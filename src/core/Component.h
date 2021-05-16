@@ -1,10 +1,18 @@
 #pragma once
 
+#define ETL_MESSAGE_TIMER_USE_INTERRUPT_LOCK
+#define ETL_MESSAGE_TIMER_ENABLE_INTERRUPTS \
+  {}
+#define ETL_MESSAGE_TIMER_DISABLE_INTERRUPTS \
+  {}
+
 #include "debug.h"
 #include "etl/list.h"
 #include "etl/message.h"
 #include "etl/message_bus.h"
 #include "etl/message_router.h"
+#include "etl/message_timer.h"
+#include "etl/timer.h"
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <functional>
@@ -15,6 +23,7 @@ enum {
   MESSAGE_LOOP,
   MESSAGE_GET_STATUS,
   MESSAGE_SET_CONFIG,
+  MESSAGE_TIMER,
 };
 
 enum {
@@ -23,6 +32,12 @@ enum {
   COMPONENT_CLASS_ACTUATOR,
   COMPONENT_CLASS_COMMUNICATION,
 };
+
+typedef enum {
+  TIMER_TYPE_250_MS,
+  TIMER_TYPE_1000_MS,
+  TIMER_TYPE_COUNT
+} timer_type_t;
 
 struct MessageLoop : public etl::message<MESSAGE_LOOP> {};
 static MessageLoop msg_loop = {};
@@ -37,11 +52,20 @@ struct MessageSetConfig : public etl::message<MESSAGE_SET_CONFIG> {
   const JsonDocument &doc;
 };
 
-static etl::message_bus<100> bus;
+struct MessageTimer : public etl::message<MESSAGE_TIMER> {
+  MessageTimer(const timer_type_t type) : type(type){};
+  const timer_type_t type;
+};
 
-class Component : public etl::message_router<Component, MessageLoop, MessageGetStatus, MessageSetConfig> {
+typedef etl::message_bus<16> MessageBus_t;
+typedef etl::message_timer<TIMER_TYPE_COUNT> MessageTimer_t;
+
+static MessageBus_t bus;
+static MessageTimer_t timer;
+
+class Component : public etl::message_router<Component, MessageLoop, MessageGetStatus, MessageSetConfig, MessageTimer> {
 private:
-  etl::message_bus<100> *_bus;
+  MessageBus_t *_bus;
 
 public:
   Component(etl::message_router_id_t id) : message_router(id) {
@@ -61,11 +85,27 @@ public:
   void on_receive(etl::imessage_router &sender, const MessageSetConfig &msg) { setConfig(msg.doc); }
   void on_receive(const MessageSetConfig &msg) { setConfig(msg.doc); };
 
+  void on_receive(etl::imessage_router &sender, const MessageTimer &msg) { on_receive(msg); }
+  void on_receive(const MessageTimer &msg) {
+    switch (msg.type) {
+    case TIMER_TYPE_250_MS:
+      timer250();
+      break;
+    case TIMER_TYPE_1000_MS:
+      timer1000();
+      break;
+    default:
+      break;
+    }
+  };
+
   virtual void getStatus(JsonDocument &doc){};
   virtual void setConfig(const JsonDocument &doc){};
 
   virtual void init(){};
   virtual void loop(){};
+  virtual void timer250(){};
+  virtual void timer1000(){};
   void yeld() { _bus->receive(msg_loop); };
   void busyWait(std::function<bool(void)> busy) {
     while (busy()) {
@@ -76,16 +116,32 @@ public:
 
 class ComponentManager {
 private:
-  etl::message_bus<100> *_bus;
+  MessageBus_t *_bus;
+  MessageTimer_t *_timer;
+  etl::timer::id::type _tm250id;
+  etl::timer::id::type _tm1000id;
 
 public:
   ComponentManager() {
     _bus = &bus;
+    _timer = &timer;
   }
 
-  void init(){};
+  void init() {
+    static MessageTimer tm250 = {TIMER_TYPE_250_MS};
+    static MessageTimer tm1000 = {TIMER_TYPE_1000_MS};
+    _tm250id = _timer->register_timer(tm250, bus, 250, true);
+    _tm1000id = _timer->register_timer(tm1000, bus, 1000, true);
+    _timer->enable(true);
+    _timer->start(_tm250id);
+    _timer->start(_tm1000id);
+  };
 
   void loop() {
+    static uint32_t lastMillis = millis();
+    uint32_t currentMillis = millis();
+    _timer->tick(currentMillis - lastMillis);
+    lastMillis = currentMillis;
     _bus->receive(msg_loop);
   };
 

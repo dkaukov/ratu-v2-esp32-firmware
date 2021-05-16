@@ -49,6 +49,10 @@ public:
     actuatorC1.init();
     actuatorC2.init();
   };
+
+  virtual void timer250() override {
+    digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
+  };
 };
 
 } // namespace Hardware
