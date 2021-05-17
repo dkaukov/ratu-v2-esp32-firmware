@@ -65,7 +65,7 @@ public:
     doc["system"]["chipModel"] = ESP.getChipModel();
   };
 
-  virtual void timer250() override {
+  virtual void timer1000() override {
     if (!_client->connected()) {
       if (_client->connect(_ssid)) {
         _LOGI("mqtt", "MQTT connected to %s:%d", "mqtt.sphere.home", 1883);
