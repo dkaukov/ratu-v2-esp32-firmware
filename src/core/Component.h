@@ -113,6 +113,10 @@ public:
       yeld();
     }
   }
+  void getGlobalStatus(JsonDocument &doc) const {
+    static MessageGetStatus msg = {doc};
+    _bus->receive(msg);
+  };
 };
 
 class ComponentManager {

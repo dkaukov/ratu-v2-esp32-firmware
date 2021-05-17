@@ -17,9 +17,9 @@ private:
   ADS1115_MUX _adcChannel = ADS1115_COMP_0_GND;
   float _fwdRaw;
   float _rflRaw;
+  uint32_t _conversionnCount = 0;
 
-  ADS1115_WE &
-  getAdc(int addr) {
+  ADS1115_WE &getAdc(int addr) {
     static ADS1115_WE __adc(addr);
     return __adc;
   }
@@ -70,6 +70,7 @@ public:
     if (digitalRead(_alertReadyPin) != HIGH) {
       read();
       start();
+      _conversionnCount++;
       if (_cnt) {
         _cnt--;
       }
@@ -77,12 +78,14 @@ public:
   }
 
   virtual void getStatus(JsonDocument &doc) const override {
+    doc["sensor"][_name]["cnt"] = _conversionnCount;
+    doc["sensor"][_name]["fwdRaw"] = _fwdRaw;
+    doc["sensor"][_name]["rflRaw"] = _rflRaw;
     SWRMeter::getStatus(doc);
-    doc["sensor"][*_name]["fwdRaw"] = _fwdRaw;
-    doc["sensor"][*_name]["rflRaw"] = _rflRaw;
   };
 
   virtual float getTarget() const override { return _rflRaw / _fwdRaw; };
+
 };
 
 } // namespace Sensor

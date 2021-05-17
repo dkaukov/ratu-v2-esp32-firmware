@@ -59,15 +59,15 @@ public:
 
   void notification(PowerRequest button) { enable(); };
 
-  virtual void getStatus(JsonDocument &doc) {
-    doc["pwrManager"]["pin"] = _enablePin;
-    doc["pwrManager"]["enabled"] = _enabled;
-    doc["pwrManager"]["timeout"] = _idleTimeoutTicks;
+  virtual void getStatus(JsonDocument &doc) const override {
+    doc["pwr"]["pin"] = _enablePin;
+    doc["pwr"]["enabled"] = _enabled;
+    doc["pwr"]["timeout"] = _idleTimeoutTicks;
   };
 
-  virtual void setConfig(const JsonDocument &doc) {
-    if (!doc["pwrManager"]["timeout"].isUndefined()) {
-      _idleTimeoutTicks = doc["pwrManager"]["timeout"];
+  virtual void setConfig(const JsonDocument &doc) override {
+    if (!doc["pwr"]["timeout"].isUndefined()) {
+      _idleTimeoutTicks = doc["pwr"]["timeout"];
     }
   };
 };
