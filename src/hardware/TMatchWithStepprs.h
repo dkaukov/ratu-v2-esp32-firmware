@@ -39,6 +39,7 @@ private:
 
 public:
   TMatchWithSteppers() : Device::ATU(COMPONENT_CLASS_GENERIC) {
+    _swrMeter = &swr;
   }
 
   virtual void init() override {

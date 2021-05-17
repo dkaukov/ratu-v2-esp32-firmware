@@ -8,7 +8,7 @@ namespace Sensor {
 
 class Sensor : public Core::Component {
 protected:
-  uint8_t _cnt;
+  uint8_t _cnt = 0;
   const char *_name;
 
 public:
