@@ -10,13 +10,13 @@ namespace Device {
 
 class ATU : public Core::Component {
 protected:
-  Sensor::SWRMeter &_swrMeter;
+  Sensor::SWRMeter *_swrMeter;
   uint8_t _swrMeterCyclesCount = 10;
 
   float measureAndWait() {
-    _swrMeter.startMeasurementCycle(_swrMeterCyclesCount);
-    busyWait([this]() { return !_swrMeter.isReady(); });
-    return _swrMeter.getTarget();
+    _swrMeter->startMeasurementCycle(_swrMeterCyclesCount);
+    busyWait([this]() { return !_swrMeter->isReady(); });
+    return _swrMeter->getTarget();
   }
 
   void stepAndWait(Actuators::Actuator &actuator, int16_t step) {
@@ -34,7 +34,7 @@ protected:
     float prevStepMeasurement = stepAndMeasure(actuator, 0);
     _LOGD("optimize", "started P(-1) = %f, step = %d", prevStepMeasurement, step);
     while (step != 0) {
-      if (!_swrMeter.isInRange()) {
+      if (!_swrMeter->isInRange()) {
         _LOGD("optimize", "aborting: measurements not in range.");
         break;
       }
@@ -60,7 +60,7 @@ protected:
   }
 
 public:
-  ATU(etl::message_router_id_t id, Sensor::SWRMeter &swrMeter) : Core::Component(id), _swrMeter(swrMeter){};
+  ATU(etl::message_router_id_t id) : Core::Component(id){};
   virtual void resetToDefaults(){};
   virtual void tune(){};
 };

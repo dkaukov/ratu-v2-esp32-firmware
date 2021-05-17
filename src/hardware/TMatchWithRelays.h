@@ -60,15 +60,15 @@ using namespace Sensor;
 using namespace Core;
 using namespace Actuators;
 
-static SWRMeterAds1115Ad8310 swr(ADS1115_ALERT_READY_PIN);
 
-static Adafruit_MCP23017 mcp;
-ActuatorDACMCP23017 actuatorL(L_ACTUATOR_NAME, {pin : {K1, K2, K3, K4, K5, K6, K7, K8}}, mcp);
-ActuatorDACGPIO actuatorC1(C1_ACTUATOR_NAME, {pin : {K17, K18, K19, K20, K21, K22, K23, K24}});
-ActuatorDACMCP23017 actuatorC2(C2_ACTUATOR_NAME, {pin : {K9, K10, K11, K12, K13, K14, K15, K16}}, mcp);
 
 class TMatchWithRelays : public Device::ATU {
 private:
+  Actuator *_actuatorL;
+  Actuator *_actuatorC1;
+  Actuator *_actuatorC2;
+  Adafruit_MCP23017 *_mcp;
+
   int32_t _actuatorLInitial = 8;
   int32_t _actuatorC1Initial = 64;
   int32_t _actuatorC2Initial = 64;
@@ -79,18 +79,27 @@ private:
   float _historesis = 0.0;
 
 public:
-  TMatchWithRelays() : Device::ATU(COMPONENT_CLASS_GENERIC, swr) {
-    
+  TMatchWithRelays() : Device::ATU(COMPONENT_CLASS_GENERIC) {
+    static SWRMeterAds1115Ad8310 swr(ADS1115_ALERT_READY_PIN);
+    static Adafruit_MCP23017 mcp;
+    static ActuatorDACMCP23017 actuatorL(L_ACTUATOR_NAME, {pin : {K1, K2, K3, K4, K5, K6, K7, K8}}, mcp);
+    static ActuatorDACGPIO actuatorC1(C1_ACTUATOR_NAME, {pin : {K17, K18, K19, K20, K21, K22, K23, K24}});
+    static ActuatorDACMCP23017 actuatorC2(C2_ACTUATOR_NAME, {pin : {K9, K10, K11, K12, K13, K14, K15, K16}}, mcp);
+    _swrMeter = &swr;
+    _actuatorL = &actuatorL;
+    _actuatorC1 = &actuatorC1;
+    _actuatorC2 = &actuatorC2;
+    _mcp = &mcp;
   }
 
   virtual void init() override {
-    mcp.begin();
+    _mcp->begin();
     pinMode(K25, OUTPUT);
     pinMode(K26, OUTPUT);
-    swr.init();
-    actuatorL.init();
-    actuatorC1.init();
-    actuatorC2.init();
+    _swrMeter->init();
+    _actuatorL->init();
+    _actuatorC1->init();
+    _actuatorC2->init();
     resetToDefaults();
   };
 
@@ -100,18 +109,18 @@ public:
 
   virtual void resetToDefaults() override {
     _LOGI("resetToDefaults", "Moving actuators to the default positions(s): L=%d, C1=%d, C2=%d", _actuatorLInitial, _actuatorC1Initial, _actuatorC2Initial);
-    actuatorL.setValue(_actuatorLInitial);
-    actuatorC1.setValue(_actuatorC1Initial);
-    actuatorC2.setValue(_actuatorC2Initial);
+    _actuatorL->setValue(_actuatorLInitial);
+    _actuatorC1->setValue(_actuatorC1Initial);
+    _actuatorC2->setValue(_actuatorC2Initial);
   };
 
   virtual void tune() override {
     uint32_t startedTime = micros();
-    optimise(actuatorL, _actuatorLInitialStep, _historesis);
+    optimise(*_actuatorL, _actuatorLInitialStep, _historesis);
     _LOGI("autoTune", "actuatorL finished in %8d ms", (uint32_t)micros() - startedTime);
-    optimise(actuatorC1, _actuatorC1InitialStep, _historesis);
+    optimise(*_actuatorC1, _actuatorC1InitialStep, _historesis);
     _LOGI("autoTune", "actuatorC1 finished in %8d ms", (uint32_t)micros() - startedTime);
-    optimise(actuatorC2, _actuatorC2InitialStep, _historesis);
+    optimise(*_actuatorC2, _actuatorC2InitialStep, _historesis);
     _LOGI("autoTune", "actuatorC2 finished in %8d ms", (uint32_t)micros() - startedTime);
   };
 
