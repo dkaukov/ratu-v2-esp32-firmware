@@ -18,7 +18,7 @@ protected:
   uint8_t _value;
   uint8_t _delay;
 
-  virtual void internalSetValue(uint8_t val){};
+  virtual void dacSetValue(uint8_t val){};
 
 public:
   ActuatorDAC(const char *name,
@@ -47,15 +47,17 @@ public:
   virtual int32_t setValue(int32_t pos) override {
     uint8_t val = constrain(pos, _min, _max);
     if ((val & _value) != 0) {
-      internalSetValue(val);
+      dacSetValue(val);
     } else {
-      internalSetValue(val | _value);
+      dacSetValue(val | _value);
       delay(_delay);
-      internalSetValue(val);
+      dacSetValue(val);
     }
     _value = val;
   };
+
   virtual int32_t getValue() const override { return _value; };
+
   virtual bool isReady() const override { return true; }
 };
 
