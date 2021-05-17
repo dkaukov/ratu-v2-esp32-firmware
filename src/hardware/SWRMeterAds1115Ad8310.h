@@ -1,5 +1,6 @@
 #pragma once
 
+#include "core/Component.h"
 #include "debug.h"
 #include "sensor/SWRMeter.h"
 #include "sensor/Sensor.h"
@@ -8,6 +9,8 @@
 #include <Wire.h>
 
 namespace Sensor {
+
+#define ADS1115_DEFAULT_I2C_ADDRESS 0x48
 
 class SWRMeterAds1115Ad8310 : public SWRMeter {
 
@@ -25,11 +28,11 @@ private:
   }
 
 public:
-  SWRMeterAds1115Ad8310(etl::message_router_id_t id,
-                        int addr,
-                        uint8_t alertReadyPin) : SWRMeter(id, "SWRMeterAds1115Ad8310"),
-                                                 _adc(getAdc(addr)),
-                                                 _alertReadyPin(alertReadyPin){};
+  SWRMeterAds1115Ad8310(uint8_t alertReadyPin,
+                        uint8_t ads1115Addr = ADS1115_DEFAULT_I2C_ADDRESS)
+      : SWRMeter(Core::COMPONENT_CLASS_SENSOR, "SWRMeterAds1115Ad8310"),
+        _adc(getAdc(ads1115Addr)),
+        _alertReadyPin(alertReadyPin){};
 
   void start() {
     _adc.setCompareChannels(_adcChannel);
@@ -85,7 +88,6 @@ public:
   };
 
   virtual float getTarget() const override { return _rflRaw / _fwdRaw; };
-
 };
 
 } // namespace Sensor
