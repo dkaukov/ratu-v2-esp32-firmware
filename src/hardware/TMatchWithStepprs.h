@@ -58,9 +58,6 @@ private:
   Actuator *_actuatorL;
   Actuator *_actuatorC1;
   Actuator *_actuatorC2;
-  AccelStepper *_stepperL;
-  AccelStepper *_stepperC1;
-  AccelStepper *_stepperC2;
 
   int32_t _actuatorLInitial = 3000;
   int32_t _actuatorC1Initial = 120;
@@ -73,41 +70,30 @@ private:
 
 public:
   TMatchWithSteppers() : Device::ATU(COMPONENT_CLASS_GENERIC) {
-
     static SWRMeterAds1115Ad8310 swr(ADS1115_ALERT_READY_PIN);
-
     static AccelStepper stepperL = AccelStepper(AccelStepper::DRIVER, L_DRIVER_PIN_STEP, L_DRIVER_PIN_DIR);
     static AccelStepper stepperC1 = AccelStepper(AccelStepper::DRIVER, C1_DRIVER_PIN_STEP, C1_DRIVER_PIN_DIR);
     static AccelStepper stepperC2 = AccelStepper(AccelStepper::DRIVER, C2_DRIVER_PIN_STEP, C2_DRIVER_PIN_DIR);
-
     static ActuatorStepperPowerManager pwrManager(ALL_MOTORS_ENABLE_PIN);
     static ActuatorStepper actuatorL(stepperL, L_SENSOR_PIN, L_RANGE_IN_STEPS, L_ACTUATOR_NAME);
     static ActuatorStepper actuatorC1(stepperC1, C1_SENSOR_PIN, C1_RANGE_IN_STEPS, C1_ACTUATOR_NAME);
     static ActuatorStepper actuatorC2(stepperC2, C2_SENSOR_PIN, C2_RANGE_IN_STEPS, C2_ACTUATOR_NAME);
-
     actuatorL.registerPowerManager(pwrManager);
     actuatorC1.registerPowerManager(pwrManager);
     actuatorC2.registerPowerManager(pwrManager);
-
     stepperL.setMaxSpeed(L_SPEED);            //  Set maximum rotation speed for "L" Motor 1
     stepperL.setSpeed(L_SPEED);               //  Set maximum calibration speed for "L" Motor 1
     stepperL.setAcceleration(L_ACCELERATION); //  Set maximum acceleration for "L" Motor 1
-
     stepperC1.setMaxSpeed(C1_SPEED);            //  Set maximum rotation speed for "C1" Motor 2
     stepperC1.setSpeed(C1_SPEED);               //  Set maximum calibration speed for "C1" Motor 2
     stepperC1.setAcceleration(C1_ACCELERATION); //  Set maximum acceleration for "C1" Motor 2
-
     stepperC2.setMaxSpeed(C2_SPEED);            //  Set maximum rotation speed for "C2" Motor 3
     stepperC2.setSpeed(C2_SPEED);               //  Set maximum calibration speed for "C2" Motor 3
     stepperC2.setAcceleration(C2_ACCELERATION); //  Set maximum acceleration for "C2" Motor 3
-
     _swrMeter = &swr;
     _actuatorL = &actuatorL;
     _actuatorC1 = &actuatorC1;
     _actuatorC2 = &actuatorC2;
-    _stepperL = &stepperL;
-    _stepperC1 = &stepperC1;
-    _stepperC2 = &stepperC2;
   }
 
   virtual void init() override {
