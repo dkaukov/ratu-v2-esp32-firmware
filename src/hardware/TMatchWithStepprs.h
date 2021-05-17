@@ -78,11 +78,11 @@ public:
   virtual void tune() override {
     uint32_t startedTime = micros();
     optimise(&actuatorL, _actuatorLInitialStep, _historesis);
-    _LOGI("autoTune", "stepperL finished in %8d ms\n", (uint32_t)micros() - startedTime);
+    _LOGI("autoTune", "stepperL finished in %8d ms", (uint32_t)micros() - startedTime);
     optimise(&actuatorC1, _actuatorC1InitialStep, _historesis);
-    _LOGI("autoTune", "stepperC1 finished in %8d ms\n", (uint32_t)micros() - startedTime);
+    _LOGI("autoTune", "stepperC1 finished in %8d ms", (uint32_t)micros() - startedTime);
     optimise(&actuatorC2, _actuatorC2InitialStep, _historesis);
-    _LOGI("autoTune", "stepperC2 finished in %8d ms\n", (uint32_t)micros() - startedTime);
+    _LOGI("autoTune", "stepperC2 finished in %8d ms", (uint32_t)micros() - startedTime);
   };
 };
 

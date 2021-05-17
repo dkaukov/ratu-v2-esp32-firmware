@@ -116,7 +116,7 @@ public:
         stepsTraveled++;
       }
       if (stepsTraveled >= range) {
-        _LOGE("calibrate", "Calibration of %s apborted, as end-stop was not riched in %d steps.", _name, stepsTraveled);
+        _LOGE("calibrate", "Calibration of %s aborted, as end-stop was not riched in %d steps.", _name, stepsTraveled);
         _stepper.stop();
         _stepper.setCurrentPosition(0);
         //disable();
