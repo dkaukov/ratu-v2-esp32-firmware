@@ -22,17 +22,26 @@ AccelStepper stepperC1 = AccelStepper(1, 17, 16); // Custom pinout "C1" - Step t
 AccelStepper stepperC2 = AccelStepper(1, 0, 4);   // Custom pinout "C2" - Step to GPI00, Dir to GPI04 (Default AccelStepper::FULL4WIRE (4 pins) on 2, 3, 4, 5)
 
 ActuatorStepperPowerManager pwrManager(5);
-ActuatorStepper actuatorL(stepperL, 26, "L");
-ActuatorStepper actuatorC1(stepperC1, 14, "C1");
-ActuatorStepper actuatorC2(stepperC2, 27, "C2");
+ActuatorStepper actuatorL(stepperL, 26, 32000, "L");
+ActuatorStepper actuatorC1(stepperC1, 14, 32000, "C1");
+ActuatorStepper actuatorC2(stepperC2, 27, 32000, "C2");
 
 class TMatchWithSteppers : public Device::ATU {
 private:
+  int32_t _actuatorLInitial = 3000;
+  int32_t _actuatorC1Initial = 120;
+  int32_t _actuatorC2Initial = 120;
+
+  int32_t _actuatorLInitialStep = 3000;
+  int32_t _actuatorC1InitialStep = 100;
+  int32_t _actuatorC2InitialStep = 100;
+  float  _historesis = 0.0;
+
 public:
   TMatchWithSteppers() : Device::ATU(COMPONENT_CLASS_GENERIC) {
   }
 
-  virtual void init() {
+  virtual void init() override {
     stepperL.setMaxSpeed(5500);     //  Set maximum roration speed for "L" Motor 1
     stepperL.setSpeed(5500);        //  Set maximum calibration speed for "L" Motor 1
     stepperL.setAcceleration(4000); //  Set maximum acceleration for "L" Motor 1
@@ -52,10 +61,28 @@ public:
     actuatorL.init();
     actuatorC1.init();
     actuatorC2.init();
+    resetToDefaults();
   };
 
   virtual void timer250() override {
     digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
+  };
+
+  virtual void resetToDefaults() override {
+    _LOGI("resetToDefaults", "Moving actuators to the default positions(s): L=%d, C1=%d, C2=%d", _actuatorLInitial, _actuatorC1Initial, _actuatorC2Initial);
+    actuatorL.setValue(_actuatorLInitial);
+    actuatorC1.setValue(_actuatorC1Initial);
+    actuatorC2.setValue(_actuatorC2Initial);
+  };
+
+  virtual void tune() override {
+    uint32_t startedTime = micros();
+    optimise(&actuatorL, _actuatorLInitialStep, _historesis);
+    _LOGI("autoTune", "stepperL finished in %8d ms\n", (uint32_t)micros() - startedTime);
+    optimise(&actuatorC1, _actuatorC1InitialStep, _historesis);
+    _LOGI("autoTune", "stepperC1 finished in %8d ms\n", (uint32_t)micros() - startedTime);
+    optimise(&actuatorC2, _actuatorC2InitialStep, _historesis);
+    _LOGI("autoTune", "stepperC2 finished in %8d ms\n", (uint32_t)micros() - startedTime);
   };
 };
 

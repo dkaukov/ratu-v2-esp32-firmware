@@ -85,14 +85,15 @@ protected:
 
 public:
   ActuatorStepper(AccelStepper &stepper,
-
                   const uint8_t sensorPin,
+                  const uint32_t max,
                   const char *name) : Actuator(Core::COMPONENT_CLASS_ACTUATOR, name),
                                       _stepper(stepper),
-                                      _sensorPin(sensorPin){};
+                                      _sensorPin(sensorPin) {
+    _max = max;
+  };
 
   virtual void init() {
-    _max = 32000;
     pinMode(_sensorPin, INPUT);
     enable();
     calibrate();
