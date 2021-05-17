@@ -3,61 +3,104 @@
 #include "AccelStepper.h"
 #include "Actuator.h"
 #include "core/Component.h"
+#include "etl/observer.h"
 #include <Arduino.h>
 
 namespace Actuators {
 
-class ActuatorStepper : public Actuator {
-protected:
-  AccelStepper &_stepper;
-  uint8_t _sensorPin;
+struct PowerRequest {
+};
+
+static PowerRequest powerRequest = {};
+
+typedef etl::observer<PowerRequest> PowerRequest_Observer;
+
+class ActuatorStepperPowerManager : public PowerRequest_Observer, Core::Component {
+private:
   uint8_t _enablePin;
   bool _enabled = false;
+  uint8_t _enabledTicks;
+  uint8_t _idleTimeoutTicks = 4;
+
+public:
+  ActuatorStepperPowerManager(uint8_t enablePin) : Core::Component(Core::COMPONENT_CLASS_POWER_MANAGER), _enablePin(enablePin){};
 
   virtual void enable() {
     if (!_enabled) {
+      _LOGD("pwr", "Enabling stepper(s) power using pin %d", _enablePin);
       digitalWrite(_enablePin, LOW);
       delay(5);
       _enabled = true;
     }
+    _enabledTicks = _idleTimeoutTicks;
   };
 
   virtual void disable() {
-    digitalWrite(_enablePin, HIGH);
-    _enabled = false;
+    if (_enabled) {
+      _LOGD("pwr", "Disabling stepper(s) power using pin %d", _enablePin);
+      digitalWrite(_enablePin, HIGH);
+      _enabled = false;
+    }
   };
 
-  virtual void managePower() {
-    static const unsigned long REFRESH_INTERVAL = 100; // ms
-    static unsigned long lastRefreshTime = 0;
-    if (millis() - lastRefreshTime >= REFRESH_INTERVAL) {
-      lastRefreshTime = millis();
-      if (!_stepper.isRunning()) {
+  virtual void timer250() {
+    if (_enabledTicks > 0) {
+      _enabledTicks--;
+    } else {
+      if (_enabled) {
         disable();
       }
     }
-  }
+  };
+
+  virtual void init() {
+    pinMode(_enablePin, OUTPUT);
+  };
+
+  void notification(PowerRequest button) { enable(); };
+
+  virtual void getStatus(JsonDocument &doc) {
+    doc["pwrManager"]["pin"] = _enablePin;
+    doc["pwrManager"]["enabled"] = _enabled;
+    doc["pwrManager"]["timeout"] = _idleTimeoutTicks;
+  };
+
+  virtual void setConfig(const JsonDocument &doc) {
+    if (!doc["pwrManager"]["timeout"].isUndefined()) {
+      _idleTimeoutTicks = doc["pwrManager"]["timeout"];
+    }
+  };
+};
+
+class ActuatorStepper : public Actuator,
+                        etl::observable<PowerRequest_Observer, 1> {
+protected:
+  AccelStepper &_stepper;
+  uint8_t _sensorPin;
+  bool _enabled = false;
+
+  virtual void enable() {
+    notify_observers(powerRequest);
+  };
 
 public:
   ActuatorStepper(AccelStepper &stepper,
-                  const uint8_t enablePin,
+
                   const uint8_t sensorPin,
                   const char *name) : Actuator(Core::COMPONENT_CLASS_ACTUATOR, name),
                                       _stepper(stepper),
-                                      _sensorPin(sensorPin),
-                                      _enablePin(enablePin){};
+                                      _sensorPin(sensorPin){};
 
   virtual void init() {
     _max = 32000;
     pinMode(_sensorPin, INPUT);
-    pinMode(_enablePin, OUTPUT);
     enable();
     calibrate();
   };
 
   virtual void loop() {
-    if (!_stepper.run()) {
-      managePower();
+    if (_stepper.run()) {
+      enable();
     }
   };
 
@@ -73,7 +116,9 @@ public:
       }
       if (stepsTraveled >= range) {
         _LOGE("calibrate", "Calibration of %s apborted, as end-stop was not riched in %d steps.", _name, stepsTraveled);
-        disable();
+        _stepper.stop();
+        _stepper.setCurrentPosition(0);
+        //disable();
         return;
       }
     }
@@ -98,6 +143,10 @@ public:
   };
 
   virtual bool isReady() { return !_stepper.isRunning(); }
+
+  virtual void registerPowerManager(ActuatorStepperPowerManager &pwrManager) {
+    add_observer(pwrManager);
+  }
 };
 
 } // namespace Actuators

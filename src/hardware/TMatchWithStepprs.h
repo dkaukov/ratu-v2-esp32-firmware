@@ -21,9 +21,10 @@ AccelStepper stepperL = AccelStepper(1, 19, 18);  // Custom pinout "L" - Step to
 AccelStepper stepperC1 = AccelStepper(1, 17, 16); // Custom pinout "C1" - Step to GPI017, Dir to GPI016 (Default AccelStepper::FULL4WIRE (4 pins) on 2, 3, 4, 5)
 AccelStepper stepperC2 = AccelStepper(1, 0, 4);   // Custom pinout "C2" - Step to GPI00, Dir to GPI04 (Default AccelStepper::FULL4WIRE (4 pins) on 2, 3, 4, 5)
 
-ActuatorStepper actuatorL(stepperL, 5, 26, "L");
-ActuatorStepper actuatorC1(stepperC1, 5, 14, "C1");
-ActuatorStepper actuatorC2(stepperC2, 5, 27, "C2");
+ActuatorStepperPowerManager pwrManager(5);
+ActuatorStepper actuatorL(stepperL, 26, "L");
+ActuatorStepper actuatorC1(stepperC1, 14, "C1");
+ActuatorStepper actuatorC2(stepperC2, 27, "C2");
 
 class TMatchWithSteppers : public Device::ATU {
 private:
@@ -45,6 +46,9 @@ public:
     stepperC2.setAcceleration(2000); //  Set maximum acceleration for "C" Motor 3
 
     swr.init();
+    actuatorL.registerPowerManager(pwrManager);
+    actuatorC1.registerPowerManager(pwrManager);
+    actuatorC2.registerPowerManager(pwrManager);
     actuatorL.init();
     actuatorC1.init();
     actuatorC2.init();
