@@ -60,8 +60,6 @@ using namespace Sensor;
 using namespace Core;
 using namespace Actuators;
 
-
-
 class TMatchWithRelays : public Device::ATU {
 private:
   Actuator *_actuatorL;
@@ -132,5 +130,7 @@ public:
     _LOGI(_name, "Status: %s", output.c_str());
   };
 };
+
+TMatchWithRelays atu;
 
 } // namespace Hardware

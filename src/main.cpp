@@ -7,14 +7,13 @@
 #include "config.h"
 #include "core/Component.h"
 #include "debug.h"
-#include "hardware/TMatchWithRelays.h"
-//#include "hardware/TMatchWithStepprs.h"
+//#include "hardware/TMatchWithRelays.h"
+#include "hardware/TMatchWithStepprs.h"
 #include "lwip/apps/sntp.h"
 #include "secrets.h"
 #include <Arduino.h>
 
 Core::ComponentManager mgr;
-Hardware::TMatchWithRelays atu;
 
 void setupWiFi() {
   btStop();
@@ -46,7 +45,7 @@ void setup() {
   setupWiFi();
   digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
   debugInit();
-  atu.init();
+  Hardware::atu.init();
   mgr.init();
 }
 
