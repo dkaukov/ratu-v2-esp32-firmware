@@ -15,8 +15,11 @@ private:
   ADS1115_WE &_adc;
   const uint8_t _alertReadyPin;
   ADS1115_MUX _adcChannel = ADS1115_COMP_0_GND;
+  float _fwdRaw;
+  float _rflRaw;
 
-  ADS1115_WE &getAdc(int addr) {
+  ADS1115_WE &
+  getAdc(int addr) {
     static ADS1115_WE __adc(addr);
     return __adc;
   }
@@ -34,16 +37,18 @@ public:
     _adc.startSingleMeasurement();
   }
 
-  float convertFwd(float input) const { return input; }
+  float convertFwd(const float x) const { return exp((x - 1913.417895) / 102.743582); }
 
-  float convertRfl(float input) const { return input; }
+  float convertRfl(const float x) const { return exp((x - 1913.151197) / 101.409361); }
 
   void read() {
     if (_adcChannel == ADS1115_COMP_0_GND) {
-      _fwd = convertFwd(_adc.getResult_mV());
+      _fwdRaw = _adc.getResult_mV();
+      _fwd = convertFwd(_fwdRaw);
       _adcChannel = ADS1115_COMP_1_GND;
     } else {
-      _rfl = convertRfl(_adc.getResult_mV());
+      _rflRaw = _adc.getResult_mV();
+      _rfl = convertRfl(_rflRaw);
       _adcChannel = ADS1115_COMP_0_GND;
     }
   }
@@ -70,6 +75,14 @@ public:
       }
     }
   }
+
+  virtual void getStatus(JsonDocument &doc) const override {
+    SWRMeter::getStatus(doc);
+    doc["sensor"][*_name]["fwdRaw"] = _fwdRaw;
+    doc["sensor"][*_name]["rflRaw"] = _rflRaw;
+  };
+
+  virtual float getTarget() const override { return _rflRaw / _fwdRaw; };
 };
 
 } // namespace Sensor

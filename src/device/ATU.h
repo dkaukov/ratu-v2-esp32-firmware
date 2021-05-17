@@ -16,7 +16,7 @@ protected:
   float measureAndWait() {
     _swrMeter.startMeasurementCycle(_swrMeterCyclesCount);
     busyWait([this]() { return !_swrMeter.isReady(); });
-    return _swrMeter.getPct();
+    return _swrMeter.getTarget();
   }
 
   void stepAndWait(Actuators::Actuator &actuator, int16_t step) {

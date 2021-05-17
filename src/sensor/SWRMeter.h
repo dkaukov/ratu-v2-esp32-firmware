@@ -24,6 +24,7 @@ public:
     float p = getPct();
     return (1 + p) / (1 - p);
   };
+  virtual float getTarget() const { return getPct(); };
 
   virtual bool isInRange() const {
     return (_fwd > _minFwd) && (_rfl > _minRfl);
@@ -34,6 +35,7 @@ public:
     doc["sensor"][*_name]["rfl"] = getRfl();
     doc["sensor"][*_name]["pct"] = getPct();
     doc["sensor"][*_name]["swr"] = getSWR();
+    doc["sensor"][*_name]["target"] = getTarget();
   };
 
   virtual void setConfig(const JsonDocument &doc) override {
