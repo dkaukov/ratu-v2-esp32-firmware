@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SWRMeterAd8307.h"
+#include "SWRMeterAds1115Ad8310.h"
 #include "actuators/ActuatorStepper.h"
 #include "core/Component.h"
 #include "debug.h"
@@ -16,7 +16,7 @@ using namespace Sensor;
 using namespace Core;
 using namespace Actuators;
 
-static SWRMeterAd8307 swr(COMPONENT_CLASS_SENSOR, I2C_ADDRESS, 23);
+static SWRMeterAds1115Ad8310 swr(COMPONENT_CLASS_SENSOR, I2C_ADDRESS, 23);
 AccelStepper stepperL = AccelStepper(1, 19, 18);  // Custom pinout "L" - Step to GPI019, Dir to GPI018 (Default AccelStepper::FULL4WIRE (4 pins) on 2, 3, 4, 5)
 AccelStepper stepperC1 = AccelStepper(1, 17, 16); // Custom pinout "C1" - Step to GPI017, Dir to GPI016 (Default AccelStepper::FULL4WIRE (4 pins) on 2, 3, 4, 5)
 AccelStepper stepperC2 = AccelStepper(1, 0, 4);   // Custom pinout "C2" - Step to GPI00, Dir to GPI04 (Default AccelStepper::FULL4WIRE (4 pins) on 2, 3, 4, 5)
@@ -35,12 +35,10 @@ private:
   int32_t _actuatorLInitialStep = 3000;
   int32_t _actuatorC1InitialStep = 100;
   int32_t _actuatorC2InitialStep = 100;
-  float  _historesis = 0.0;
+  float _historesis = 0.0;
 
 public:
-  TMatchWithSteppers() : Device::ATU(COMPONENT_CLASS_GENERIC) {
-    _swrMeter = &swr;
-  }
+  TMatchWithSteppers() : Device::ATU(COMPONENT_CLASS_GENERIC, swr) {}
 
   virtual void init() override {
     stepperL.setMaxSpeed(5500);     //  Set maximum roration speed for "L" Motor 1
@@ -78,11 +76,11 @@ public:
 
   virtual void tune() override {
     uint32_t startedTime = micros();
-    optimise(&actuatorL, _actuatorLInitialStep, _historesis);
+    optimise(actuatorL, _actuatorLInitialStep, _historesis);
     _LOGI("autoTune", "stepperL finished in %8d ms", (uint32_t)micros() - startedTime);
-    optimise(&actuatorC1, _actuatorC1InitialStep, _historesis);
+    optimise(actuatorC1, _actuatorC1InitialStep, _historesis);
     _LOGI("autoTune", "stepperC1 finished in %8d ms", (uint32_t)micros() - startedTime);
-    optimise(&actuatorC2, _actuatorC2InitialStep, _historesis);
+    optimise(actuatorC2, _actuatorC2InitialStep, _historesis);
     _LOGI("autoTune", "stepperC2 finished in %8d ms", (uint32_t)micros() - startedTime);
   };
 };

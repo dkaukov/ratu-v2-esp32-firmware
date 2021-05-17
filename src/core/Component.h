@@ -100,14 +100,14 @@ public:
     }
   };
 
-  virtual void getStatus(JsonDocument &doc){};
+  virtual void getStatus(JsonDocument &doc) const {};
   virtual void setConfig(const JsonDocument &doc){};
 
   virtual void init(){};
   virtual void loop(){};
   virtual void timer250(){};
   virtual void timer1000(){};
-  void yeld() { _bus->receive(msg_loop); };
+  void yeld() const { _bus->receive(msg_loop); };
   void busyWait(std::function<bool(void)> busy) {
     while (busy()) {
       yeld();
@@ -138,7 +138,7 @@ public:
     _timer->start(_tm1000id);
   };
 
-  void loop() {
+  void loop() const {
     static uint32_t lastMillis = millis();
     uint32_t currentMillis = millis();
     _timer->tick(currentMillis - lastMillis);
@@ -146,7 +146,7 @@ public:
     _bus->receive(msg_loop);
   };
 
-  void getStatus(JsonDocument &doc) {
+  void getStatus(JsonDocument &doc) const {
     static MessageGetStatus msg = {doc};
     _bus->receive(msg);
   };

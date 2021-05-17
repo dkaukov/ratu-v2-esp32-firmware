@@ -93,19 +93,19 @@ public:
     _max = max;
   };
 
-  virtual void init() {
+  virtual void init() override {
     pinMode(_sensorPin, INPUT);
     enable();
     calibrate();
   };
 
-  virtual void loop() {
+  virtual void loop() override {
     if (_stepper.run()) {
       enable();
     }
   };
 
-  virtual void calibrate(bool restoreState = false) {
+  virtual void calibrate(bool restoreState = false) override {
     _LOGI("calibrate", "Calibration of %s started.", _name);
     int32_t oldPosition = _stepper.currentPosition();
     int32_t range = (_max - _min);
@@ -131,11 +131,11 @@ public:
     }
   };
 
-  virtual int32_t getValue() { return _stepper.currentPosition(); };
+  virtual int32_t getValue() const override { return _stepper.currentPosition(); };
 
-  virtual float getPhisicalValue() { return getValue(); };
+  virtual float getPhisicalValue() const override { return getValue(); };
 
-  virtual int32_t setValue(int32_t pos) {
+  virtual int32_t setValue(int32_t pos) override {
     int32_t oldPosition = _stepper.currentPosition();
     pos = constrain(pos, _min, _max);
     enable();
@@ -143,7 +143,7 @@ public:
     return pos - oldPosition;
   };
 
-  virtual bool isReady() { return !_stepper.isRunning(); }
+  virtual bool isReady() const override { return !_stepper.isRunning(); }
 
   virtual void registerPowerManager(ActuatorStepperPowerManager &pwrManager) {
     add_observer(pwrManager);
