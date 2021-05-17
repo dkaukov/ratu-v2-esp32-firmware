@@ -7,4 +7,4 @@
 
 #define WIFI_HOSTNAME "atu"
 
-#define NTP_SERVER "gps.sphere.home"
+#define NTP_SERVER "router.sphere.home"

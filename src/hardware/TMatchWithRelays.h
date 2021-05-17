@@ -115,13 +115,6 @@ public:
     _LOGI("autoTune", "actuatorC2 finished in %8d ms", (uint32_t)micros() - startedTime);
   };
 
-  virtual void timer1000() override {
-    StaticJsonDocument<1024> doc;
-    getGlobalStatus(doc);
-    String output;
-    serializeJson(doc, output);
-    _LOGI(_name, "Status: %s", output.c_str());
-  };
 };
 
 } // namespace Hardware

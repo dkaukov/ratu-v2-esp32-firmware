@@ -8,6 +8,7 @@
 #include "core/Component.h"
 #include "debug.h"
 #include "hardware/TMatchWithRelays.h"
+#include "network/MQTT.h"
 //#include "hardware/TMatchWithStepprs.h"
 #include "lwip/apps/sntp.h"
 #include "secrets.h"
@@ -46,6 +47,7 @@ void setup() {
   setupWiFi();
   digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
   debugInit();
+  Network::mqtt.init();
   atu.init();
   mgr.init();
 }
