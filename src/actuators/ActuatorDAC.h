@@ -4,41 +4,33 @@
 
 namespace Actuators {
 
+#define DAC_BIT_COUNT 8
+
+typedef struct gpio8bit {
+  uint8_t pin[DAC_BIT_COUNT];
+} gpio8bit;
+
 class ActuatorDAC : public Actuator {
 protected:
-  const uint8_t _gpio0;
-  const uint8_t _gpio1;
-  const uint8_t _gpio2;
-  const uint8_t _gpio3;
-  const uint8_t _gpio4;
-  const uint8_t _gpio5;
-  const uint8_t _gpio6;
-  const uint8_t _gpio7;
+  const gpio8bit _gpio;
 
   uint8_t _value;
   uint8_t _delay;
 
-  virtual void dacSetValue(uint8_t val){};
+  void dacSetValue(uint8_t val) {
+    for (uint8_t i = 0; i < DAC_BIT_COUNT; i++) {
+      _digitalWrite(_gpio.pin[0], (val & (1 << i)));
+    }
+  };
+
+  virtual void _digitalWrite(uint8_t pin, uint8_t val){};
+  virtual void _pinMode(uint8_t pin, uint8_t mode){};
 
 public:
   ActuatorDAC(const char *name,
-              uint8_t gpio0,
-              uint8_t gpio1,
-              uint8_t gpio2,
-              uint8_t gpio3,
-              uint8_t gpio4,
-              uint8_t gpio5,
-              uint8_t gpio6,
-              uint8_t gpio7)
+              const gpio8bit gpio)
       : Actuator(Core::COMPONENT_CLASS_ACTUATOR, name),
-        _gpio0(gpio0),
-        _gpio1(gpio1),
-        _gpio2(gpio2),
-        _gpio3(gpio3),
-        _gpio4(gpio4),
-        _gpio5(gpio5),
-        _gpio6(gpio6),
-        _gpio7(gpio7) {
+        _gpio(gpio) {
     _min = 1;
     _max = 255;
     _delay = 15;
@@ -46,6 +38,7 @@ public:
 
   virtual int32_t setValue(int32_t pos) override {
     uint8_t val = constrain(pos, _min, _max);
+    uint8_t oldVal = _value;
     if ((val & _value) != 0) {
       dacSetValue(val);
     } else {
@@ -54,11 +47,18 @@ public:
       dacSetValue(val);
     }
     _value = val;
+    return val - oldVal;
   };
 
   virtual int32_t getValue() const override { return _value; };
 
   virtual bool isReady() const override { return true; }
+
+  virtual void init() override {
+    for (uint8_t i = 0; i < DAC_BIT_COUNT; i++) {
+      _pinMode(_gpio.pin[i], OUTPUT);
+    }
+  };
 };
 
 } // namespace Actuators
