@@ -17,6 +17,10 @@
 #include <ArduinoJson.h>
 #include <functional>
 
+void ____loop() {
+  loop();
+}
+
 namespace Core {
 
 enum {
@@ -123,7 +127,10 @@ public:
   virtual void loop(){};
   virtual void timer250(){};
   virtual void timer1000(){};
-  void yeld() const { _bus->receive(msg_loop); };
+  void yeld() const {
+    ____loop();
+    //_bus->receive(msg_loop);
+  };
   void busyWait(std::function<bool(void)> busy) {
     while (busy()) {
       yeld();
