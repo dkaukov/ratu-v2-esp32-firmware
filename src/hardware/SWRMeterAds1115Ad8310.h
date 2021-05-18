@@ -18,9 +18,9 @@ private:
   ADS1115_WE &_adc;
   const uint8_t _alertReadyPin;
   ADS1115_MUX _adcChannel = ADS1115_COMP_0_GND;
+  uint32_t _conversionnCount = 0;
   float _fwdRaw;
   float _rflRaw;
-  uint32_t _conversionnCount = 0;
 
   ADS1115_WE &getAdc(int addr) {
     static ADS1115_WE __adc(addr);

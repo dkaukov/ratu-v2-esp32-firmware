@@ -103,8 +103,12 @@ inline void debugInit() {
 inline void debugLoop() {
 }
 
-#define dprintf(format, ...)
 #define assert(expression)
+#define _LOGE(tag, fmt, ...)
+#define _LOGW(tag, fmt, ...)
+#define _LOGI(tag, fmt, ...)
+#define _LOGD(tag, fmt, ...)
+#define _LOGV(tag, fmt, ...)
 
 #endif
 

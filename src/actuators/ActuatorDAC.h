@@ -59,6 +59,24 @@ public:
       _pinMode(_gpio.pin[i], OUTPUT);
     }
   };
+
+  virtual void onCommand(Core::command_type_t type, const JsonDocument &doc) override {
+    Actuator::onCommand(type, doc);
+    if (type == Core::COMMAND_TYPE_ACTUATE) {
+      if (!doc["actuator"][_name]["setBit"].isUndefined()) {
+        uint8_t value = doc["actuator"][_name]["setBit"];
+        dacSetValue(1 << value);
+        _value = 1 << value;
+        _LOGD("actuator", "Actuator: %s. Setting bit %d, value = %d", _name, value, getValue());
+      }
+    }
+  }
+
+  virtual void setConfig(const JsonDocument &doc) override {
+    if (!doc["actuator"][_name]["delay"].isUndefined()) {
+      _delay = doc["actuator"][_name]["delay"];
+    }
+  };
 };
 
 } // namespace Actuators
