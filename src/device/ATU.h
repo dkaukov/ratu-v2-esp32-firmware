@@ -63,6 +63,12 @@ public:
   ATU(etl::message_router_id_t id, Sensor::SWRMeter &swrMeter) : Core::Component(id), _swrMeter(swrMeter){};
   virtual void resetToDefaults(){};
   virtual void tune(){};
+  
+  virtual void onCommand(Core::command_type_t type, const JsonDocument &doc) override{
+    if (type == Core::COMMAND_TYPE_TUNE) {
+      tune();
+    }
+  };
 };
 
 } // namespace Device
