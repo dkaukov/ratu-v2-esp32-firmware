@@ -90,6 +90,10 @@ public:
     if (doc["cmd"] == "config") {
       setGlobalConfig(doc);
     }
+    if (doc["cmd"] == "restart") {
+      ESP.restart();
+    }
+    doc.clear();
   };
 
   virtual void sendStatus() {
@@ -113,14 +117,17 @@ public:
   virtual void getStatus(JsonDocument &doc) const override {
     doc["system"]["timestamp"] = getTime();
     doc["system"]["freeHeap"] = ESP.getFreeHeap();
+    doc["system"]["stackHighWaterMark"] = uxTaskGetStackHighWaterMark(NULL);
   };
 
   virtual void timer1000() override {
     if (!_client->connected()) {
-      if (_client->connect(_clientId.c_str())) {
-        setupMqttConnection();
-        _LOGI("mqtt", "MQTT connected to %s:%d", _host.c_str(), _port);
-      };
+      if (WiFi.status() == WL_CONNECTED) {
+        if (_client->connect(_clientId.c_str())) {
+          setupMqttConnection();
+          _LOGI("mqtt", "MQTT connected to %s:%d", _host.c_str(), _port);
+        }
+      }
     } else {
       sendStatus();
     }

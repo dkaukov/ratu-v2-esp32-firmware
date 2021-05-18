@@ -13,9 +13,28 @@
 #include "lwip/apps/sntp.h"
 #include "secrets.h"
 #include <Arduino.h>
+#include <ArduinoOTA.h>
 
 Core::ComponentManager mgr;
 Hardware::TMatchWithRelays atu;
+
+void WiFiStationConnected(WiFiEvent_t event, WiFiEventInfo_t info) {
+  _LOGI("main", "Connected to AP successfully!");
+}
+
+void wiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info) {
+  _LOGW("main", "Disconnected from WiFi access point");
+  _LOGW("main", "WiFi lost connection. Reason: %d", info.disconnected.reason);
+  _LOGW("main", "Trying to Reconnect");
+  WiFi.disconnect();
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+}
+
+void wiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info) {
+  _LOGI("main", "WiFi connected!");
+  _LOGI("main", "IP address: %s", WiFi.localIP().toString().c_str());
+  _LOGI("main", "IP hostname: %s", WiFi.getHostname());
+}
 
 void setupWiFi() {
   btStop();
@@ -27,14 +46,13 @@ void setupWiFi() {
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   WiFi.setHostname(WIFI_HOSTNAME);
   WiFi.setAutoReconnect(true);
+  WiFi.onEvent(WiFiStationConnected, SYSTEM_EVENT_STA_CONNECTED);
+  WiFi.onEvent(wiFiStationDisconnected, SYSTEM_EVENT_STA_DISCONNECTED);
+  WiFi.onEvent(wiFiGotIP, SYSTEM_EVENT_STA_GOT_IP);
   sntp_setoperatingmode(SNTP_OPMODE_POLL);
   sntp_setservername(0, (char *)NTP_SERVER);
   sntp_init();
-  if (WiFi.waitForConnectResult() == WL_CONNECTED) {
-    _LOGI("main", "WiFi connected!");
-    _LOGI("main", "IP address: %s", WiFi.localIP().toString().c_str());
-    _LOGI("main", "IP hostname: %s", WiFi.getHostname());
-  } else {
+  if (WiFi.waitForConnectResult() != WL_CONNECTED) {
     _LOGE("main", "Wifi connection failed!");
     ESP.restart();
   }
@@ -47,6 +65,9 @@ void setup() {
   setupWiFi();
   digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
   debugInit();
+  ArduinoOTA.setMdnsEnabled(true);
+  ArduinoOTA.setHostname(WIFI_HOSTNAME);
+  ArduinoOTA.begin();
   Network::mqtt.init();
   atu.init();
   mgr.init();
@@ -54,5 +75,6 @@ void setup() {
 
 void loop() {
   debugLoop();
+  ArduinoOTA.handle();
   mgr.loop();
 }
