@@ -124,8 +124,10 @@ public:
     if (!_client->connected()) {
       if (WiFi.status() == WL_CONNECTED) {
         if (_client->connect(_clientId.c_str())) {
-          setupMqttConnection();
-          _LOGI("mqtt", "MQTT connected to %s:%d", _host.c_str(), _port);
+          if (_client->connected()) {
+            setupMqttConnection();
+            _LOGI("mqtt", "MQTT connected to %s:%d", _host.c_str(), _port);
+          }
         }
       }
     } else {

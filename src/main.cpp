@@ -23,11 +23,17 @@ void WiFiStationConnected(WiFiEvent_t event, WiFiEventInfo_t info) {
 }
 
 void wiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info) {
-  _LOGW("main", "Disconnected from WiFi access point");
-  _LOGW("main", "WiFi lost connection. Reason: %d", info.disconnected.reason);
-  _LOGW("main", "Trying to Reconnect");
+  //_LOGW("main", "Disconnected from WiFi access point");
+  //_LOGW("main", "WiFi lost connection. Reason: %d", info.disconnected.reason);
+  //_LOGW("main", "Trying to Reconnect");
   WiFi.disconnect();
+  WiFi.mode(WIFI_STA);
+  WiFi.setSleep(false);
+  WiFi.setTxPower(WIFI_POWER_19_5dBm);
+  WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  WiFi.setHostname(WIFI_HOSTNAME);
+  WiFi.setAutoReconnect(true);
 }
 
 void wiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info) {
