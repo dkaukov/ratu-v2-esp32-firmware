@@ -44,6 +44,7 @@ typedef enum {
 
 typedef enum {
   COMMAND_TYPE_TUNE,
+  COMMAND_TYPE_ACTUATE,
 } command_type_t;
 
 struct MessageLoop : public etl::message<MESSAGE_LOOP> {};
@@ -134,6 +135,10 @@ public:
   };
   virtual void broadcastCommand(command_type_t type, const JsonDocument &doc) {
     MessageCommand msg = {type, doc};
+    _bus->receive(msg);
+  };
+  void setGlobalConfig(JsonDocument &doc) const {
+    MessageSetConfig msg = {doc};
     _bus->receive(msg);
   };
 };

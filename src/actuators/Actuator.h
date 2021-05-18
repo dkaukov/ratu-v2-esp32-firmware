@@ -37,6 +37,25 @@ public:
     doc["actuator"][_name]["isReady"] = isReady();
     doc["actuator"][_name]["isAtLimit"] = isAtLimit();
   };
+
+  virtual void onCommand(Core::command_type_t type, const JsonDocument &doc) override {
+    if (type == Core::COMMAND_TYPE_ACTUATE) {
+      if (!doc["actuator"][_name]["calibrate"].isUndefined()) {
+        bool value = doc["actuator"][_name]["calibrate"];
+        if (value) {
+          _LOGD("actuator", "Calibrating actuator %s. Will restore value: %d", _name, getValue());
+          calibrate(true);
+        }
+      }
+      if (!doc["actuator"][_name]["value"].isUndefined()) {
+        int32_t value = doc["actuator"][_name]["value"];
+        if (value != getValue()) {
+          setValue(value);
+          _LOGD("actuator", "Moving actuator %s to the %d", _name, getValue());
+        }
+      }
+    }
+  }
 };
 
 } // namespace Actuators

@@ -84,6 +84,12 @@ public:
     if (doc["cmd"] == "tune") {
       broadcastCommand(Core::COMMAND_TYPE_TUNE, doc);
     }
+    if (doc["cmd"] == "actuate") {
+      broadcastCommand(Core::COMMAND_TYPE_ACTUATE, doc);
+    }
+    if (doc["cmd"] == "config") {
+      setGlobalConfig(doc);
+    }
   };
 
   virtual void sendStatus() {
