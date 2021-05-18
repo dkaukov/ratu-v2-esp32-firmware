@@ -49,19 +49,22 @@ typedef enum {
 typedef enum {
   COMMAND_TYPE_TUNE,
   COMMAND_TYPE_ACTUATE,
+  COMMAND_TYPE_CONFIG,
+  COMMAND_TYPE_RESTART,
+  COMMAND_TYPE_UNKNOWN,
 } command_type_t;
 
 struct MessageLoop : public etl::message<MESSAGE_LOOP> {};
 static MessageLoop msg_loop = {};
 
 struct MessageGetStatus : public etl::message<MESSAGE_GET_STATUS> {
-  MessageGetStatus(JsonDocument &doc_) : doc(doc_){};
-  JsonDocument &doc;
+  MessageGetStatus(JsonObject &doc_) : doc(doc_){};
+  JsonObject &doc;
 };
 
 struct MessageSetConfig : public etl::message<MESSAGE_SET_CONFIG> {
-  MessageSetConfig(const JsonDocument &doc_) : doc(doc_){};
-  const JsonDocument &doc;
+  MessageSetConfig(const JsonObject &doc_) : doc(doc_){};
+  const JsonObject &doc;
 };
 
 struct MessageTimer : public etl::message<MESSAGE_TIMER> {
@@ -70,9 +73,9 @@ struct MessageTimer : public etl::message<MESSAGE_TIMER> {
 };
 
 struct MessageCommand : public etl::message<MESSAGE_COMMAND> {
-  MessageCommand(const command_type_t type, const JsonDocument &doc_) : type(type), doc(doc_){};
+  MessageCommand(const command_type_t type, const JsonObject &doc_) : type(type), doc(doc_){};
   const command_type_t type;
-  const JsonDocument &doc;
+  const JsonObject &doc;
 };
 
 typedef etl::message_bus<16> MessageBus_t;
@@ -84,6 +87,23 @@ static MessageTimer_t timer;
 class Component : public etl::message_router<Component, MessageLoop, MessageGetStatus, MessageSetConfig, MessageTimer, MessageCommand> {
 private:
   MessageBus_t *_bus;
+
+protected:
+  command_type_t parseCommand(String &cmd) {
+    if (cmd == "tune") {
+      return COMMAND_TYPE_TUNE;
+    }
+    if (cmd == "actuate") {
+      return COMMAND_TYPE_ACTUATE;
+    }
+    if (cmd == "config") {
+      return COMMAND_TYPE_CONFIG;
+    }
+    if (cmd == "restart") {
+      return COMMAND_TYPE_RESTART;
+    }
+    return COMMAND_TYPE_UNKNOWN;
+  }
 
 public:
   Component(etl::message_router_id_t id) : message_router(id) {
@@ -119,9 +139,9 @@ public:
   void on_receive(etl::imessage_router &sender, const MessageCommand &msg) { on_receive(msg); }
   void on_receive(const MessageCommand &msg) { onCommand(msg.type, msg.doc); };
 
-  virtual void getStatus(JsonDocument &doc) const {};
-  virtual void setConfig(const JsonDocument &doc){};
-  virtual void onCommand(command_type_t type, const JsonDocument &doc){};
+  virtual void getStatus(JsonObject &doc) const {};
+  virtual void setConfig(const JsonObject &doc){};
+  virtual void onCommand(command_type_t type, const JsonObject &doc){};
 
   virtual void init(){};
   virtual void loop(){};
@@ -136,15 +156,15 @@ public:
       yeld();
     }
   }
-  void getGlobalStatus(JsonDocument &doc) const {
+  void getGlobalStatus(JsonObject &doc) const {
     MessageGetStatus msg = {doc};
     _bus->receive(msg);
   };
-  virtual void broadcastCommand(command_type_t type, const JsonDocument &doc) {
+  virtual void broadcastCommand(command_type_t type, const JsonObject &doc) {
     MessageCommand msg = {type, doc};
     _bus->receive(msg);
   };
-  void setGlobalConfig(JsonDocument &doc) const {
+  void setGlobalConfig(const JsonObject &doc) const {
     MessageSetConfig msg = {doc};
     _bus->receive(msg);
   };
@@ -181,7 +201,7 @@ public:
     _bus->receive(msg_loop);
   };
 
-  void getStatus(JsonDocument &doc) const {
+  void getStatus(JsonObject &doc) const {
     static MessageGetStatus msg = {doc};
     _bus->receive(msg);
   };

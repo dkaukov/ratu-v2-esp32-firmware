@@ -31,23 +31,23 @@ public:
     return _name;
   }
 
-  virtual void getStatus(JsonDocument &doc) const override {
+  virtual void getStatus(JsonObject &doc) const override {
     doc["actuator"][_name]["value"] = getValue();
     doc["actuator"][_name]["phValue"] = getPhisicalValue();
     doc["actuator"][_name]["isReady"] = isReady();
     doc["actuator"][_name]["isAtLimit"] = isAtLimit();
   };
 
-  virtual void onCommand(Core::command_type_t type, const JsonDocument &doc) override {
+  virtual void onCommand(Core::command_type_t type, const JsonObject &doc) override {
     if (type == Core::COMMAND_TYPE_ACTUATE) {
-      if (!doc["actuator"][_name]["calibrate"].isUndefined()) {
+       if (!doc["actuator"][_name]["calibrate"].isNull()) {
         bool value = doc["actuator"][_name]["calibrate"];
         if (value) {
           _LOGD("actuator", "Calibrating actuator %s. Will restore value: %d", _name, getValue());
           calibrate(true);
         }
       }
-      if (!doc["actuator"][_name]["value"].isUndefined()) {
+      if (!doc["actuator"][_name]["value"].isNull()) {
         int32_t value = doc["actuator"][_name]["value"];
         if (value != getValue()) {
           setValue(value);

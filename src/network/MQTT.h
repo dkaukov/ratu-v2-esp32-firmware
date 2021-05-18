@@ -81,14 +81,18 @@ public:
   void messageReceived(String &topic, String &payload) {
     StaticJsonDocument<1024> doc;
     deserializeJson(doc, payload);
+    JsonObject obj = doc.as<JsonObject>();
+    String cmd = doc["cmd"];
+    broadcastCommand(parseCommand(cmd), obj);
+
     if (doc["cmd"] == "tune") {
-      broadcastCommand(Core::COMMAND_TYPE_TUNE, doc);
+      broadcastCommand(Core::COMMAND_TYPE_TUNE, obj);
     }
     if (doc["cmd"] == "actuate") {
-      broadcastCommand(Core::COMMAND_TYPE_ACTUATE, doc);
+      broadcastCommand(Core::COMMAND_TYPE_ACTUATE, obj);
     }
     if (doc["cmd"] == "config") {
-      setGlobalConfig(doc);
+      setGlobalConfig(obj);
     }
     if (doc["cmd"] == "restart") {
       ESP.restart();
@@ -96,9 +100,20 @@ public:
     doc.clear();
   };
 
+  virtual void onCommand(Core::command_type_t type, const JsonObject &doc) override {
+    if (type == Core::COMMAND_TYPE_CONFIG) {
+      setGlobalConfig(doc);
+    } else if (type == Core::COMMAND_TYPE_RESTART) {
+      ESP.restart();
+    } else if (type == Core::COMMAND_TYPE_UNKNOWN) {
+      _LOGI("mqtt", "MQTT unknown command: '%s'", doc["cmd"].as<String>().c_str());
+    }
+  };
+
   virtual void sendStatus() {
     StaticJsonDocument<1024> doc;
-    getGlobalStatus(doc);
+    JsonObject obj = doc.to<JsonObject>();
+    getGlobalStatus(obj);
     String output;
     serializeJson(doc, output);
     _client->publish(_statusTopic, output);
@@ -114,7 +129,7 @@ public:
     _LOGI("mqtt", "MQTT init mqtt://%s:%d", _host.c_str(), _port);
   };
 
-  virtual void getStatus(JsonDocument &doc) const override {
+  virtual void getStatus(JsonObject &doc) const override {
     doc["system"]["timestamp"] = getTime();
     doc["system"]["freeHeap"] = ESP.getFreeHeap();
     doc["system"]["stackHighWaterMark"] = uxTaskGetStackHighWaterMark(NULL);

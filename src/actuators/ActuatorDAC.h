@@ -60,10 +60,10 @@ public:
     }
   };
 
-  virtual void onCommand(Core::command_type_t type, const JsonDocument &doc) override {
+  virtual void onCommand(Core::command_type_t type, const JsonObject &doc) override {
     Actuator::onCommand(type, doc);
     if (type == Core::COMMAND_TYPE_ACTUATE) {
-      if (!doc["actuator"][_name]["setBit"].isUndefined()) {
+      if (!doc["actuator"][_name]["setBit"].isNull()) {
         uint8_t value = doc["actuator"][_name]["setBit"];
         dacSetValue(1 << value);
         _value = 1 << value;
@@ -72,8 +72,8 @@ public:
     }
   }
 
-  virtual void setConfig(const JsonDocument &doc) override {
-    if (!doc["actuator"][_name]["delay"].isUndefined()) {
+  virtual void setConfig(const JsonObject &doc) override {
+    if (!doc["actuator"][_name]["delay"].isNull()) {
       _delay = doc["actuator"][_name]["delay"];
     }
   };

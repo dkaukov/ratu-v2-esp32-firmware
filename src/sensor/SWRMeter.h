@@ -30,7 +30,7 @@ public:
     return (_fwd > _minFwd) && (_rfl > _minRfl);
   }
 
-  virtual void getStatus(JsonDocument &doc) const override {
+  virtual void getStatus(JsonObject &doc) const override {
     doc["sensor"][_name]["fwd"] = getFwd();
     doc["sensor"][_name]["rfl"] = getRfl();
     doc["sensor"][_name]["pct"] = getPct();
@@ -38,11 +38,11 @@ public:
     doc["sensor"][_name]["target"] = getTarget();
   };
 
-  virtual void setConfig(const JsonDocument &doc) override {
-    if (!doc["sensor"][_name]["minFwd"].isUndefined()) {
+  virtual void setConfig(const JsonObject &doc) override {
+    if (!doc["sensor"][_name]["minFwd"].isNull()) {
       _minFwd = doc["sensor"][_name]["minFwd"];
     }
-    if (!doc["sensor"][_name]["minRfl"].isUndefined()) {
+    if (!doc["sensor"][_name]["minRfl"].isNull()) {
       _minRfl = doc["sensor"][_name]["minRfl"];
     }
   };

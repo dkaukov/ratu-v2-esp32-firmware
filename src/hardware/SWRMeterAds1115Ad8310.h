@@ -80,7 +80,7 @@ public:
     }
   }
 
-  virtual void getStatus(JsonDocument &doc) const override {
+  virtual void getStatus(JsonObject &doc) const override {
     doc["sensor"][_name]["cnt"] = _conversionnCount;
     doc["sensor"][_name]["fwdRaw"] = _fwdRaw;
     doc["sensor"][_name]["rflRaw"] = _rflRaw;
