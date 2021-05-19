@@ -71,7 +71,7 @@ public:
   virtual void onCommand(Core::command_type_t type, const JsonObject &doc) override {
     Actuator::onCommand(type, doc);
     if (type == Core::COMMAND_TYPE_ACTUATE) {
-      auto node = doc[_name];
+      auto node = doc["actuator"][_name];
       if (!node["setBit"].isNull()) {
         uint8_t value = node["setBit"];
         dacSetValue(1 << value);

@@ -84,12 +84,8 @@ public:
     if (!error) {
       doc.shrinkToFit();
       JsonObject obj = doc.as<JsonObject>();
-      for (JsonPair kv : obj) {
-        String cmd = kv.key().c_str();
-        broadcastCommand(parseCommand(cmd), kv.value().as<JsonObject>());
-      }
-      //String cmd = doc["cmd"];
-      //broadcastCommand(parseCommand(cmd), obj);
+      String cmd = doc["cmd"];
+      broadcastCommand(parseCommand(cmd), obj);
       doc.clear();
     } else {
       _LOGE("mqtt", "MQTT command deserialisation failure: %s", error.c_str());

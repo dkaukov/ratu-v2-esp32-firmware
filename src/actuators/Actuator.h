@@ -53,7 +53,7 @@ public:
 
   virtual void onCommand(Core::command_type_t type, const JsonObject &doc) override {
     if (type == Core::COMMAND_TYPE_ACTUATE) {
-      auto node = doc[_name];
+      auto node = doc["actuator"][_name];
       if (!node["calibrate"].isNull()) {
         bool value = node["calibrate"];
         if (value) {
