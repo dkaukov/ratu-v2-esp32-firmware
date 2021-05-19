@@ -21,9 +21,13 @@ protected:
 public:
   ActuatorDACMCP23017(const char *name,
                       const gpio8bit gpio,
-                      Adafruit_MCP23017 &mcp)
+                      Adafruit_MCP23017 &mcp,
+                      const float min,
+                      const float max)
       : ActuatorDAC(name,
-                    gpio),
+                    gpio,
+                    min,
+                    max),
         _mcp(mcp){};
 
   virtual void init() override {

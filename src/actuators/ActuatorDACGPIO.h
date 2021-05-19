@@ -17,9 +17,13 @@ protected:
 
 public:
   ActuatorDACGPIO(const char *name,
-                  const gpio8bit gpio)
+                  const gpio8bit gpio,
+                  const float min,
+                  const float max)
       : ActuatorDAC(name,
-                    gpio){};
+                    gpio,
+                    min,
+                    max){};
 };
 
 } // namespace Actuators

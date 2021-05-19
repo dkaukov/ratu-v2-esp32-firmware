@@ -54,6 +54,15 @@
 #define C1_ACTUATOR_NAME "C1"
 #define C2_ACTUATOR_NAME "C2"
 
+#define L_ACTUATOR_MIN 0.05
+#define L_ACTUATOR_MAX 12.75
+
+#define C1_ACTUATOR_MIN 5.0
+#define C1_ACTUATOR_MAX 1304.0
+
+#define C2_ACTUATOR_MIN 5.0
+#define C2_ACTUATOR_MAX 1304.0
+
 namespace Hardware {
 
 using namespace Sensor;
@@ -63,9 +72,9 @@ using namespace Actuators;
 static SWRMeterAds1115Ad8310 swr(ADS1115_ALERT_READY_PIN);
 
 static Adafruit_MCP23017 mcp;
-ActuatorDACMCP23017 actuatorL(L_ACTUATOR_NAME, {pin : {K1, K2, K3, K4, K5, K6, K7, K8}}, mcp);
-ActuatorDACMCP23017 actuatorC1(C1_ACTUATOR_NAME, {pin : {K9, K10, K11, K12, K13, K14, K15, K16}}, mcp);
-ActuatorDACGPIO actuatorC2(C2_ACTUATOR_NAME, {pin : {K17, K18, K19, K20, K21, K22, K23, K24}});
+ActuatorDACMCP23017 actuatorL(L_ACTUATOR_NAME, {pin : {K1, K2, K3, K4, K5, K6, K7, K8}}, mcp, L_ACTUATOR_MIN, L_ACTUATOR_MAX);
+ActuatorDACMCP23017 actuatorC1(C1_ACTUATOR_NAME, {pin : {K9, K10, K11, K12, K13, K14, K15, K16}}, mcp, C1_ACTUATOR_MIN, C1_ACTUATOR_MAX);
+ActuatorDACGPIO actuatorC2(C2_ACTUATOR_NAME, {pin : {K17, K18, K19, K20, K21, K22, K23, K24}}, C2_ACTUATOR_MIN, C2_ACTUATOR_MAX);
 
 class TMatchWithRelays : public Device::ATU {
 private:

@@ -28,11 +28,19 @@ protected:
 
 public:
   ActuatorDAC(const char *name,
-              const gpio8bit gpio)
+              const gpio8bit gpio,
+              const float min,
+              const float max)
       : Actuator(Core::COMPONENT_CLASS_ACTUATOR, name),
         _gpio(gpio) {
     _min = 1;
     _max = 255;
+
+    _a = (max - min) / (_max - _min);
+    _b = min - _min * _a;
+
+    __a = 1.0 / _a;
+    __b = _b / _a;
     _delay = 15;
   };
 
@@ -81,8 +89,6 @@ public:
       _LOGD("actuator", "Actuator: %s. Setting delay to %d", _name, _delay);
     }
   };
-
-  virtual float getPhisicalValue() const override { return getValue(); };
 };
 
 } // namespace Actuators
