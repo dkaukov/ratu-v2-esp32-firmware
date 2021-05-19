@@ -2,7 +2,7 @@
     "cmd": "actuate",
     "actuator": {
         "L": {
-            "calibrate": true 
+            "calibrate": true,
             "value": 0
         },
         "C1": {
