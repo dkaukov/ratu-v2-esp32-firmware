@@ -116,12 +116,12 @@ public:
         digitalWrite(K26, LOW);
         break;
       case ATU_MODE_LC:
-        digitalWrite(K25, LOW);
+        digitalWrite(K25, HIGH);
         digitalWrite(K26, LOW);
         break;
       case ATU_MODE_CL:
         digitalWrite(K25, LOW);
-        digitalWrite(K26, LOW);
+        digitalWrite(K26, HIGH);
         break;
       }
       _mode = mode;
