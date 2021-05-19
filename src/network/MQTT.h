@@ -116,7 +116,7 @@ public:
     _client->onMessageAdvanced([this](MQTTClient *client, char topic[], char bytes[], int length) { messageReceived(client, topic, bytes, length); });
     getClientId();
     configureTopics();
-    _client->setKeepAlive(1);
+    _client->setKeepAlive(MQTT_KEEP_ALIVE_SEC);
     _client->setWill(_stateTopic.c_str(), "offline", true, 0);
     _LOGI("mqtt", "MQTT init mqtt://%s:%d", _host.c_str(), _port);
   };

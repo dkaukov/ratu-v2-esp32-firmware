@@ -64,8 +64,8 @@ static SWRMeterAds1115Ad8310 swr(ADS1115_ALERT_READY_PIN);
 
 static Adafruit_MCP23017 mcp;
 ActuatorDACMCP23017 actuatorL(L_ACTUATOR_NAME, {pin : {K1, K2, K3, K4, K5, K6, K7, K8}}, mcp);
-ActuatorDACGPIO actuatorC1(C1_ACTUATOR_NAME, {pin : {K17, K18, K19, K20, K21, K22, K23, K24}});
-ActuatorDACMCP23017 actuatorC2(C2_ACTUATOR_NAME, {pin : {K9, K10, K11, K12, K13, K14, K15, K16}}, mcp);
+ActuatorDACMCP23017 actuatorC1(C1_ACTUATOR_NAME, {pin : {K9, K10, K11, K12, K13, K14, K15, K16}}, mcp);
+ActuatorDACGPIO actuatorC2(C2_ACTUATOR_NAME, {pin : {K17, K18, K19, K20, K21, K22, K23, K24}});
 
 class TMatchWithRelays : public Device::ATU {
 private:
@@ -74,13 +74,12 @@ private:
   int32_t _actuatorC2Initial = 64;
 
   int32_t _actuatorLInitialStep = 2;
-  int32_t _actuatorC1InitialStep = 8;
-  int32_t _actuatorC2InitialStep = 8;
+  int32_t _actuatorC1InitialStep = -8;
+  int32_t _actuatorC2InitialStep = -8;
   float _historesis = 0.0;
 
 public:
   TMatchWithRelays() : Device::ATU(COMPONENT_CLASS_GENERIC, swr) {
-    
   }
 
   virtual void init() override {
@@ -92,10 +91,6 @@ public:
     actuatorC1.init();
     actuatorC2.init();
     resetToDefaults();
-  };
-
-  virtual void timer250() override {
-    digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
   };
 
   virtual void resetToDefaults() override {
@@ -115,6 +110,27 @@ public:
     _LOGI("autoTune", "actuatorC2 finished in %8d ms", (uint32_t)micros() - startedTime);
   };
 
+  virtual void setConfig(const JsonObject &doc) override {
+    auto node = doc["atu"];
+    if (!node["L"]["initial"].isNull()) {
+      _actuatorLInitial = node["L"]["initial"];
+    }
+    if (!node["C1"]["initial"].isNull()) {
+      _actuatorC1Initial = node["C1"]["initial"];
+    }
+    if (!node["C2"]["initial"].isNull()) {
+      _actuatorC2Initial = node["C2"]["initial"];
+    }
+    if (!node["L"]["step"].isNull()) {
+      _actuatorLInitialStep = node["L"]["step"];
+    }
+    if (!node["C1"]["step"].isNull()) {
+      _actuatorC1InitialStep = node["C1"]["step"];
+    }
+    if (!node["C2"]["step"].isNull()) {
+      _actuatorC2InitialStep = node["C2"]["step"];
+    }
+  };
 };
 
 } // namespace Hardware

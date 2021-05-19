@@ -31,19 +31,21 @@ public:
   }
 
   virtual void getStatus(JsonObject &doc) const override {
-    doc["sensor"][_name]["fwd"] = getFwd();
-    doc["sensor"][_name]["rfl"] = getRfl();
-    doc["sensor"][_name]["pct"] = getPct();
-    doc["sensor"][_name]["swr"] = getSWR();
-    doc["sensor"][_name]["target"] = getTarget();
+    auto node = doc["sensor"][_name];
+    node["fwd"] = getFwd();
+    node["rfl"] = getRfl();
+    node["pct"] = getPct();
+    node["swr"] = getSWR();
+    node["target"] = getTarget();
   };
 
   virtual void setConfig(const JsonObject &doc) override {
-    if (!doc["sensor"][_name]["minFwd"].isNull()) {
-      _minFwd = doc["sensor"][_name]["minFwd"];
+    auto node = doc["sensor"][_name];
+    if (!node["minFwd"].isNull()) {
+      _minFwd = node["minFwd"];
     }
-    if (!doc["sensor"][_name]["minRfl"].isNull()) {
-      _minRfl = doc["sensor"][_name]["minRfl"];
+    if (!node["minRfl"].isNull()) {
+      _minRfl = node["minRfl"];
     }
   };
 };

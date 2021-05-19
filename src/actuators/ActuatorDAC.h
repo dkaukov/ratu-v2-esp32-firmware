@@ -81,6 +81,8 @@ public:
       _LOGD("actuator", "Actuator: %s. Setting delay to %d", _name, _delay);
     }
   };
+
+  virtual float getPhisicalValue() const override { return getValue(); };
 };
 
 } // namespace Actuators

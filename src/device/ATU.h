@@ -66,6 +66,9 @@ public:
 
   virtual void onCommand(Core::command_type_t type, const JsonObject &doc) override {
     if (type == Core::COMMAND_TYPE_TUNE) {
+      if (!doc["config"].isNull()) {
+        setConfig(doc["config"].as<JsonObject>());
+      }
       tune();
     }
   };

@@ -18,19 +18,25 @@
 Core::ComponentManager mgr;
 Hardware::TMatchWithRelays atu;
 
-void WiFiStationConnected(WiFiEvent_t event, WiFiEventInfo_t info) {
-  _LOGI("main", "Connected to AP successfully!");
-}
-
-void wiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info) {
+void WiFiSTAConnect() {
   WiFi.disconnect();
   WiFi.mode(WIFI_STA);
   WiFi.setSleep(false);
   WiFi.setTxPower(WIFI_POWER_19_5dBm);
   WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+#if defined(WIFI_HOSTNAME)
   WiFi.setHostname(WIFI_HOSTNAME);
+#endif
   WiFi.setAutoReconnect(true);
+}
+
+void WiFiStationConnected(WiFiEvent_t event, WiFiEventInfo_t info) {
+  _LOGI("main", "Connected to AP successfully!");
+}
+
+void wiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info) {
+  WiFiSTAConnect();
 }
 
 void wiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info) {
@@ -41,14 +47,7 @@ void wiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info) {
 
 void setupWiFi() {
   btStop();
-  WiFi.disconnect();
-  WiFi.mode(WIFI_STA);
-  WiFi.setSleep(false);
-  WiFi.setTxPower(WIFI_POWER_19_5dBm);
-  WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  WiFi.setHostname(WIFI_HOSTNAME);
-  WiFi.setAutoReconnect(true);
+  WiFiSTAConnect();
   WiFi.onEvent(WiFiStationConnected, SYSTEM_EVENT_STA_CONNECTED);
   WiFi.onEvent(wiFiStationDisconnected, SYSTEM_EVENT_STA_DISCONNECTED);
   WiFi.onEvent(wiFiGotIP, SYSTEM_EVENT_STA_GOT_IP);
@@ -69,8 +68,10 @@ void setup() {
   setupWiFi();
   digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
   debugInit();
+#if defined(WIFI_HOSTNAME)
   ArduinoOTA.setMdnsEnabled(true);
   ArduinoOTA.setHostname(WIFI_HOSTNAME);
+#endif
   ArduinoOTA.begin();
   Network::mqtt.init();
   atu.init();

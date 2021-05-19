@@ -12,3 +12,4 @@
 #define MQTT_HOST_NAME "mqtt.sphere.home"
 #define MQTT_CONFIG_TOPIC_ROOT "ratu-v2/configurations"
 #define MQTT_DEVICE_TOPIC_ROOT "ratu-v2/devices"
+#define MQTT_KEEP_ALIVE_SEC 5

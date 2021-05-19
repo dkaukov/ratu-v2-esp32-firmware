@@ -21,6 +21,8 @@ private:
   uint32_t _conversionnCount = 0;
   float _fwdRaw;
   float _rflRaw;
+  float _fwdIntercept = 840;
+  float _rflIntercept = 840;
 
   ADS1115_WE &getAdc(int addr) {
     static ADS1115_WE __adc(addr);
@@ -43,6 +45,10 @@ public:
   float convertFwd(const float x) const { return exp((x - 1913.417895) / 102.743582); }
 
   float convertRfl(const float x) const { return exp((x - 1913.151197) / 101.409361); }
+
+  virtual bool isInRange() const {
+    return (_fwdRaw > _fwdIntercept) && (_rflRaw > _rflIntercept);
+  }
 
   void read() {
     if (_adcChannel == ADS1115_COMP_0_GND) {
@@ -81,10 +87,24 @@ public:
   }
 
   virtual void getStatus(JsonObject &doc) const override {
-    doc["sensor"][_name]["cnt"] = _conversionnCount;
-    doc["sensor"][_name]["fwdRaw"] = _fwdRaw;
-    doc["sensor"][_name]["rflRaw"] = _rflRaw;
+    auto node = doc["sensor"][_name];
+    node["cnt"] = _conversionnCount;
+    node["fwdRaw"] = _fwdRaw;
+    node["rflRaw"] = _rflRaw;
+    node["fwdIntercept"] = _fwdIntercept;
+    node["rflIntercept"] = _rflIntercept;
     SWRMeter::getStatus(doc);
+  };
+
+  virtual void setConfig(const JsonObject &doc) override {
+    SWRMeter::setConfig(doc);
+    auto node = doc["sensor"][_name];
+    if (!node["fwdIntercept"].isNull()) {
+      _fwdIntercept = node["fwdIntercept"];
+    }
+    if (!node["rflIntercept"].isNull()) {
+      _rflIntercept = node["rflIntercept"];
+    }
   };
 
   virtual float getTarget() const override { return _rflRaw / _fwdRaw; };
