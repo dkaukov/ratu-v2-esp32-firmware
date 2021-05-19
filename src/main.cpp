@@ -8,9 +8,9 @@
 #include "core/Component.h"
 #include "debug.h"
 #include "hardware/TMatchWithRelays.h"
-#include "network/MQTT.h"
 //#include "hardware/TMatchWithStepprs.h"
 #include "lwip/apps/sntp.h"
+#include "network/MQTT.h"
 #include "secrets.h"
 #include <Arduino.h>
 #include <ArduinoOTA.h>
@@ -23,9 +23,6 @@ void WiFiStationConnected(WiFiEvent_t event, WiFiEventInfo_t info) {
 }
 
 void wiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info) {
-  //_LOGW("main", "Disconnected from WiFi access point");
-  //_LOGW("main", "WiFi lost connection. Reason: %d", info.disconnected.reason);
-  //_LOGW("main", "Trying to Reconnect");
   WiFi.disconnect();
   WiFi.mode(WIFI_STA);
   WiFi.setSleep(false);

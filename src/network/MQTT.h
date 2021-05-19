@@ -84,19 +84,6 @@ public:
     JsonObject obj = doc.as<JsonObject>();
     String cmd = doc["cmd"];
     broadcastCommand(parseCommand(cmd), obj);
-
-    if (doc["cmd"] == "tune") {
-      broadcastCommand(Core::COMMAND_TYPE_TUNE, obj);
-    }
-    if (doc["cmd"] == "actuate") {
-      broadcastCommand(Core::COMMAND_TYPE_ACTUATE, obj);
-    }
-    if (doc["cmd"] == "config") {
-      setGlobalConfig(obj);
-    }
-    if (doc["cmd"] == "restart") {
-      ESP.restart();
-    }
     doc.clear();
   };
 

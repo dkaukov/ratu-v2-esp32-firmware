@@ -11,12 +11,17 @@ protected:
   int32_t _min = 0;
   int32_t _max = UINT32_MAX >> 1;
 
+  virtual int32_t pctToValue(float pct) {
+    return (_min + round((_max - _min) * constrain(pct, 0.0, 1.0)));
+  };
+
 public:
   Actuator(etl::message_router_id_t id, const char *name) : Core::Component(id), _name(name){};
   virtual void calibrate(bool restoreState = false){};
   virtual int32_t getValue() const { return 0; };
   virtual float getPhisicalValue() const { return 0; };
   virtual int32_t setValue(int32_t pos) { return 0; };
+  virtual int32_t setPct(float pct) { return setValue(pctToValue(pct)); };
   virtual bool isAtLimit() const {
     return (getValue() >= _max) || (getValue() <= _min);
   };
@@ -40,18 +45,26 @@ public:
 
   virtual void onCommand(Core::command_type_t type, const JsonObject &doc) override {
     if (type == Core::COMMAND_TYPE_ACTUATE) {
-       if (!doc["actuator"][_name]["calibrate"].isNull()) {
-        bool value = doc["actuator"][_name]["calibrate"];
+      auto node = doc["actuator"][_name];
+      if (!node["calibrate"].isNull()) {
+        bool value = node["calibrate"];
         if (value) {
           _LOGD("actuator", "Calibrating actuator %s. Will restore value: %d", _name, getValue());
           calibrate(true);
         }
       }
-      if (!doc["actuator"][_name]["value"].isNull()) {
-        int32_t value = doc["actuator"][_name]["value"];
+      if (!node["value"].isNull()) {
+        int32_t value = node["value"];
         if (value != getValue()) {
           setValue(value);
-          _LOGD("actuator", "Moving actuator %s to the %d", _name, getValue());
+          _LOGD("actuator", "[V] Moving actuator %s to the %d", _name, value);
+        }
+      }
+      if (!node["pct"].isNull()) {
+        int32_t value = pctToValue(node["pct"]);
+        if (value != getValue()) {
+          setValue(value);
+          _LOGD("actuator", "[P] Moving actuator %s to the %d", _name, value);
         }
       }
     }
