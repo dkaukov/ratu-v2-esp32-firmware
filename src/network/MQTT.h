@@ -78,14 +78,19 @@ public:
     _port = 1883;
   };
 
-  void messageReceived(String &topic, String &payload) {
-    StaticJsonDocument<1024> doc;
-    deserializeJson(doc, payload);
-    JsonObject obj = doc.as<JsonObject>();
-    String cmd = doc["cmd"];
-    broadcastCommand(parseCommand(cmd), obj);
-    doc.clear();
-  };
+  void messageReceived(MQTTClient *client, char topic[], char bytes[], int length) {
+    DynamicJsonDocument doc(ESP.getMaxAllocHeap() - 1024);
+    DeserializationError error = deserializeJson(doc, bytes, length);
+    if (!error) {
+      doc.shrinkToFit();
+      JsonObject obj = doc.as<JsonObject>();
+      String cmd = doc["cmd"];
+      broadcastCommand(parseCommand(cmd), obj);
+      doc.clear();
+    } else {
+      _LOGE("mqtt", "MQTT command deserialisation failure: %s", error.c_str());
+    }
+  }
 
   virtual void onCommand(Core::command_type_t type, const JsonObject &doc) override {
     if (type == Core::COMMAND_TYPE_CONFIG) {
@@ -93,7 +98,7 @@ public:
     } else if (type == Core::COMMAND_TYPE_RESTART) {
       ESP.restart();
     } else if (type == Core::COMMAND_TYPE_UNKNOWN) {
-      _LOGI("mqtt", "MQTT unknown command: '%s'", doc["cmd"].as<String>().c_str());
+      _LOGE("mqtt", "MQTT unknown command: '%s'", doc["cmd"].as<String>().c_str());
     }
   };
 
@@ -108,7 +113,7 @@ public:
 
   virtual void init() override {
     _client->begin(_host.c_str(), _port, net);
-    _client->onMessage([this](String &topic, String &payload) { messageReceived(topic, payload); });
+    _client->onMessageAdvanced([this](MQTTClient *client, char topic[], char bytes[], int length) { messageReceived(client, topic, bytes, length); });
     getClientId();
     configureTopics();
     _client->setKeepAlive(1);
