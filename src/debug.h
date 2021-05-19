@@ -21,6 +21,8 @@ uint8_t __dbg_buff_ptr = 0;
 
 #if defined(ESP32)
 
+#include "ArduinoJson.h"
+#include "WiFi.h"
 #include "config.h"
 #include <Syslog.h>
 
