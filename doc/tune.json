@@ -1,6 +1,5 @@
 {
-    "cmd": "tune",
-    "config": {
+    "tune": {
         "atu": {
             "L": {
                 "step": 2

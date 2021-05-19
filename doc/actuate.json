@@ -1,6 +1,5 @@
 {
-    "cmd": "actuate",
-    "actuator": {
+    "actuate": {
         "L": {
             "calibrate": true,
             "value": 0
