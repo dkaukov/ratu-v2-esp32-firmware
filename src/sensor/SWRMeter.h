@@ -11,8 +11,6 @@ class SWRMeter : public Sensor {
 protected:
   float _fwd;
   float _rfl;
-  float _minFwd = 10.0;
-  float _minRfl = 4.0;
 
 public:
   SWRMeter(etl::message_router_id_t id, const char *name) : Sensor(id, name){};
@@ -27,7 +25,7 @@ public:
   virtual float getTarget() const { return getPct(); };
 
   virtual bool isInRange() const {
-    return (_fwd > _minFwd) && (_rfl > _minRfl);
+    return true;
   }
 
   virtual void getStatus(JsonObject &doc) const override {
@@ -37,16 +35,6 @@ public:
     node["pct"] = getPct();
     node["swr"] = getSWR();
     node["target"] = getTarget();
-  };
-
-  virtual void setConfig(const JsonObject &doc) override {
-    auto node = doc["sensor"][_name];
-    if (!node["minFwd"].isNull()) {
-      _minFwd = node["minFwd"];
-    }
-    if (!node["minRfl"].isNull()) {
-      _minRfl = node["minRfl"];
-    }
   };
 };
 
