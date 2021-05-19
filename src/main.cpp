@@ -52,12 +52,13 @@ void setupWiFi() {
   WiFi.onEvent(WiFiStationConnected, SYSTEM_EVENT_STA_CONNECTED);
   WiFi.onEvent(wiFiStationDisconnected, SYSTEM_EVENT_STA_DISCONNECTED);
   WiFi.onEvent(wiFiGotIP, SYSTEM_EVENT_STA_GOT_IP);
+#if defined(NTP_SERVER)
   sntp_setoperatingmode(SNTP_OPMODE_POLL);
   sntp_setservername(0, (char *)NTP_SERVER);
   sntp_init();
+#endif
   if (WiFi.waitForConnectResult() != WL_CONNECTED) {
     _LOGE("main", "Wifi connection failed!");
-    ESP.restart();
   }
 }
 
