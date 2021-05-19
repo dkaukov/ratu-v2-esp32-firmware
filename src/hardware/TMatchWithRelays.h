@@ -156,7 +156,11 @@ public:
     Device::ATU::setConfig(doc);
     auto node = doc["atu"];
     if (!node["mode"].isNull()) {
-      setMode(node["mode"]);
+      atu_mode_type_t mode = node["mode"];
+      if (mode != _mode) {
+        setMode(node["mode"]);
+        _LOGI("atu", "Setting ATU mode: %d", _mode);
+      }
     }
     if (!node["L"]["initial"].isNull()) {
       _actuatorLInitial = node["L"]["initial"];
