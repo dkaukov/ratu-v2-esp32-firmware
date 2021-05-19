@@ -66,12 +66,19 @@ public:
 
   virtual void onCommand(Core::command_type_t type, const JsonObject &doc) override {
     if (type == Core::COMMAND_TYPE_TUNE) {
+      static bool lock = false;
+      busyWait([this]() { return lock; });
+      lock = true;
       if (!doc["config"].isNull()) {
         setConfig(doc["config"].as<JsonObject>());
       }
+      busyWait([this]() { return !isReady(); });
       tune();
+      lock = false;
     }
   };
+
+  virtual bool isReady() const { return true; }
 };
 
 } // namespace Device

@@ -122,6 +122,7 @@ public:
     _LOGI("autoTune", "stepperC2 finished in %8d ms", (uint32_t)micros() - startedTime);
   };
 
+  virtual bool isReady() const override { return actuatorL.isReady() && actuatorC1.isReady() && actuatorC2.isReady(); }
 };
 
 } // namespace Hardware
