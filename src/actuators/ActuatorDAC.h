@@ -19,7 +19,7 @@ protected:
 
   void dacSetValue(uint8_t val) {
     for (uint8_t i = 0; i < DAC_BIT_COUNT; i++) {
-      _digitalWrite(_gpio.pin[0], (val & (1 << i)));
+      _digitalWrite(_gpio.pin[i], ((val & (1 << i)) != 0));
     }
   };
 
