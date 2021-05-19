@@ -68,14 +68,14 @@ ActuatorDACMCP23017 actuatorC1(C1_ACTUATOR_NAME, {pin : {K9, K10, K11, K12, K13,
 ActuatorDACGPIO actuatorC2(C2_ACTUATOR_NAME, {pin : {K17, K18, K19, K20, K21, K22, K23, K24}});
 
 typedef enum {
-  ATU_MODE_TMMATCH,
+  ATU_MODE_TMATCH,
   ATU_MODE_LC,
   ATU_MODE_CL,
 } atu_mode_type_t;
 
 class TMatchWithRelays : public Device::ATU {
 private:
-  atu_mode_type_t _mode = ATU_MODE_TMMATCH;
+  atu_mode_type_t _mode = ATU_MODE_TMATCH;
 
   int32_t _actuatorLInitial = 8;
   int32_t _actuatorC1Initial = 64;
@@ -111,7 +111,7 @@ public:
   virtual void setMode(atu_mode_type_t mode) {
     if (mode != _mode) {
       switch (mode) {
-      case ATU_MODE_TMMATCH:
+      case ATU_MODE_TMATCH:
         digitalWrite(K25, LOW);
         digitalWrite(K26, LOW);
         break;
@@ -130,7 +130,7 @@ public:
 
   virtual void tune() override {
     uint32_t startedTime = micros();
-    if (_mode == ATU_MODE_TMMATCH) {
+    if (_mode == ATU_MODE_TMATCH) {
       optimise(actuatorL, _actuatorLInitialStep, _historesis);
       _LOGI("autoTune", "actuatorL finished in %8d ms", (uint32_t)micros() - startedTime);
       optimise(actuatorC1, _actuatorC1InitialStep, _historesis);
