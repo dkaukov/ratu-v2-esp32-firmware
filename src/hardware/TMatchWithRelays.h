@@ -153,6 +153,7 @@ public:
   };
 
   virtual void setConfig(const JsonObject &doc) override {
+    Device::ATU::setConfig(doc);
     auto node = doc["atu"];
     if (!node["mode"].isNull()) {
       setMode(node["mode"]);
@@ -178,6 +179,7 @@ public:
   };
 
   virtual void getStatus(JsonObject &doc) const override {
+    Device::ATU::getStatus(doc);
     auto node = doc["atu"];
     node["mode"] = _mode;
   }
