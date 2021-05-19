@@ -1,0 +1,34 @@
+{
+    "cmd": "config",
+    "atu": {
+        "L": {
+            "step": 2,
+            "initial": 20
+        },
+        "C1": {
+            "step": -8,
+            "initial": 20
+        },
+        "C2": {
+            "step": -8,
+            "initial": 20
+        }
+    },
+    "sensor": {
+        "SWRMeterAds1115Ad8310": {
+            "fwdIntercept": 100.0,
+            "rflIntercept": 100.0
+        }
+    },
+    "actuator": {
+        "L": {
+            "delay": 10
+        },
+        "C1": {
+            "delay": 10
+        },
+        "C2": {
+            "delay": 10
+        }
+    }
+}

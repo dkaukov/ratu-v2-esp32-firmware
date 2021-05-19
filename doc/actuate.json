@@ -1,0 +1,14 @@
+{
+    "cmd": "actuate",
+    "actuator": {
+        "L": {
+            "value": 0
+        },
+        "C1": {
+            "pct": 0.5
+        },
+        "C2": {
+            "setBit": 3
+        }
+    }
+}
