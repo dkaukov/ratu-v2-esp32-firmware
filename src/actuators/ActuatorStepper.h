@@ -136,7 +136,7 @@ public:
   virtual float getPhisicalValue() const override { return getValue(); };
 
   virtual int32_t setValue(int32_t pos) override {
-    int32_t oldPosition = _stepper.currentPosition();
+    int32_t oldPosition = _stepper.targetPosition();
     pos = constrain(pos, _min, _max);
     enable();
     _stepper.moveTo(pos);

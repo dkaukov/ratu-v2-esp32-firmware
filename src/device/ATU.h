@@ -19,19 +19,19 @@ protected:
     return _swrMeter.getTarget();
   }
 
-  void stepAndWait(Actuators::Actuator &actuator, int16_t step) {
-    actuator.step(step);
+  void stepAndWait(Actuators::Actuator &actuator, int16_t &step) {
+    step = actuator.step(step);
     busyWait([&actuator]() { return !actuator.isReady(); });
   }
 
-  float stepAndMeasure(Actuators::Actuator &actuator, int16_t step) {
+  float stepAndMeasure(Actuators::Actuator &actuator, int16_t &step) {
     stepAndWait(actuator, step);
     return measureAndWait();
   }
 
   virtual void optimise(Actuators::Actuator &actuator, int16_t step, float hysteresis) {
     uint16_t stepCount = 0;
-    float prevStepMeasurement = stepAndMeasure(actuator, 0);
+    float prevStepMeasurement = measureAndWait();
     _LOGD("optimize", "started P(-1) = %f, step = %d", prevStepMeasurement, step);
     while (step != 0) {
       if (!_swrMeter.isInRange()) {
