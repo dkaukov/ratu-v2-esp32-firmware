@@ -76,8 +76,16 @@ ActuatorDACMCP23017 actuatorL(L_ACTUATOR_NAME, {pin : {K1, K2, K3, K4, K5, K6, K
 ActuatorDACMCP23017 actuatorC1(C1_ACTUATOR_NAME, {pin : {K9, K10, K11, K12, K13, K14, K15, K16}}, mcp, C1_ACTUATOR_MIN, C1_ACTUATOR_MAX);
 ActuatorDACGPIO actuatorC2(C2_ACTUATOR_NAME, {pin : {K17, K18, K19, K20, K21, K22, K23, K24}}, C2_ACTUATOR_MIN, C2_ACTUATOR_MAX);
 
+typedef enum {
+  ATU_MODE_TMATCH,
+  ATU_MODE_LC,
+  ATU_MODE_CL,
+} atu_mode_type_t;
+
 class TMatchWithRelays : public Device::ATU {
 private:
+  atu_mode_type_t _mode = ATU_MODE_TMATCH;
+
   int32_t _actuatorLInitial = 8;
   int32_t _actuatorC1Initial = 64;
   int32_t _actuatorC2Initial = 64;
@@ -109,18 +117,60 @@ public:
     actuatorC2.setValue(_actuatorC2Initial);
   };
 
+  virtual void setMode(atu_mode_type_t mode) {
+    if (mode != _mode) {
+      switch (mode) {
+      case ATU_MODE_TMATCH:
+        digitalWrite(K25, LOW);
+        digitalWrite(K26, LOW);
+        break;
+      case ATU_MODE_LC:
+        digitalWrite(K25, HIGH);
+        digitalWrite(K26, LOW);
+        break;
+      case ATU_MODE_CL:
+        digitalWrite(K25, LOW);
+        digitalWrite(K26, HIGH);
+        break;
+      }
+      _mode = mode;
+    }
+  }
+
   virtual void tune() override {
     uint32_t startedTime = micros();
-    optimise(actuatorL, _actuatorLInitialStep, _historesis);
-    _LOGI("autoTune", "actuatorL finished in %8d ms", (uint32_t)micros() - startedTime);
-    optimise(actuatorC1, _actuatorC1InitialStep, _historesis);
-    _LOGI("autoTune", "actuatorC1 finished in %8d ms", (uint32_t)micros() - startedTime);
-    optimise(actuatorC2, _actuatorC2InitialStep, _historesis);
-    _LOGI("autoTune", "actuatorC2 finished in %8d ms", (uint32_t)micros() - startedTime);
+    if (_mode == ATU_MODE_TMATCH) {
+      optimise(actuatorL, _actuatorLInitialStep, _historesis);
+      _LOGI("autoTune", "actuatorL finished in %8d ms", (uint32_t)micros() - startedTime);
+      optimise(actuatorC1, _actuatorC1InitialStep, _historesis);
+      _LOGI("autoTune", "actuatorC1 finished in %8d ms", (uint32_t)micros() - startedTime);
+      optimise(actuatorC2, _actuatorC2InitialStep, _historesis);
+      _LOGI("autoTune", "actuatorC2 finished in %8d ms", (uint32_t)micros() - startedTime);
+    }
+    if (_mode == ATU_MODE_CL) {
+      optimise(actuatorC1, _actuatorC1InitialStep, _historesis);
+      _LOGI("autoTune", "actuatorC1 finished in %8d ms", (uint32_t)micros() - startedTime);
+      optimise(actuatorL, _actuatorLInitialStep, _historesis);
+      _LOGI("autoTune", "actuatorL finished in %8d ms", (uint32_t)micros() - startedTime);
+    }
+    if (_mode == ATU_MODE_LC) {
+      optimise(actuatorC2, _actuatorC2InitialStep, _historesis);
+      _LOGI("autoTune", "actuatorC2 finished in %8d ms", (uint32_t)micros() - startedTime);
+      optimise(actuatorL, _actuatorLInitialStep, _historesis);
+      _LOGI("autoTune", "actuatorL finished in %8d ms", (uint32_t)micros() - startedTime);
+    }
   };
 
   virtual void setConfig(const JsonObject &doc) override {
+    Device::ATU::setConfig(doc);
     auto node = doc["atu"];
+    if (!node["mode"].isNull()) {
+      atu_mode_type_t mode = node["mode"];
+      if (mode != _mode) {
+        setMode(node["mode"]);
+        _LOGI("atu", "Setting ATU mode: %d", _mode);
+      }
+    }
     if (!node["L"]["initial"].isNull()) {
       _actuatorLInitial = node["L"]["initial"];
     }
@@ -140,6 +190,12 @@ public:
       _actuatorC2InitialStep = node["C2"]["step"];
     }
   };
+
+  virtual void getStatus(JsonObject &doc) const override {
+    Device::ATU::getStatus(doc);
+    auto node = doc["atu"];
+    node["mode"] = _mode;
+  }
 };
 
 } // namespace Hardware

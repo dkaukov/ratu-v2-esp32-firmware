@@ -2,6 +2,7 @@
     "cmd": "tune",
     "config": {
         "atu": {
+            "mode": 0,
             "L": {
                 "step": 2
             },
