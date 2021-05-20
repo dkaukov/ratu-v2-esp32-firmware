@@ -32,9 +32,11 @@ public:
     auto node = doc["sensor"][_name];
     node["fwd"] = getFwd();
     node["rfl"] = getRfl();
-    node["pct"] = getPct();
-    node["swr"] = getSWR();
-    node["target"] = getTarget();
+    if (isInRange()) {
+      node["pct"] = getPct();
+      node["swr"] = getSWR();
+      node["target"] = getTarget();
+    }
   };
 };
 
