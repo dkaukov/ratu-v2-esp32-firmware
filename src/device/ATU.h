@@ -8,6 +8,12 @@
 
 namespace Device {
 
+typedef enum {
+  ATU_STATE_OFFLINE,
+  ATU_STATE_READY,
+  ATU_STATE_BUSY,
+} atu_state_type_t;
+
 class ATU : public Core::Component {
 protected:
   Sensor::SWRMeter &_swrMeter;
@@ -79,6 +85,30 @@ public:
   };
 
   virtual bool isReady() const { return true; }
+
+  virtual atu_state_type_t getState() const {
+    if (isReady()) {
+      return ATU_STATE_READY;
+    }
+    return ATU_STATE_BUSY;
+  }
+
+  virtual void getStatus(JsonObject &doc) const override {
+    auto node = doc["atu"];
+    switch (getState()) {
+    case ATU_STATE_OFFLINE:
+      node["state"] = "offline";
+      break;
+    case ATU_STATE_BUSY:
+      node["state"] = "busy";
+      break;
+    case ATU_STATE_READY:
+      node["state"] = "ready";
+      break;
+    default:
+      break;
+    }
+  }
 };
 
 } // namespace Device

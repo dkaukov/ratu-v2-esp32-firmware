@@ -24,13 +24,11 @@ private:
   String _clientId;
   String _configurationTopic;
   String _statusTopic;
-  String _stateTopic;
   String _commandTopic;
 
   void configureTopics() {
     _configurationTopic = String(MQTT_CONFIG_TOPIC_ROOT) + "/" + _clientId;
     _statusTopic = String(MQTT_DEVICE_TOPIC_ROOT) + "/" + _clientId + "/status";
-    _stateTopic = String(MQTT_DEVICE_TOPIC_ROOT) + "/" + _clientId + "/state";
     _commandTopic = String(MQTT_DEVICE_TOPIC_ROOT) + "/" + _clientId + "/command";
   }
 
@@ -54,7 +52,6 @@ private:
 
   void setupMqttConnection() {
     StaticJsonDocument<1024> doc;
-    doc["stateTopic"] = _stateTopic;
     doc["commandTopic"] = _commandTopic;
     doc["statusTopic"] = _statusTopic;
     doc["device"]["id"] = _clientId;
@@ -66,7 +63,6 @@ private:
     String output;
     serializeJson(doc, output);
     _client->publish(_configurationTopic, output, true, 2);
-    _client->publish(_stateTopic, "online", true, 0);
     _client->subscribe(_commandTopic + "/#");
   }
 
@@ -117,7 +113,7 @@ public:
     getClientId();
     configureTopics();
     _client->setKeepAlive(MQTT_KEEP_ALIVE_SEC);
-    _client->setWill(_stateTopic.c_str(), "offline", true, 0);
+    _client->setWill(_statusTopic.c_str(), "{\"atu\": {\"state\": \"offline\"}}", true, 0);
     _LOGI("mqtt", "MQTT init mqtt://%s:%d", _host.c_str(), _port);
   };
 
