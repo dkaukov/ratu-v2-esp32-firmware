@@ -56,15 +56,20 @@ private:
     net.setNoDelay(true);
     doc["commandTopic"] = _commandTopic;
     doc["statusTopic"] = _statusTopic;
+
     doc["device"]["id"] = _clientId;
-    doc["device"]["ip"] = net.localIP().toString();
-    doc["device"]["local-port"] = net.localPort();
-    doc["device"]["hostname"] = WiFi.getHostname();
     doc["device"]["heapSize"] = ESP.getHeapSize();
     doc["device"]["sdkVersion"] = ESP.getSdkVersion();
     doc["device"]["cpuFreqMHz"] = ESP.getCpuFreqMHz();
     doc["device"]["sketchMD5"] = ESP.getSketchMD5();
     doc["device"]["chipModel"] = ESP.getChipModel();
+
+    doc["device"]["wifi"]["ssid"] = WiFi.SSID();
+    doc["device"]["wifi"]["bssid"] = WiFi.BSSIDstr();
+    doc["device"]["wifi"]["ip"] = net.localIP().toString();
+    doc["device"]["wifi"]["hostname"] = WiFi.getHostname();
+    doc["device"]["wifi"]["mqtt-local-port"] = net.localPort();
+
     String output;
     serializeJson(doc, output);
     _client->publish(_configurationTopic, output, true, 2);
