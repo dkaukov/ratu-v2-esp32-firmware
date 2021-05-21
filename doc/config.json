@@ -1,6 +1,7 @@
 {
     "cmd": "config",
     "atu": {
+        "mode": 1,
         "L": {
             "step": 2,
             "initial": 20
