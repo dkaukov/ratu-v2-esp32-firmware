@@ -25,6 +25,7 @@ private:
   String _configurationTopic;
   String _statusTopic;
   String _commandTopic;
+  int16_t _mqttReconnectCount = -1;
 
   void configureTopics() {
     _configurationTopic = String(MQTT_CONFIG_TOPIC_ROOT) + "/" + _clientId;
@@ -55,6 +56,8 @@ private:
     doc["commandTopic"] = _commandTopic;
     doc["statusTopic"] = _statusTopic;
     doc["device"]["id"] = _clientId;
+    doc["device"]["ip"] = WiFi.localIP().toString();
+    doc["device"]["hostname"] = WiFi.getHostname();
     doc["device"]["heapSize"] = ESP.getHeapSize();
     doc["device"]["sdkVersion"] = ESP.getSdkVersion();
     doc["device"]["cpuFreqMHz"] = ESP.getCpuFreqMHz();
@@ -121,6 +124,8 @@ public:
     doc["system"]["timestamp"] = getTime();
     doc["system"]["freeHeap"] = ESP.getFreeHeap();
     doc["system"]["stackHighWaterMark"] = uxTaskGetStackHighWaterMark(NULL);
+    doc["system"]["rssi"] = WiFi.RSSI();
+    doc["system"]["mqtt-reconnects"] = _mqttReconnectCount;
   };
 
   virtual void timer1000() override {
@@ -128,6 +133,7 @@ public:
       if (WiFi.status() == WL_CONNECTED) {
         if (_client->connect(_clientId.c_str())) {
           if (_client->connected()) {
+            _mqttReconnectCount++;
             setupMqttConnection();
             _LOGI("mqtt", "MQTT connected to %s:%d", _host.c_str(), _port);
           }
