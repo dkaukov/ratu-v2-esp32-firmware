@@ -53,10 +53,12 @@ private:
 
   void setupMqttConnection() {
     StaticJsonDocument<1024> doc;
+    net.setNoDelay(true);
     doc["commandTopic"] = _commandTopic;
     doc["statusTopic"] = _statusTopic;
     doc["device"]["id"] = _clientId;
-    doc["device"]["ip"] = WiFi.localIP().toString();
+    doc["device"]["ip"] = net.localIP().toString();
+    doc["device"]["local-port"] = net.localPort();
     doc["device"]["hostname"] = WiFi.getHostname();
     doc["device"]["heapSize"] = ESP.getHeapSize();
     doc["device"]["sdkVersion"] = ESP.getSdkVersion();
@@ -71,7 +73,7 @@ private:
 
 public:
   MQTT() : Core::Component(Core::COMPONENT_CLASS_NETWORK) {
-    static MQTTClient client(1024);
+    static MQTTClient client(1460);
     _client = &client;
     _host = MQTT_HOST_NAME;
     _port = 1883;
