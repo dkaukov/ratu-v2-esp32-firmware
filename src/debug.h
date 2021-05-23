@@ -26,7 +26,7 @@ uint8_t __dbg_buff_ptr = 0;
 #include "config.h"
 #include <Syslog.h>
 
-#if defined(NTP_SERVER)
+#if defined(SYSLOG_SERVER)
 
 WiFiUDP udpClient;
 Syslog syslog(udpClient, SYSLOG_SERVER, SYSLOG_PORT, DEVICE_HOSTNAME, APP_NAME, LOG_KERN, SYSLOG_PROTO_BSD);
