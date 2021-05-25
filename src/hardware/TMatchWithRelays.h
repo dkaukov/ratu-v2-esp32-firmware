@@ -91,8 +91,8 @@ private:
   int32_t _actuatorC2Initial = 64;
 
   int32_t _actuatorLInitialStep = 2;
-  int32_t _actuatorC1InitialStep = -8;
-  int32_t _actuatorC2InitialStep = -8;
+  int32_t _actuatorC1InitialStep = 2;
+  int32_t _actuatorC2InitialStep = 2;
   float _historesis = 0.0;
 
 public:

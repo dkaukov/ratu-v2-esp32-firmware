@@ -35,34 +35,78 @@ protected:
     return measureAndWait();
   }
 
-  virtual void optimise(Actuators::Actuator &actuator, int16_t step, float hysteresis) {
+  void moveAndWait(Actuators::Actuator &actuator, uint32_t pos) {
+    actuator.setValue(pos);
+    busyWait([&actuator]() { return !actuator.isReady(); });
+  }
+
+  float moveAndMeasure(Actuators::Actuator &actuator, uint32_t pos) {
+    moveAndWait(actuator, pos);
+    return measureAndWait();
+  }
+
+  virtual float optimise(Actuators::Actuator &actuator, int16_t step, float hysteresis) {
     uint16_t stepCount = 0;
     float prevStepMeasurement = measureAndWait();
     _LOGD("optimize", "started P(-1) = %f, step = %d", prevStepMeasurement, step);
+    _LOGD("optimize", "Phase 1: finding interval by Svenn method.");
     while (step != 0) {
       if (!_swrMeter.isInRange()) {
         _LOGD("optimize", "aborting: measurements not in range.");
         break;
       }
       float curStepMeasurement = stepAndMeasure(actuator, step);
-      _LOGD("optimise", "[%d]: step=%d, %s->%f P(n-1)=%f, P(n)=%f", stepCount, step, actuator.getName(), actuator.getPhisicalValue(), prevStepMeasurement, curStepMeasurement);
+      _LOGD("optimise", "Sv:[%d]: step=%d, %s->%f P(n-1)=%f, P(n)=%f", stepCount, step, actuator.getName(), actuator.getPhisicalValue(), prevStepMeasurement, curStepMeasurement);
       if ((prevStepMeasurement < curStepMeasurement) && (abs(prevStepMeasurement - curStepMeasurement) > hysteresis)) {
         step = -step;
         if (stepCount != 0) {
-          if ((step / 2) == 0) {
-            _LOGD("optimize", "analyse: wrong direction of last step, stepping back: step = %d", step);
-            curStepMeasurement = stepAndMeasure(actuator, step);
-          }
-          step = step / 2;
+          _LOGD("optimize", "analyse: found interval, switching to the binary search: step = %d", step);
         } else {
           _LOGD("optimize", "analyse: wrong direction of 1st step, reversing with same value: step = %d", step);
           curStepMeasurement = stepAndMeasure(actuator, step);
         }
+      } else {
+        step = step * 2;
       }
       prevStepMeasurement = curStepMeasurement;
       stepCount++;
     }
-    _LOGD("optimize", "finished: P(%d)=%f", stepCount, prevStepMeasurement);
+    _LOGD("optimize", "Svenn finished: P(%d)=%f, step=%d", stepCount, prevStepMeasurement, step);
+    return optimiseFibonacci(actuator, min(actuator.getValue(), actuator.getValue() + step), max(actuator.getValue(), actuator.getValue() + step), stepCount);
+  }
+
+  virtual float optimiseFibonacci(Actuators::Actuator &actuator, uint32_t a, uint32_t b, uint16_t &stepCount) {
+    _LOGD("optimize", "Phase 2: Fibonacci search of the minimum.");
+    uint32_t x1 = a + round(0.382 * (b - a));
+    uint32_t x2 = b - round(0.382 * (b - a));
+    float A = moveAndMeasure(actuator, x1);
+    float B = moveAndMeasure(actuator, x2);
+    stepCount = stepCount + 2;
+    while (true) {
+      if (A < B) {
+        b = x2;
+        if ((b - a) <= 1) {
+          break;
+        }
+        x2 = x1;
+        B = A;
+        x1 = a + round(0.382 * (b - a));
+        A = moveAndMeasure(actuator, x1);
+        stepCount++;
+      } else {
+        a = x1;
+        if ((b - a) <= 1) {
+          break;
+        }
+        x1 = x2;
+        A = B;
+        x2 = b - round(0.382 * (b - a));
+        B = moveAndMeasure(actuator, x2);
+        stepCount++;
+      }
+    }
+    _LOGD("optimize", "Fibonacci finished: P(%d)=%f", stepCount, A);
+    return A;
   }
 
 public:
