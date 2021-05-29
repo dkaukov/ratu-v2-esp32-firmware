@@ -138,6 +138,7 @@ public:
   }
 
   virtual void tune() override {
+    ATU::tune();
     uint32_t startedTime = micros();
     if (_mode == ATU_MODE_TMATCH) {
       optimise(actuatorL, _actuatorLInitialStep, _historesis);

@@ -113,6 +113,7 @@ public:
   };
 
   virtual void tune() override {
+    ATU::tune();
     uint32_t startedTime = micros();
     optimise(actuatorL, _actuatorLInitialStep, _historesis);
     _LOGI("autoTune", "stepperL finished in %8d ms", (uint32_t)micros() - startedTime);
