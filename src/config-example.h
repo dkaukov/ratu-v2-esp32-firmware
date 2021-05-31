@@ -1,11 +1,11 @@
 #pragma once
 
+#define DEVICE_ID "atu-01"
+
 #define SYSLOG_SERVER "elk.sphere.home"
 #define SYSLOG_PORT 5140
-#define DEVICE_HOSTNAME ""
-#define APP_NAME "ratu"
-
-#define WIFI_HOSTNAME "atu"
+#define SYSLOG_DEVICE_HOSTNAME ""
+#define SYSLOG_APP_NAME "ratu"
 
 #define NTP_SERVER "router.sphere.home"
 

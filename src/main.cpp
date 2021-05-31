@@ -1,6 +1,8 @@
-#define MECH_DEBUG 1
+//#define MECH_DEBUG 1
 #define ETL_NO_STL
 #define ARDUINOJSON_ENABLE_ARDUINO_STRING 1
+
+const char *getDeviceId();
 
 #include "ArduinoJson.h"
 #include "WiFi.h"
@@ -16,8 +18,28 @@
 #include <Arduino.h>
 #include <ArduinoOTA.h>
 
+#define CLIENT_ID_TEMPLATE "ATU-%04X%08X"
+#define CLIENT_ID_SIZE (sizeof(CLIENT_ID_TEMPLATE) + 5)
+
 Core::ComponentManager mgr;
 Hardware::TMatchWithRelays atu;
+String deviceId;
+
+void InitDeviceId() {
+#if defined(DEVICE_ID)
+  deviceId = DEVICE_ID;
+#else
+  char clientId[CLIENT_ID_SIZE];
+  uint64_t chipid = ESP.getEfuseMac();
+  uint16_t chip = (uint16_t)(chipid >> 32);
+  snprintf(clientId, CLIENT_ID_SIZE, CLIENT_ID_TEMPLATE, chip, (uint32_t)chipid);
+  deviceId = String(clientId);
+#endif
+}
+
+const char *getDeviceId() {
+  return deviceId.c_str();
+}
 
 void WiFiSTAConnect() {
   WiFi.disconnect();
@@ -26,9 +48,7 @@ void WiFiSTAConnect() {
   WiFi.setTxPower(WIFI_POWER_19_5dBm);
   WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-#if defined(WIFI_HOSTNAME)
-  WiFi.setHostname(WIFI_HOSTNAME);
-#endif
+  WiFi.setHostname(getDeviceId());
   WiFi.setAutoReconnect(true);
 }
 
@@ -63,16 +83,15 @@ void setupWiFi() {
 }
 
 void setup() {
+  InitDeviceId();
   pinMode(BUILTIN_LED, OUTPUT);
   Serial.begin(250000);
   digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
   setupWiFi();
   digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
   debugInit();
-#if defined(WIFI_HOSTNAME)
   ArduinoOTA.setMdnsEnabled(true);
-  ArduinoOTA.setHostname(WIFI_HOSTNAME);
-#endif
+  ArduinoOTA.setHostname(getDeviceId());
   ArduinoOTA.begin();
   Network::mqtt.init();
   Network::sdr.init();

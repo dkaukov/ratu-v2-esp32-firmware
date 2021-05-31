@@ -12,9 +12,6 @@ namespace Network {
 
 WiFiClient net;
 
-#define CLIENT_ID_TEMPLATE "ATU-%04X%08X"
-#define CLIENT_ID_SIZE (sizeof(CLIENT_ID_TEMPLATE) + 5)
-
 class MQTT : public Core::Component {
 private:
   MQTTClient *_client;
@@ -33,11 +30,7 @@ private:
   }
 
   void getClientId() {
-    char clientId[CLIENT_ID_SIZE];
-    uint64_t chipid = ESP.getEfuseMac();
-    uint16_t chip = (uint16_t)(chipid >> 32);
-    snprintf(clientId, CLIENT_ID_SIZE, CLIENT_ID_TEMPLATE, chip, (uint32_t)chipid);
-    _clientId = String(clientId);
+    _clientId = String(getDeviceId());
   }
 
   static std::string getTime() {
