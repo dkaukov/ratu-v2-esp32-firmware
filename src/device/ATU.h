@@ -137,7 +137,7 @@ public:
       busyWait([this]() { return lock; });
       lock = true;
       if (!doc["config"].isNull()) {
-        setConfig(doc["config"].as<JsonObject>());
+        setGlobalConfig(doc["config"].as<JsonObject>());
       }
       busyWait([this]() { return !isReady(); });
       turnOnTrx();
