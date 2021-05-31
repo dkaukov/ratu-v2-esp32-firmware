@@ -25,6 +25,7 @@ class ATU : public Core::Component, etl::observable<TxTuneRequest_Observer, 1> {
 protected:
   Sensor::SWRMeter &_swrMeter;
   uint8_t _swrMeterCyclesCount = 10;
+  uint8_t _waitTickTimeout;
 
   float measureAndWait() {
     _swrMeter.startMeasurementCycle(_swrMeterCyclesCount);
@@ -134,15 +135,23 @@ public:
   virtual void onCommand(Core::command_type_t type, const JsonObject &doc) override {
     if (type == Core::COMMAND_TYPE_TUNE) {
       static bool lock = false;
+      _LOGD("atu", "Tune, waiting for lock.");
       busyWait([this]() { return lock; });
       lock = true;
       if (!doc["config"].isNull()) {
         setGlobalConfig(doc["config"].as<JsonObject>());
       }
+      _LOGD("atu", "Tune, waiting for isReady().");
       busyWait([this]() { return !isReady(); });
       turnOnTrx();
-      busyWait([this]() { return !_swrMeter.isInRange(); });
-      tune();
+      _waitTickTimeout = 10;
+      _LOGD("atu", "Tune, waiting for swrMeter.isInRange().");
+      busyWait([this]() { return !(_swrMeter.isInRange() || (_waitTickTimeout == 0)); });
+      if (_swrMeter.isInRange()) {
+        tune();
+      } else {
+        _LOGE("atu", "Timeout waiting for swrMeter.isInRange(), aborting.");
+      }
       turnOffTrx();
       lock = false;
     }
@@ -176,6 +185,12 @@ public:
 
   virtual void registerObserver(TxTuneRequest_Observer &observer) {
     add_observer(observer);
+  }
+
+  virtual void timer250() override {
+    if (_waitTickTimeout) {
+      _waitTickTimeout--;
+    }
   }
 };
 
