@@ -11,6 +11,7 @@
 //#include "hardware/TMatchWithStepprs.h"
 #include "lwip/apps/sntp.h"
 #include "network/MQTT.h"
+#include "network/SDR.h"
 #include "secrets.h"
 #include <Arduino.h>
 #include <ArduinoOTA.h>
@@ -74,7 +75,9 @@ void setup() {
 #endif
   ArduinoOTA.begin();
   Network::mqtt.init();
+  Network::sdr.init();
   atu.init();
+  atu.registerObserver(Network::sdr);
   mgr.init();
 }
 

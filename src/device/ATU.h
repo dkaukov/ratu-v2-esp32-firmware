@@ -3,8 +3,8 @@
 #include "actuators/Actuator.h"
 #include "core/Component.h"
 #include "debug.h"
-#include "sensor/SWRMeter.h"
 #include "etl/observer.h"
+#include "sensor/SWRMeter.h"
 #include <Arduino.h>
 
 namespace Device {
@@ -16,20 +16,15 @@ typedef enum {
 } atu_state_type_t;
 
 struct TxTuneRequest {
-  uint8_t trx;
-  uint8_t drive;
   bool tuneEnabled;
 };
 
 typedef etl::observer<TxTuneRequest> TxTuneRequest_Observer;
 
-
-class ATU : public Core::Component,  etl::observable<TxTuneRequest_Observer, 1> {
+class ATU : public Core::Component, etl::observable<TxTuneRequest_Observer, 1> {
 protected:
   Sensor::SWRMeter &_swrMeter;
   uint8_t _swrMeterCyclesCount = 10;
-  uint8_t _trx = 0;
-  uint8_t _drive = 100;
 
   float measureAndWait() {
     _swrMeter.startMeasurementCycle(_swrMeterCyclesCount);
@@ -122,20 +117,19 @@ protected:
   }
 
   void turnOnTrx() {
-    TxTuneRequest txTuneRequest = {trx: _trx, drive: _drive, tuneEnabled: true};
+    TxTuneRequest txTuneRequest = {tuneEnabled : true};
     notify_observers(txTuneRequest);
   }
 
   void turnOffTrx() {
-    TxTuneRequest txTuneRequest = {trx: _trx, drive: _drive, tuneEnabled: false};
+    TxTuneRequest txTuneRequest = {tuneEnabled : false};
     notify_observers(txTuneRequest);
   }
 
 public:
   ATU(etl::message_router_id_t id, Sensor::SWRMeter &swrMeter) : Core::Component(id), _swrMeter(swrMeter){};
   virtual void resetToDefaults(){};
-  virtual void tune(){
-  };
+  virtual void tune(){};
 
   virtual void onCommand(Core::command_type_t type, const JsonObject &doc) override {
     if (type == Core::COMMAND_TYPE_TUNE) {
@@ -180,16 +174,9 @@ public:
     }
   }
 
-    virtual void setConfig(const JsonObject &doc) override {
-    auto node = doc["atu"];
-    if (!node["tune"]["trx"].isNull()) {
-      _trx = node["tune"]["trx"];
-    }
-    if (!node["tune"]["drive"].isNull()) {
-      _drive = node["tune"]["drive"];
-    }
-  };
-
+  virtual void registerObserver(TxTuneRequest_Observer &observer) {
+    add_observer(observer);
+  }
 };
 
 } // namespace Device

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "actuators/Actuator.h"
 #include "config.h"
 #include "core/Component.h"
 #include "debug.h"
@@ -149,6 +148,13 @@ public:
     } else {
       sendStatus();
     }
+  };
+
+  virtual void onPublish(const char *topic, const JsonDocument &doc) override {
+    String output;
+    serializeJson(doc, output);
+    _LOGD("mqtt", "MQTT publish: %s => %s", topic, output.c_str());
+    _client->publish(topic, output);
   };
 
   virtual void loop() override {
