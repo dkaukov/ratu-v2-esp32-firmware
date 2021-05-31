@@ -135,22 +135,24 @@ public:
   virtual void onCommand(Core::command_type_t type, const JsonObject &doc) override {
     if (type == Core::COMMAND_TYPE_TUNE) {
       static bool lock = false;
-      _LOGD("atu", "Tune, waiting for lock.");
-      busyWait([this]() { return lock; });
+      if (lock) {
+        _LOGE("atu", "Core::COMMAND_TYPE_TUNE: Command execution in progress, aborting.");
+        return;
+      }
       lock = true;
       if (!doc["config"].isNull()) {
         setGlobalConfig(doc["config"].as<JsonObject>());
       }
-      _LOGD("atu", "Tune, waiting for isReady().");
+      _LOGD("atu", "Core::COMMAND_TYPE_TUNE: waiting for isReady().");
       busyWait([this]() { return !isReady(); });
       turnOnTrx();
       _waitTickTimeout = 10;
-      _LOGD("atu", "Tune, waiting for swrMeter.isInRange().");
+      _LOGD("atu", "Core::COMMAND_TYPE_TUNE: waiting for swrMeter.isInRange().");
       busyWait([this]() { return !(_swrMeter.isInRange() || (_waitTickTimeout == 0)); });
       if (_swrMeter.isInRange()) {
         tune();
       } else {
-        _LOGE("atu", "Timeout waiting for swrMeter.isInRange(), aborting.");
+        _LOGE("atu", "Core::COMMAND_TYPE_TUNE: Timeout waiting for swrMeter.isInRange(), aborting.");
       }
       turnOffTrx();
       lock = false;
