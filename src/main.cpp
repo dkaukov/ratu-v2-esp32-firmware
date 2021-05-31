@@ -17,7 +17,7 @@ const char *getDeviceId();
 #include <Arduino.h>
 #include <ArduinoOTA.h>
 
-#define CLIENT_ID_TEMPLATE "ATU-%04X%08X"
+#define CLIENT_ID_TEMPLATE "ATU-%06X"
 #define CLIENT_ID_SIZE (sizeof(CLIENT_ID_TEMPLATE) + 5)
 
 Core::ComponentManager mgr;
@@ -29,9 +29,15 @@ void InitDeviceId() {
   deviceId = DEVICE_ID;
 #else
   char clientId[CLIENT_ID_SIZE];
-  uint64_t chipid = ESP.getEfuseMac();
-  uint16_t chip = (uint16_t)(chipid >> 32);
-  snprintf(clientId, CLIENT_ID_SIZE, CLIENT_ID_TEMPLATE, chip, (uint32_t)chipid);
+  uint32_t nic = ESP.getEfuseMac() >> 24;
+  uint32_t chipid = nic & 0xFF;
+  chipid = chipid << 8;
+  nic = nic >> 8;
+  chipid = chipid | (nic & 0xFF);
+  chipid = chipid << 8;
+  nic = nic >> 8;
+  chipid = chipid | (nic & 0xFF);
+  snprintf(clientId, CLIENT_ID_SIZE, CLIENT_ID_TEMPLATE, chipid);
   deviceId = String(clientId);
 #endif
 }
