@@ -1,4 +1,3 @@
-//#define MECH_DEBUG 1
 #define ETL_NO_STL
 #define ARDUINOJSON_ENABLE_ARDUINO_STRING 1
 
