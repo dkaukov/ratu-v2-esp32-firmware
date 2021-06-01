@@ -1,6 +1,10 @@
 #define ETL_NO_STL
 #define ARDUINOJSON_ENABLE_ARDUINO_STRING 1
 
+#if not defined(HARDAWARE_TYPE_TMATCH_WITH_RELAYS) && not defined(HARDAWARE_TYPE_TMATCH_WITH_STEPPERS)
+#define HARDAWARE_TYPE_TMATCH_WITH_RELAYS
+#endif
+
 const char *getDeviceId();
 
 #include "ArduinoJson.h"
@@ -8,8 +12,11 @@ const char *getDeviceId();
 #include "config.h"
 #include "core/Component.h"
 #include "debug.h"
+#if defined(HARDAWARE_TYPE_TMATCH_WITH_RELAYS)
 #include "hardware/TMatchWithRelays.h"
-//#include "hardware/TMatchWithStepprs.h"
+#elif defined(HARDAWARE_TYPE_TMATCH_WITH_STEPPERS)
+#include "hardware/TMatchWithStepprs.h"
+#endif
 #include "lwip/apps/sntp.h"
 #include "network/MQTT.h"
 #include "network/SDR.h"
@@ -21,7 +28,6 @@ const char *getDeviceId();
 #define CLIENT_ID_SIZE (sizeof(CLIENT_ID_TEMPLATE) + 5)
 
 Core::ComponentManager mgr;
-Hardware::TMatchWithRelays atu;
 String deviceId;
 
 void InitDeviceId() {
@@ -100,8 +106,8 @@ void setup() {
   ArduinoOTA.begin();
   Network::mqtt.init();
   Network::sdr.init();
-  atu.init();
-  atu.registerObserver(Network::sdr);
+  Hardware::atu.init();
+  Hardware::atu.registerObserver(Network::sdr);
   mgr.init();
 }
 
