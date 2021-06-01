@@ -65,10 +65,11 @@ protected:
       }
       float curStepMeasurement = stepAndMeasure(actuator, step);
       _LOGD("optimise", "Sv:[%d]: step=%d, %s->%f P(n-1)=%f, P(n)=%f", stepCount, step, actuator.getName(), actuator.getPhisicalValue(), prevStepMeasurement, curStepMeasurement);
-      if ((prevStepMeasurement < curStepMeasurement) && (abs(prevStepMeasurement - curStepMeasurement) > hysteresis)) {
+      if (((prevStepMeasurement < curStepMeasurement) && (abs(prevStepMeasurement - curStepMeasurement) > hysteresis)) || actuator.isAtLimit()) {
         step = -step;
         if (stepCount != 0) {
           _LOGD("optimize", "analyse: found interval, switching to the binary search: step = %d", step);
+          break;
         } else {
           _LOGD("optimize", "analyse: wrong direction of 1st step, reversing with same value: step = %d", step);
           curStepMeasurement = stepAndMeasure(actuator, step);
