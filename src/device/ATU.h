@@ -85,13 +85,14 @@ protected:
   }
 
   virtual float optimiseFibonacci(Actuators::Actuator &actuator, uint32_t a, uint32_t b, uint16_t &stepCount) {
-    _LOGD("optimize", "Phase 2: Fibonacci search of the minimum.");
+    _LOGD("optimize", "Phase 2: Fibonacci search of the minimum. a=%d, b=%d", a, b);
     uint32_t x1 = a + round(0.382 * (b - a));
     uint32_t x2 = b - round(0.382 * (b - a));
     float A = moveAndMeasure(actuator, x1);
     float B = moveAndMeasure(actuator, x2);
     stepCount = stepCount + 2;
     while (true) {
+      _LOGD("optimise", "Ph:[%d]: Pa(%d)=%f, Pb(%d)=%f", stepCount, a, A, b, B);
       if (A < B) {
         b = x2;
         if ((b - a) <= 1) {
@@ -114,7 +115,7 @@ protected:
         stepCount++;
       }
     }
-    _LOGD("optimize", "Fibonacci finished: P(%d)=%f", stepCount, A);
+    _LOGD("optimise", "Ph:[%d] Finished: Pa(%d)=%f, Pb(%d)=%f", stepCount, a, A, b, B);
     return A;
   }
 
