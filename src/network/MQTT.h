@@ -22,6 +22,7 @@ private:
   String _statusTopic;
   String _commandTopic;
   int16_t _mqttReconnectCount = -1;
+  String _sysLogHost;
 
   void configureTopics() {
     _configurationTopic = String(MQTT_CONFIG_TOPIC_ROOT) + "/" + _clientId;
@@ -129,8 +130,15 @@ public:
 
   virtual void setConfig(const JsonObject &doc) override {
 #if defined(SYSLOG_SERVER)
-    if (!doc["syslogEnabled"].isNull()) {
-      __sysLogEnabled = doc["syslogEnabled"];
+    auto node = doc["syslog"];
+    if (!node["host"].isNull() && !node["port"].isNull()) {
+      _sysLogHost = node["host"].as<String>();
+      int port = node["port"];
+      syslog.server(_sysLogHost.c_str(), port);
+      _LOGI("mqtt", "Syslog %s:%d", _sysLogHost.c_str(), port);
+    }
+    if (!node["enabled"].isNull()) {
+      __sysLogEnabled = node["enabled"];
       if (__sysLogEnabled) {
         _LOGI("mqtt", "Syslog enabled.");
       }

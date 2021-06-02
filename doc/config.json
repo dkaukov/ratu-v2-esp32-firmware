@@ -1,6 +1,10 @@
 {
     "cmd": "config",
-    "syslogEnabled": true,
+    "syslog": {
+        "enabled": true,
+        "host": "elk.sphere.home",
+        "port": 5140
+    },
     "atu": {
         "mode": 1,
         "L": {
