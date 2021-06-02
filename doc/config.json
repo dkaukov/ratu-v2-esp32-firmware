@@ -1,5 +1,6 @@
 {
     "cmd": "config",
+    "syslogEnabled": true,
     "atu": {
         "mode": 1,
         "L": {

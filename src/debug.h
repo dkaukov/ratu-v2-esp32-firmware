@@ -30,31 +30,37 @@ uint8_t __dbg_buff_ptr = 0;
 
 WiFiUDP udpClient;
 Syslog syslog(udpClient, SYSLOG_SERVER, SYSLOG_PORT, SYSLOG_DEVICE_HOSTNAME, SYSLOG_APP_NAME, LOG_KERN, SYSLOG_PROTO_BSD);
+static bool __sysLogEnabled = false;
 
-#define _LOGE(tag, fmt, ...)                                         \
-  {                                                                  \
-    ESP_LOGE(tag, fmt, ##__VA_ARGS__);                               \
-    syslog.logf(LOG_ERR, ARDUHAL_LOG_FORMAT(E, fmt), ##__VA_ARGS__); \
+#define _LOGE(tag, fmt, ...)                                           \
+  {                                                                    \
+    ESP_LOGE(tag, fmt, ##__VA_ARGS__);                                 \
+    if (__sysLogEnabled)                                               \
+      syslog.logf(LOG_ERR, ARDUHAL_LOG_FORMAT(E, fmt), ##__VA_ARGS__); \
   }
-#define _LOGW(tag, fmt, ...)                                             \
+#define _LOGW(tag, fmt, ...)                                               \
+  {                                                                        \
+    ESP_LOGW(tag, fmt, ##__VA_ARGS__);                                     \
+    if (__sysLogEnabled)                                                   \
+      syslog.logf(LOG_WARNING, ARDUHAL_LOG_FORMAT(W, fmt), ##__VA_ARGS__); \
+  }
+#define _LOGI(tag, fmt, ...)                                            \
+  {                                                                     \
+    ESP_LOGI(tag, fmt, ##__VA_ARGS__);                                  \
+    if (__sysLogEnabled)                                                \
+      syslog.logf(LOG_INFO, ARDUHAL_LOG_FORMAT(I, fmt), ##__VA_ARGS__); \
+  }
+#define _LOGD(tag, fmt, ...)                                             \
   {                                                                      \
-    ESP_LOGW(tag, fmt, ##__VA_ARGS__);                                   \
-    syslog.logf(LOG_WARNING, ARDUHAL_LOG_FORMAT(W, fmt), ##__VA_ARGS__); \
+    ESP_LOGD(tag, fmt, ##__VA_ARGS__);                                   \
+    if (__sysLogEnabled)                                                 \
+      syslog.logf(LOG_DEBUG, ARDUHAL_LOG_FORMAT(D, fmt), ##__VA_ARGS__); \
   }
-#define _LOGI(tag, fmt, ...)                                          \
-  {                                                                   \
-    ESP_LOGI(tag, fmt, ##__VA_ARGS__);                                \
-    syslog.logf(LOG_INFO, ARDUHAL_LOG_FORMAT(I, fmt), ##__VA_ARGS__); \
-  }
-#define _LOGD(tag, fmt, ...)                                           \
-  {                                                                    \
-    ESP_LOGD(tag, fmt, ##__VA_ARGS__);                                 \
-    syslog.logf(LOG_DEBUG, ARDUHAL_LOG_FORMAT(D, fmt), ##__VA_ARGS__); \
-  }
-#define _LOGV(tag, fmt, ...)                                           \
-  {                                                                    \
-    ESP_LOGV(tag, fmt, ##__VA_ARGS__);                                 \
-    syslog.logf(LOG_DEBUG, ARDUHAL_LOG_FORMAT(V, fmt), ##__VA_ARGS__); \
+#define _LOGV(tag, fmt, ...)                                             \
+  {                                                                      \
+    ESP_LOGV(tag, fmt, ##__VA_ARGS__);                                   \
+    if (__sysLogEnabled)                                                 \
+      syslog.logf(LOG_DEBUG, ARDUHAL_LOG_FORMAT(V, fmt), ##__VA_ARGS__); \
   }
 
 #else

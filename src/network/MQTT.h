@@ -127,6 +127,17 @@ public:
     doc["system"]["mqtt-reconnects"] = _mqttReconnectCount;
   };
 
+  virtual void setConfig(const JsonObject &doc) override {
+#if defined(SYSLOG_SERVER)
+    if (!doc["syslogEnabled"].isNull()) {
+      __sysLogEnabled = doc["syslogEnabled"];
+      if (__sysLogEnabled) {
+        _LOGI("mqtt", "Syslog enabled.");
+      }
+    }
+#endif
+  }
+
   virtual void timer1000() override {
     if (!_client->connected()) {
       if (WiFi.status() == WL_CONNECTED) {
