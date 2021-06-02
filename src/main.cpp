@@ -96,7 +96,7 @@ void setupWiFi() {
 void setup() {
   InitDeviceId();
   pinMode(BUILTIN_LED, OUTPUT);
-  Serial.begin(250000);
+  Serial.begin(115200);
   digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
   setupWiFi();
   digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
