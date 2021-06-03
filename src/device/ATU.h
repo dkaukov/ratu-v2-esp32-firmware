@@ -97,7 +97,7 @@ protected:
     float bp = actuator.getPhisicalValue();
     stepCount = stepCount + 2;
     while (true) {
-      _LOGD("optimise", "Ph:[%d]: Pa(%d)=%f, Pb(%d)=%f [%s->%f, %s->%f]", stepCount, a, A, b, B, actuator.getName(), ap, actuator.getName(), bp);
+      _LOGD("optimise", "Ph:[%d]: int:[%d-%d] Pa(%d)=%f, Pb(%d)=%f [%s->%f, %s->%f]", stepCount, a, b, x1, A, x2, B, actuator.getName(), ap, actuator.getName(), bp);
       if (A < B) {
         b = x2;
         if ((b - a) <= 1) {
@@ -120,6 +120,11 @@ protected:
         B = moveAndMeasure(actuator, x2);
         bp = actuator.getPhisicalValue();
         stepCount++;
+      }
+      if (x1 > x2) {
+        _LOGD("optimise", "Ph:[%d] x1 > x2, swapping", stepCount);
+        std::swap(x1, x2);
+        std::swap(A, B);
       }
     }
     _LOGD("optimise", "Ph:[%d] Finished: Pa(%d)=%f, Pb(%d)=%f, %s->%f", stepCount, a, A, b, B, actuator.getName(), ap);
