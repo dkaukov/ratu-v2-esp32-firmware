@@ -89,8 +89,7 @@ protected:
     uint32_t x1 = a + round(0.382 * (b - a));
     uint32_t x2 = b - round(0.382 * (b - a));
     if (x1 == x2) { // workaround for small intervals where x1 and x2 can meet.
-      x1--;
-      x2++;
+      x1 = a;
     }
     float A = moveAndMeasure(actuator, x1);
     float ap = actuator.getPhisicalValue();
