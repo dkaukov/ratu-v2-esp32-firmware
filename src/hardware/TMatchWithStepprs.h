@@ -114,13 +114,21 @@ public:
 
   virtual void tune() override {
     ATU::tune();
-    uint32_t startedTime = micros();
+    uint32_t startedTime = millis();
+    _LOGI("autoTune", "start: %s=%f(%d), %s=%f(%d), %s=%f(%d)",
+          actuatorL.getName(), actuatorL.getPhisicalValue(), actuatorL.getValue(),
+          actuatorC1.getName(), actuatorC1.getPhisicalValue(), actuatorC1.getValue(),
+          actuatorC2.getName(), actuatorC2.getPhisicalValue(), actuatorC2.getValue());
     optimise(actuatorL, _actuatorLInitialStep, _historesis);
-    _LOGI("autoTune", "stepperL finished in %8d ms", (uint32_t)micros() - startedTime);
+    _LOGI("autoTune", "stepperL finished in %8d ms", (uint32_t)millis() - startedTime);
     optimise(actuatorC1, _actuatorC1InitialStep, _historesis);
-    _LOGI("autoTune", "stepperC1 finished in %8d ms", (uint32_t)micros() - startedTime);
+    _LOGI("autoTune", "stepperC1 finished in %8d ms", (uint32_t)millis() - startedTime);
     optimise(actuatorC2, _actuatorC2InitialStep, _historesis);
-    _LOGI("autoTune", "stepperC2 finished in %8d ms", (uint32_t)micros() - startedTime);
+    _LOGI("autoTune", "stepperC2 finished in %8d ms", (uint32_t)millis() - startedTime);
+    _LOGI("autoTune", "finish: %s=%f(%d), %s=%f(%d), %s=%f(%d)",
+          actuatorL.getName(), actuatorL.getPhisicalValue(), actuatorL.getValue(),
+          actuatorC1.getName(), actuatorC1.getPhisicalValue(), actuatorC1.getValue(),
+          actuatorC2.getName(), actuatorC2.getPhisicalValue(), actuatorC2.getValue());
   };
 
   virtual bool isReady() const override { return actuatorL.isReady() && actuatorC1.isReady() && actuatorC2.isReady(); }

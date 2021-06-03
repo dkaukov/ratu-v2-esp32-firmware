@@ -56,7 +56,7 @@ protected:
   virtual float optimise(Actuators::Actuator &actuator, int16_t step, float hysteresis) {
     uint16_t stepCount = 0;
     float prevStepMeasurement = measureAndWait();
-    _LOGD("optimize", "started P(-1) = %f, step = %d", prevStepMeasurement, step);
+    _LOGD("optimize", "started P(-1) = %f, step = %d, %s->%f(%d)", prevStepMeasurement, step, actuator.getName(), actuator.getPhisicalValue(), actuator.getValue());
     _LOGD("optimize", "Phase 1: finding interval by Svenn method.");
     while (step != 0) {
       if (!_swrMeter.isInRange()) {
@@ -64,7 +64,7 @@ protected:
         break;
       }
       float curStepMeasurement = stepAndMeasure(actuator, step);
-      _LOGD("optimise", "Sv:[%d]: step=%d, %s->%f P(n-1)=%f, P(n)=%f", stepCount, step, actuator.getName(), actuator.getPhisicalValue(), prevStepMeasurement, curStepMeasurement);
+      _LOGD("optimise", "Sv:[%d]: step=%d, %s->%f(%d) P(n-1)=%f, P(n)=%f", stepCount, step, actuator.getName(), actuator.getPhisicalValue(), actuator.getValue(), prevStepMeasurement, curStepMeasurement);
       if (((prevStepMeasurement < curStepMeasurement) && (abs(prevStepMeasurement - curStepMeasurement) > hysteresis)) || actuator.isAtLimit()) {
         step = -step;
         if (stepCount != 0) {
@@ -89,10 +89,12 @@ protected:
     uint32_t x1 = a + round(0.382 * (b - a));
     uint32_t x2 = b - round(0.382 * (b - a));
     float A = moveAndMeasure(actuator, x1);
+    float ap = actuator.getPhisicalValue();
     float B = moveAndMeasure(actuator, x2);
+    float bp = actuator.getPhisicalValue();
     stepCount = stepCount + 2;
     while (true) {
-      _LOGD("optimise", "Ph:[%d]: Pa(%d)=%f, Pb(%d)=%f", stepCount, a, A, b, B);
+      _LOGD("optimise", "Ph:[%d]: Pa(%d)=%f, Pb(%d)=%f [%s->%f, %s->%f]", stepCount, a, A, b, B, actuator.getName(), ap, actuator.getName(), bp);
       if (A < B) {
         b = x2;
         if ((b - a) <= 1) {
@@ -102,6 +104,7 @@ protected:
         B = A;
         x1 = a + round(0.382 * (b - a));
         A = moveAndMeasure(actuator, x1);
+        ap = actuator.getPhisicalValue();
         stepCount++;
       } else {
         a = x1;
@@ -112,10 +115,11 @@ protected:
         A = B;
         x2 = b - round(0.382 * (b - a));
         B = moveAndMeasure(actuator, x2);
+        bp = actuator.getPhisicalValue();
         stepCount++;
       }
     }
-    _LOGD("optimise", "Ph:[%d] Finished: Pa(%d)=%f, Pb(%d)=%f", stepCount, a, A, b, B);
+    _LOGD("optimise", "Ph:[%d] Finished: Pa(%d)=%f, Pb(%d)=%f, %s->%f", stepCount, a, A, b, B, actuator.getName(), ap);
     return A;
   }
 

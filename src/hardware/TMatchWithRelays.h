@@ -139,27 +139,35 @@ public:
 
   virtual void tune() override {
     ATU::tune();
-    uint32_t startedTime = micros();
+    uint32_t startedTime = millis();
+    _LOGI("autoTune", "start: %s=%f(%d), %s=%f(%d), %s=%f(%d)",
+          actuatorL.getName(), actuatorL.getPhisicalValue(), actuatorL.getValue(),
+          actuatorC1.getName(), actuatorC1.getPhisicalValue(), actuatorC1.getValue(),
+          actuatorC2.getName(), actuatorC2.getPhisicalValue(), actuatorC2.getValue());
     if (_mode == ATU_MODE_TMATCH) {
       optimise(actuatorL, _actuatorLInitialStep, _historesis);
-      _LOGI("autoTune", "actuatorL finished in %8d ms", (uint32_t)micros() - startedTime);
+      _LOGI("autoTune", "actuatorL finished in %8d ms", (uint32_t)millis() - startedTime);
       optimise(actuatorC1, _actuatorC1InitialStep, _historesis);
-      _LOGI("autoTune", "actuatorC1 finished in %8d ms", (uint32_t)micros() - startedTime);
+      _LOGI("autoTune", "actuatorC1 finished in %8d ms", (uint32_t)millis() - startedTime);
       optimise(actuatorC2, _actuatorC2InitialStep, _historesis);
-      _LOGI("autoTune", "actuatorC2 finished in %8d ms", (uint32_t)micros() - startedTime);
+      _LOGI("autoTune", "actuatorC2 finished in %8d ms", (uint32_t)millis() - startedTime);
     }
     if (_mode == ATU_MODE_CL) {
       optimise(actuatorC1, _actuatorC1InitialStep, _historesis);
-      _LOGI("autoTune", "actuatorC1 finished in %8d ms", (uint32_t)micros() - startedTime);
+      _LOGI("autoTune", "actuatorC1 finished in %8d ms", (uint32_t)millis() - startedTime);
       optimise(actuatorL, _actuatorLInitialStep, _historesis);
-      _LOGI("autoTune", "actuatorL finished in %8d ms", (uint32_t)micros() - startedTime);
+      _LOGI("autoTune", "actuatorL finished in %8d ms", (uint32_t)millis() - startedTime);
     }
     if (_mode == ATU_MODE_LC) {
       optimise(actuatorC2, _actuatorC2InitialStep, _historesis);
-      _LOGI("autoTune", "actuatorC2 finished in %8d ms", (uint32_t)micros() - startedTime);
+      _LOGI("autoTune", "actuatorC2 finished in %8d ms", (uint32_t)millis() - startedTime);
       optimise(actuatorL, _actuatorLInitialStep, _historesis);
-      _LOGI("autoTune", "actuatorL finished in %8d ms", (uint32_t)micros() - startedTime);
+      _LOGI("autoTune", "actuatorL finished in %8d ms", (uint32_t)millis() - startedTime);
     }
+    _LOGI("autoTune", "finish: %s=%f(%d), %s=%f(%d), %s=%f(%d)",
+          actuatorL.getName(), actuatorL.getPhisicalValue(), actuatorL.getValue(),
+          actuatorC1.getName(), actuatorC1.getPhisicalValue(), actuatorC1.getValue(),
+          actuatorC2.getName(), actuatorC2.getPhisicalValue(), actuatorC2.getValue());
   };
 
   virtual void setConfig(const JsonObject &doc) override {
