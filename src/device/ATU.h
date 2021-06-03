@@ -88,6 +88,10 @@ protected:
     _LOGD("optimize", "Phase 2: Fibonacci search of the minimum. a=%d, b=%d", a, b);
     uint32_t x1 = a + round(0.382 * (b - a));
     uint32_t x2 = b - round(0.382 * (b - a));
+    if (x1 == x2) { // workaround for small intervals where x1 and x2 can meet.
+      x1--;
+      x2++;
+    }
     float A = moveAndMeasure(actuator, x1);
     float ap = actuator.getPhisicalValue();
     float B = moveAndMeasure(actuator, x2);
@@ -120,7 +124,13 @@ protected:
       }
     }
     _LOGD("optimise", "Ph:[%d] Finished: Pa(%d)=%f, Pb(%d)=%f, %s->%f", stepCount, a, A, b, B, actuator.getName(), ap);
-    return A;
+    if (A < B) { // picking the best result
+      moveAndWait(actuator, a);
+      return A;
+    } else {
+      moveAndWait(actuator, b);
+      return B;
+    }
   }
 
   void turnOnTrx() {
