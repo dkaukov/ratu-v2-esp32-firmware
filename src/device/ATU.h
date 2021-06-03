@@ -150,7 +150,22 @@ protected:
 public:
   ATU(etl::message_router_id_t id, Sensor::SWRMeter &swrMeter) : Core::Component(id), _swrMeter(swrMeter){};
   virtual void resetToDefaults(){};
-  virtual void tune(){};
+  
+  virtual void tuneCycle(){};
+  
+  virtual void tune(){
+    float target = measureAndWait();
+    while (true) {
+      tuneCycle();
+      if (!_swrMeter.isInRange()) {
+        break;
+      }
+      if (_swrMeter.getTarget() >= target) {
+        break;
+      }
+    _LOGD("atu", "Tuning cycle P()=%f", target);
+    }
+  };
 
   virtual void onCommand(Core::command_type_t type, const JsonObject &doc) override {
     if (type == Core::COMMAND_TYPE_TUNE) {

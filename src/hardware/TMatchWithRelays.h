@@ -137,7 +137,7 @@ public:
     }
   }
 
-  virtual void tune() override {
+  virtual void tuneCycle() override {
     ATU::tune();
     uint32_t startedTime = millis();
     _LOGI("autoTune", "start: %s=%f(%d), %s=%f(%d), %s=%f(%d)",
