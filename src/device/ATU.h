@@ -130,7 +130,7 @@ protected:
       a++;
       stepCount++;
       float currentStepMeasurement = moveAndMeasure(actuator, a);
-      _LOGD("optimise", "Ln:[%d]:c P(%d)=%f", stepCount, a, currentStepMeasurement);
+      _LOGD("optimise", "Ln:[%d]: P(%d)=%f", stepCount, a, currentStepMeasurement);
       if (currentStepMeasurement > prevStepMeasurement) {
         a--;
         moveAndWait(actuator, a);
