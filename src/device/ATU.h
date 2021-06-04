@@ -88,9 +88,6 @@ protected:
     _LOGD("optimize", "Phase 2: Fibonacci search of the minimum. a=%d, b=%d", a, b);
     uint32_t x1 = a + round(0.382 * (b - a));
     uint32_t x2 = b - round(0.382 * (b - a));
-    if (x1 == x2) { // workaround for small intervals where x1 and x2 can meet.
-      x1 = a;
-    }
     float A = moveAndMeasure(actuator, x1);
     float ap = actuator.getPhisicalValue();
     float B = moveAndMeasure(actuator, x2);
@@ -100,7 +97,7 @@ protected:
       _LOGD("optimise", "Ph:[%d]: int:[%d-%d] Pa(%d)=%f, Pb(%d)=%f [%s->%f, %s->%f]", stepCount, a, b, x1, A, x2, B, actuator.getName(), ap, actuator.getName(), bp);
       if (A < B) {
         b = x2;
-        if ((b - a) <= 1) {
+        if ((b - a) <= 4) {
           break;
         }
         x2 = x1;
@@ -111,7 +108,7 @@ protected:
         stepCount++;
       } else {
         a = x1;
-        if ((b - a) <= 1) {
+        if ((b - a) <= 4) {
           break;
         }
         x1 = x2;
@@ -121,21 +118,30 @@ protected:
         bp = actuator.getPhisicalValue();
         stepCount++;
       }
-      if (x1 > x2) {
-        _LOGD("optimise", "Ph:[%d] x1 > x2, swapping", stepCount);
-        std::swap(x1, x2);
-        std::swap(A, B);
-      }
     }
     _LOGD("optimise", "Ph:[%d] Finished: Pa(%d)=%f, Pb(%d)=%f, %s->%f", stepCount, a, A, b, B, actuator.getName(), ap);
-    if (A < B) { // picking the best result
-      moveAndWait(actuator, a);
-      return A;
-    } else {
-      moveAndWait(actuator, b);
-      return B;
-    }
+    return optimiseLinear(actuator, a, b, stepCount);
   }
+
+  virtual float optimiseLinear(Actuators::Actuator &actuator, uint32_t a, uint32_t b, uint16_t &stepCount) {
+    _LOGD("optimize", "Phase 3: Linear search of the minimum. a=%d, b=%d", a, b);
+    float prevStepMeasurement = moveAndMeasure(actuator, a);
+    while (a <= b) {
+      a++;
+      stepCount++;
+      float currentStepMeasurement = moveAndMeasure(actuator, a);
+      _LOGD("optimise", "Ln:[%d]:c P(%d)=%f", stepCount, a, currentStepMeasurement);
+      if (currentStepMeasurement > prevStepMeasurement) {
+        a--;
+        moveAndWait(actuator, a);
+        break;
+      }
+      prevStepMeasurement = currentStepMeasurement;
+    }
+    _LOGD("optimise", "Ln:[%d] Finished: Pa(%d)=%f, %s->%f", stepCount, a, prevStepMeasurement, actuator.getName(), actuator.getPhisicalValue());
+    return  prevStepMeasurement;  
+  }
+
 
   void turnOnTrx() {
     TxTuneRequest txTuneRequest = {tuneEnabled : true};
@@ -154,7 +160,10 @@ public:
   virtual void tuneCycle(){};
   
   virtual void tune(){
+    tuneCycle();
+    /*
     float target = measureAndWait();
+    uint16_t cnt = 1;
     while (true) {
       tuneCycle();
       if (!_swrMeter.isInRange()) {
@@ -163,8 +172,10 @@ public:
       if (_swrMeter.getTarget() >= target) {
         break;
       }
-    _LOGD("atu", "Tuning cycle P()=%f", target);
+      _LOGD("atu", "[%d] Tuning cycle P()=%f", cnt, target);
+      cnt++;
     }
+    */
   };
 
   virtual void onCommand(Core::command_type_t type, const JsonObject &doc) override {
