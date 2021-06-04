@@ -86,6 +86,10 @@ protected:
 
   virtual float optimiseFibonacci(Actuators::Actuator &actuator, uint32_t a, uint32_t b, uint16_t &stepCount) {
     _LOGD("optimize", "Phase 2: Fibonacci search of the minimum. a=%d, b=%d", a, b);
+    if ((b - a) <= 4) {
+      _LOGD("optimize", "Fib: Interval is to short, short-circuiting to linear search.");
+      return optimiseLinear(actuator, a, b, stepCount);
+    }
     uint32_t x1 = a + round(0.382 * (b - a));
     uint32_t x2 = b - round(0.382 * (b - a));
     float A = moveAndMeasure(actuator, x1);
@@ -94,7 +98,7 @@ protected:
     float bp = actuator.getPhisicalValue();
     stepCount = stepCount + 2;
     while (true) {
-      _LOGD("optimise", "Ph:[%d]: int:[%d-%d] Pa(%d)=%f, Pb(%d)=%f [%s->%f, %s->%f]", stepCount, a, b, x1, A, x2, B, actuator.getName(), ap, actuator.getName(), bp);
+      _LOGD("optimise", "Fib:[%d]: int:[%d-%d] Pa(%d)=%f, Pb(%d)=%f [%s->%f, %s->%f]", stepCount, a, b, x1, A, x2, B, actuator.getName(), ap, actuator.getName(), bp);
       if (A < B) {
         b = x2;
         if ((b - a) <= 4) {
@@ -119,7 +123,7 @@ protected:
         stepCount++;
       }
     }
-    _LOGD("optimise", "Ph:[%d] Finished: Pa(%d)=%f, Pb(%d)=%f, %s->%f", stepCount, a, A, b, B, actuator.getName(), ap);
+    _LOGD("optimise", "Fib:[%d] Finished: Pa(%d)=%f, Pb(%d)=%f, %s->%f", stepCount, a, A, b, B, actuator.getName(), ap);
     return optimiseLinear(actuator, a, b, stepCount);
   }
 
