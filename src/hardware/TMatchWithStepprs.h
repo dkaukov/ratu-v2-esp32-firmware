@@ -113,7 +113,7 @@ public:
   };
 
   virtual void tuneCycle() override {
-    ATU::tune();
+    ATU::tuneCycle();
     uint32_t startedTime = millis();
     _LOGI("autoTune", "start: %s=%f(%d), %s=%f(%d), %s=%f(%d)",
           actuatorL.getName(), actuatorL.getPhisicalValue(), actuatorL.getValue(),
