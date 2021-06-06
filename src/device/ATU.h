@@ -56,6 +56,7 @@ protected:
   virtual float optimise(Actuators::Actuator &actuator, int16_t step, float hysteresis) {
     uint16_t stepCount = 0;
     float prevStepMeasurement = measureAndWait();
+    bool weHadImprovement = false;
     _LOGD("optimize", "started P(-1) = %f, step = %d, %s->%f(%d)", prevStepMeasurement, step, actuator.getName(), actuator.getPhisicalValue(), actuator.getValue());
     _LOGD("optimize", "Phase 1: finding interval by Svenn method.");
     while (step != 0) {
@@ -68,6 +69,10 @@ protected:
       if (((prevStepMeasurement < curStepMeasurement) && (abs(prevStepMeasurement - curStepMeasurement) > hysteresis)) || actuator.isAtLimit()) {
         step = -step;
         if (stepCount != 0) {
+          if (!weHadImprovement) {
+          _LOGD("optimize", "analyse: Looks like we too close to minimum, increasing interval to refine search.");
+            step = step * 2;
+          }
           _LOGD("optimize", "analyse: found interval, switching to the binary search: step = %d", step);
           break;
         } else {
@@ -76,6 +81,7 @@ protected:
         }
       } else {
         step = step * 2;
+        weHadImprovement = true;
       }
       prevStepMeasurement = curStepMeasurement;
       stepCount++;
