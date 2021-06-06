@@ -9,6 +9,8 @@
 
 namespace Device {
 
+#define FIB_MIN_INTERVAL 6  
+
 typedef enum {
   ATU_STATE_OFFLINE,
   ATU_STATE_READY,
@@ -92,7 +94,7 @@ protected:
 
   virtual float optimiseFibonacci(Actuators::Actuator &actuator, uint32_t a, uint32_t b, uint16_t &stepCount) {
     _LOGD("optimize", "Phase 2: Fibonacci search of the minimum. a=%d, b=%d", a, b);
-    if ((b - a) <= 4) {
+    if ((b - a) <= FIB_MIN_INTERVAL) {
       _LOGD("optimize", "Fib: Interval is to short, short-circuiting to linear search.");
       return optimiseLinear(actuator, a, b, stepCount);
     }
@@ -107,7 +109,7 @@ protected:
       _LOGD("optimise", "Fib:[%d]: int:[%d-%d] Pa(%d)=%f, Pb(%d)=%f [%s->%f, %s->%f]", stepCount, a, b, x1, A, x2, B, actuator.getName(), ap, actuator.getName(), bp);
       if (A < B) {
         b = x2;
-        if ((b - a) <= 4) {
+        if ((b - a) <= FIB_MIN_INTERVAL) {
           break;
         }
         x2 = x1;
@@ -118,7 +120,7 @@ protected:
         stepCount++;
       } else {
         a = x1;
-        if ((b - a) <= 4) {
+        if ((b - a) <= FIB_MIN_INTERVAL) {
           break;
         }
         x1 = x2;
