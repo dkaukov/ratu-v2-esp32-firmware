@@ -9,7 +9,8 @@
 
 namespace Device {
 
-#define FIB_MIN_INTERVAL 6  
+#define FIB_INTERVAL_RATIO 0.381966011  // 1.0 - (sqrt(5.0) - 1.0) / 2.0
+#define FIB_MIN_INTERVAL 4.236067977    // 1.0 / (1.0 - 2.0 * FIB_INTERVAL_RATIO)
 
 typedef enum {
   ATU_STATE_OFFLINE,
@@ -72,7 +73,7 @@ protected:
         step = -step;
         if (stepCount != 0) {
           if (!weHadImprovement) {
-          _LOGD("optimize", "analyse: Looks like we too close to minimum, increasing interval to refine search.");
+            _LOGD("optimize", "analyse: Looks like we too close to minimum, increasing interval to refine search.");
             step = step * 2;
           }
           _LOGD("optimize", "analyse: found interval, switching to the binary search: step = %d", step);
@@ -98,8 +99,8 @@ protected:
       _LOGD("optimize", "Fib: Interval is to short, short-circuiting to linear search.");
       return optimiseLinear(actuator, a, b, stepCount);
     }
-    float x1 = a + 0.382 * (b - a);
-    float x2 = b - 0.382 * (b - a);
+    float x1 = a + FIB_INTERVAL_RATIO * (b - a);
+    float x2 = b - FIB_INTERVAL_RATIO * (b - a);
     float A = moveAndMeasure(actuator, round(x1));
     float ap = actuator.getPhisicalValue();
     float B = moveAndMeasure(actuator, round(x2));
@@ -114,7 +115,7 @@ protected:
         }
         x2 = x1;
         B = A;
-        x1 = a + 0.382 * (b - a);
+        x1 = a + FIB_INTERVAL_RATIO * (b - a);
         A = moveAndMeasure(actuator, round(x1));
         ap = actuator.getPhisicalValue();
         stepCount++;
@@ -125,7 +126,7 @@ protected:
         }
         x1 = x2;
         A = B;
-        x2 = b - 0.382 * (b - a);
+        x2 = b - FIB_INTERVAL_RATIO * (b - a);
         B = moveAndMeasure(actuator, round(x2));
         bp = actuator.getPhisicalValue();
         stepCount++;
@@ -151,9 +152,8 @@ protected:
       prevStepMeasurement = currentStepMeasurement;
     }
     _LOGD("optimise", "Ln:[%d] Finished: Pa(%d)=%f, %s->%f", stepCount, a, prevStepMeasurement, actuator.getName(), actuator.getPhisicalValue());
-    return  prevStepMeasurement;  
+    return prevStepMeasurement;
   }
-
 
   void turnOnTrx() {
     TxTuneRequest txTuneRequest = {tuneEnabled : true};
@@ -168,10 +168,10 @@ protected:
 public:
   ATU(etl::message_router_id_t id, Sensor::SWRMeter &swrMeter) : Core::Component(id), _swrMeter(swrMeter){};
   virtual void resetToDefaults(){};
-  
+
   virtual void tuneCycle(){};
-  
-  virtual void tune(){
+
+  virtual void tune() {
     tuneCycle();
     /*
     float target = measureAndWait();
