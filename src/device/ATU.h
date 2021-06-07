@@ -36,12 +36,12 @@ protected:
     return _swrMeter.getTarget();
   }
 
-  void stepAndWait(Actuators::Actuator &actuator, int16_t &step) {
-    step = actuator.step(step);
+  void stepAndWait(Actuators::Actuator &actuator, int16_t step) {
+    actuator.step(step);
     busyWait([&actuator]() { return !actuator.isReady(); });
   }
 
-  float stepAndMeasure(Actuators::Actuator &actuator, int16_t &step) {
+  float stepAndMeasure(Actuators::Actuator &actuator, int16_t step) {
     stepAndWait(actuator, step);
     return measureAndWait();
   }
@@ -75,6 +75,8 @@ protected:
           if (!weHadImprovement) {
             _LOGD("optimize", "analyse: Looks like we too close to minimum, increasing interval to refine search.");
             step = step * 2;
+          } else {
+            step = step + step / 2;
           }
           _LOGD("optimize", "analyse: found interval, switching to the binary search: step = %d", step);
           break;
@@ -133,7 +135,7 @@ protected:
       }
     }
     _LOGD("optimise", "Fib:[%d] Finished: Pa(%f)=%f, Pb(%f)=%f, %s->%f", stepCount, a, A, b, B, actuator.getName(), ap);
-    return optimiseLinear(actuator, floor(a), ceil(b), stepCount);
+    return optimiseLinear(actuator, round(a), round(b), stepCount);
   }
 
   virtual float optimiseLinear(Actuators::Actuator &actuator, uint32_t a, uint32_t b, uint16_t &stepCount) {

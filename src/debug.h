@@ -8,6 +8,7 @@
 #ifndef DEBUG_H_
 #define DEBUG_H_
 
+#include <Arduino.h>
 #include <stdio.h>
 
 #if defined(MECH_DEBUG)
