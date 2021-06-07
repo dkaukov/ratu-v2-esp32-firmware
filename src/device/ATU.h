@@ -139,7 +139,7 @@ protected:
   virtual float optimiseLinear(Actuators::Actuator &actuator, uint32_t a, uint32_t b, uint16_t &stepCount) {
     _LOGD("optimize", "Phase 3: Linear search of the minimum. a=%d, b=%d", a, b);
     float prevStepMeasurement = moveAndMeasure(actuator, a);
-    while (a <= b) {
+    do {
       a++;
       stepCount++;
       float currentStepMeasurement = moveAndMeasure(actuator, a);
@@ -150,7 +150,7 @@ protected:
         break;
       }
       prevStepMeasurement = currentStepMeasurement;
-    }
+    } while (a < b);
     _LOGD("optimise", "Ln:[%d] Finished: Pa(%d)=%f, %s->%f", stepCount, a, prevStepMeasurement, actuator.getName(), actuator.getPhisicalValue());
     return prevStepMeasurement;
   }
