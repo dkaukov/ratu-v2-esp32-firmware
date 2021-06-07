@@ -9,8 +9,8 @@
 
 namespace Device {
 
-#define FIB_INTERVAL_RATIO 0.381966011  // 1.0 - (sqrt(5.0) - 1.0) / 2.0
-#define FIB_MIN_INTERVAL 4.236067977    // 1.0 / (1.0 - 2.0 * FIB_INTERVAL_RATIO)
+#define FIB_INTERVAL_RATIO 0.381966011 // 1.0 - (sqrt(5.0) - 1.0) / 2.0
+#define FIB_MIN_INTERVAL 4.236067977   // 1.0 / (1.0 - 2.0 * FIB_INTERVAL_RATIO)
 
 typedef enum {
   ATU_STATE_OFFLINE,
@@ -133,7 +133,7 @@ protected:
       }
     }
     _LOGD("optimise", "Fib:[%d] Finished: Pa(%f)=%f, Pb(%f)=%f, %s->%f", stepCount, a, A, b, B, actuator.getName(), ap);
-    return optimiseLinear(actuator, round(a), round(b), stepCount);
+    return optimiseLinear(actuator, floor(a), ceil(b), stepCount);
   }
 
   virtual float optimiseLinear(Actuators::Actuator &actuator, uint32_t a, uint32_t b, uint16_t &stepCount) {
