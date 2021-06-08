@@ -27,6 +27,8 @@ public:
   Actuator(etl::message_router_id_t id, const char *name) : Core::Component(id), _name(name){};
   virtual void calibrate(bool restoreState = false){};
   virtual int32_t getValue() const { return 0; };
+  int32_t getMin() const { return _min; };
+  int32_t getMax() const { return _max; };
   virtual float getPhisicalValue() const { return _a * getValue() + _b; };
   virtual int32_t setValue(int32_t pos) { return 0; };
   virtual int32_t setPct(float pct) { return setValue(pctToValue(pct)); };

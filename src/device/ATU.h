@@ -92,7 +92,8 @@ protected:
       stepCount++;
     }
     _LOGD("optimize", "Svenn finished: P(%d)=%f, step=%d", stepCount, prevStepMeasurement, step);
-    return optimiseFibonacci(actuator, min(actuator.getValue(), actuator.getValue() + step), max(actuator.getValue(), actuator.getValue() + step), stepCount);
+    return optimiseFibonacci(actuator, constrain(min(actuator.getValue(), actuator.getValue() + step), actuator.getMin(), actuator.getMax()),
+                             constrain(max(actuator.getValue(), actuator.getValue() + step), actuator.getMin(), actuator.getMax()), stepCount);
   }
 
   virtual float optimiseFibonacci(Actuators::Actuator &actuator, float a, float b, uint16_t &stepCount) {
