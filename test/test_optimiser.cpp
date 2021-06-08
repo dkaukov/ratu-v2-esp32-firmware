@@ -26,11 +26,17 @@ ActuatorDACGPIO actuatorC2("test", {pin : {K17, K18, K19, K20, K21, K22, K23, K2
 class TestSWRMeter : public Sensor::SWRMeter {
 private:
   Actuator &_actuator;
+  uint32_t _measurementCount;
 
 public:
   TestSWRMeter(Actuator &actuator) : SWRMeter(Core::COMPONENT_CLASS_SENSOR, "test"), _actuator(actuator){};
   virtual bool isReady() const override { return true; };
-  virtual float getTarget() const override { return (_actuator.getValue() - 100.0) * (_actuator.getValue() - 100.0) / 1000.0; };
+  virtual float getTarget() const override {
+    return pow((_actuator.getValue() - 100.0), 2) / 1000.0;
+  };
+  void clearMeasurementCount() { _measurementCount = 0; }
+  virtual void startMeasurementCycle(uint8_t cnt) override { _measurementCount++; };
+  uint32_t getMeasurementCount() { return _measurementCount; }
 };
 
 TestSWRMeter swr(actuatorC2);
@@ -54,6 +60,7 @@ TestAtu atu(actuatorC2);
 Core::ComponentManager mgr;
 
 void testOptimiseWithTinySteps() {
+  Test::swr.clearMeasurementCount();
   Test::actuatorC2.setValue(128);
   Test::atu.testOptimise(1);
   TEST_ASSERT_EQUAL(100, Test::actuatorC2.getValue());
@@ -61,9 +68,11 @@ void testOptimiseWithTinySteps() {
   TEST_ASSERT_EQUAL(100, Test::actuatorC2.getValue());
   Test::atu.testOptimise(1);
   TEST_ASSERT_EQUAL(100, Test::actuatorC2.getValue());
+  _LOGI("test", "Measurements: %d", Test::swr.getMeasurementCount());
 }
 
 void testOptimiseWithSmallSteps() {
+  Test::swr.clearMeasurementCount();
   Test::actuatorC2.setValue(128);
   Test::atu.testOptimise(2);
   TEST_ASSERT_EQUAL(100, Test::actuatorC2.getValue());
@@ -71,9 +80,11 @@ void testOptimiseWithSmallSteps() {
   TEST_ASSERT_EQUAL(100, Test::actuatorC2.getValue());
   Test::atu.testOptimise(2);
   TEST_ASSERT_EQUAL(100, Test::actuatorC2.getValue());
+  _LOGI("test", "Measurements: %d", Test::swr.getMeasurementCount());
 }
 
 void testOptimiseWithBiggerSteps() {
+  Test::swr.clearMeasurementCount();
   Test::actuatorC2.setValue(128);
   Test::atu.testOptimise(4);
   TEST_ASSERT_EQUAL(100, Test::actuatorC2.getValue());
@@ -81,43 +92,52 @@ void testOptimiseWithBiggerSteps() {
   TEST_ASSERT_EQUAL(100, Test::actuatorC2.getValue());
   Test::atu.testOptimise(4);
   TEST_ASSERT_EQUAL(100, Test::actuatorC2.getValue());
+  _LOGI("test", "Measurements: %d", Test::swr.getMeasurementCount());
 }
 
 void testOptimiseLowLimit() {
+  Test::swr.clearMeasurementCount();
   Test::actuatorC2.setValue(0);
   Test::atu.testOptimise(-4);
   TEST_ASSERT_EQUAL(100, Test::actuatorC2.getValue());
+  _LOGI("test", "Measurements: %d", Test::swr.getMeasurementCount());
 }
 
 void testOptimiseHighLimit() {
+  Test::swr.clearMeasurementCount();
   Test::actuatorC2.setValue(255);
   Test::atu.testOptimise(4);
   TEST_ASSERT_EQUAL(100, Test::actuatorC2.getValue());
   Test::actuatorC2.setValue(253);
   Test::atu.testOptimise(4);
   TEST_ASSERT_EQUAL(100, Test::actuatorC2.getValue());
+  _LOGI("test", "Measurements: %d", Test::swr.getMeasurementCount());
 }
 
 void testOptimiseStability() {
+  Test::swr.clearMeasurementCount();
   for (int i = 0; i <= 255; i++) {
     Test::actuatorC2.setValue(i);
     Test::atu.testOptimise(5);
     TEST_ASSERT_EQUAL(100, Test::actuatorC2.getValue());
   }
+  _LOGI("test", "Measurements: %d", Test::swr.getMeasurementCount());
 }
 
 void testOptimiseStabilityStepSize() {
+  Test::swr.clearMeasurementCount();
   for (int i = 1; i <= 255; i++) {
     Test::actuatorC2.setValue(0);
     Test::atu.testOptimise(i);
     TEST_ASSERT_EQUAL(100, Test::actuatorC2.getValue());
   }
+  _LOGI("test", "Measurements: %d", Test::swr.getMeasurementCount());
 }
 
 void setup() {
   UNITY_BEGIN();
   Serial.begin(115200);
-  _LOGE("setup", "Start");
+  _LOGI("setup", "Start");
   debugInit();
   Test::actuatorC2.init();
   Test::swr.init();

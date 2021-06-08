@@ -27,7 +27,7 @@ typedef etl::observer<TxTuneRequest> TxTuneRequest_Observer;
 class ATU : public Core::Component, etl::observable<TxTuneRequest_Observer, 1> {
 protected:
   Sensor::SWRMeter &_swrMeter;
-  uint8_t _swrMeterCyclesCount = 10;
+  uint8_t _swrMeterCyclesCount = 8;
   uint8_t _waitTickTimeout;
 
   float measureAndWait() {
@@ -78,11 +78,14 @@ protected:
           } else {
             step = step + step / 2;
           }
+          stepCount++;
           _LOGD("optimize", "analyse: found interval, switching to the binary search: step = %d", step);
           break;
         } else {
           _LOGD("optimize", "analyse: wrong direction of 1st step, reversing with same value: step = %d", step);
-          curStepMeasurement = stepAndMeasure(actuator, step);
+          // curStepMeasurement = stepAndMeasure(actuator, step);
+          curStepMeasurement = prevStepMeasurement;
+          step = step * 2;
         }
       } else {
         step = step * 2;
@@ -141,6 +144,7 @@ protected:
 
   virtual float optimiseLinear(Actuators::Actuator &actuator, uint32_t a, uint32_t b, uint16_t &stepCount) {
     _LOGD("optimize", "Phase 3: Linear search of the minimum. a=%d, b=%d", a, b);
+    stepCount++;
     float prevStepMeasurement = moveAndMeasure(actuator, a);
     do {
       a++;
