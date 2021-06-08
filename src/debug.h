@@ -139,7 +139,7 @@ inline void debugInit() {
 inline void debugLoop() {
 }
 
-#define assert(expression)
+//#define assert(expression)
 #define _LOGE(tag, fmt, ...)
 #define _LOGW(tag, fmt, ...)
 #define _LOGI(tag, fmt, ...)
