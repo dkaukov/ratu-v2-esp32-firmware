@@ -99,13 +99,19 @@ void testOptimiseHighLimit() {
 }
 
 void testOptimiseStability() {
-  esp_log_level_set("*", ESP_LOG_ERROR);
   for (int i = 0; i <= 255; i++) {
     Test::actuatorC2.setValue(i);
     Test::atu.testOptimise(5);
     TEST_ASSERT_EQUAL(100, Test::actuatorC2.getValue());
   }
-  esp_log_level_set("*", ESP_LOG_DEBUG);
+}
+
+void testOptimiseStabilityStepSize() {
+  for (int i = 1; i <= 255; i++) {
+    Test::actuatorC2.setValue(0);
+    Test::atu.testOptimise(i);
+    TEST_ASSERT_EQUAL(100, Test::actuatorC2.getValue());
+  }
 }
 
 void setup() {
@@ -123,6 +129,7 @@ void setup() {
   RUN_TEST(testOptimiseLowLimit);
   RUN_TEST(testOptimiseHighLimit);
   RUN_TEST(testOptimiseStability);
+  RUN_TEST(testOptimiseStabilityStepSize);
   UNITY_END();
 }
 
