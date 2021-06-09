@@ -67,6 +67,7 @@ public:
   }
 
   virtual void init() override {
+    pinMode(ALL_MOTORS_ENABLE_PIN, OUTPUT);
     engine.init();
     stepperL = engine.stepperConnectToPin(L_DRIVER_PIN_STEP);
     if (stepperL) {
