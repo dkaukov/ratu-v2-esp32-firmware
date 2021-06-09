@@ -56,11 +56,11 @@ void WiFiSTAConnect() {
   WiFi.disconnect();
   WiFi.mode(WIFI_STA);
   WiFi.setSleep(false);
-  WiFi.setTxPower(WIFI_POWER_19_5dBm);
   WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   WiFi.setHostname(getDeviceId());
   WiFi.setAutoReconnect(true);
+  WiFi.setTxPower(WIFI_POWER_19_5dBm);
 }
 
 void WiFiStationConnected(WiFiEvent_t event, WiFiEventInfo_t info) {
