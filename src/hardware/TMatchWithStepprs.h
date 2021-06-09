@@ -73,7 +73,7 @@ private:
   int32_t _actuatorC1Initial = 120;
   int32_t _actuatorC2Initial = 120;
 
-  int32_t _actuatorLInitialStep = 3000;
+  int32_t _actuatorLInitialStep = 100;
   int32_t _actuatorC1InitialStep = 100;
   int32_t _actuatorC2InitialStep = 100;
   float _historesis = 0.0;
@@ -145,6 +145,30 @@ public:
   };
 
   virtual bool isReady() const override { return actuatorL.isReady() && actuatorC1.isReady() && actuatorC2.isReady(); }
+
+  virtual void setConfig(const JsonObject &doc) override {
+    Device::ATU::setConfig(doc);
+    auto node = doc["atu"];
+    if (!node["L"]["initial"].isNull()) {
+      _actuatorLInitial = node["L"]["initial"];
+    }
+    if (!node["C1"]["initial"].isNull()) {
+      _actuatorC1Initial = node["C1"]["initial"];
+    }
+    if (!node["C2"]["initial"].isNull()) {
+      _actuatorC2Initial = node["C2"]["initial"];
+    }
+    if (!node["L"]["step"].isNull()) {
+      _actuatorLInitialStep = node["L"]["step"];
+    }
+    if (!node["C1"]["step"].isNull()) {
+      _actuatorC1InitialStep = node["C1"]["step"];
+    }
+    if (!node["C2"]["step"].isNull()) {
+      _actuatorC2InitialStep = node["C2"]["step"];
+    }
+  };
+  
 };
 
 TMatchWithSteppers atu;
