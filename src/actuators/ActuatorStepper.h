@@ -1,7 +1,7 @@
 #pragma once
 
-#include "AccelStepper.h"
 #include "Actuator.h"
+#include "FastAccelStepper.h"
 #include "core/Component.h"
 #include "etl/observer.h"
 #include <Arduino.h>
@@ -75,7 +75,7 @@ public:
 class ActuatorStepper : public Actuator,
                         etl::observable<PowerRequest_Observer, 1> {
 protected:
-  AccelStepper &_stepper;
+  FastAccelStepper *&_stepper;
   uint8_t _sensorPin;
   bool _enabled = false;
 
@@ -84,7 +84,7 @@ protected:
   };
 
 public:
-  ActuatorStepper(AccelStepper &stepper,
+  ActuatorStepper(FastAccelStepper *&stepper,
                   const uint8_t sensorPin,
                   const uint32_t max,
                   const char *name) : Actuator(Core::COMPONENT_CLASS_ACTUATOR, name),
@@ -99,49 +99,46 @@ public:
     calibrate();
   };
 
-  virtual void loop() override {
-    if (_stepper.run()) {
-      enable();
-    }
+  virtual void loop() override{
+
   };
 
   virtual void calibrate(bool restoreState = false) override {
     _LOGI("calibrate", "Calibration of %s started.", _name);
-    int32_t oldPosition = _stepper.currentPosition();
+    int32_t oldPosition = _stepper->getCurrentPosition();
     int32_t range = (_max - _min);
     int32_t stepsTraveled = 0;
-    _stepper.setSpeed(-3500);
+    uint32_t oldSpeedInUs = _stepper->getSpeedInUs();
+    _stepper->setSpeedInHz(3500);
+    _stepper->runBackward();
     while (digitalRead(_sensorPin) == LOW) {
-      if (_stepper.runSpeed()) {
-        stepsTraveled++;
-      }
+      stepsTraveled = (oldPosition - _stepper->getCurrentPosition());
       if (stepsTraveled >= range) {
         _LOGE("calibrate", "Calibration of %s aborted, as end-stop was not riched in %d steps.", _name, stepsTraveled);
-        _stepper.stop();
-        _stepper.setCurrentPosition(0);
-        //disable();
+        _stepper->forceStopAndNewPosition(0);
+        _stepper->setSpeedInUs(oldSpeedInUs);
         return;
       }
     }
     _LOGI("calibrate", "Calibration of %s finished in %d steps.", _name, stepsTraveled);
-    _stepper.stop();
-    _stepper.setCurrentPosition(0);
+    _stepper->forceStopAndNewPosition(0);
+    _stepper->setSpeedInUs(oldSpeedInUs);
     if (restoreState) {
-      _stepper.moveTo(oldPosition);
+      _stepper->moveTo(oldPosition);
     }
   };
 
-  virtual int32_t getValue() const override { return _stepper.currentPosition(); };
+  virtual int32_t getValue() const override { return _stepper->getCurrentPosition(); };
 
   virtual int32_t setValue(int32_t pos) override {
-    int32_t oldPosition = _stepper.targetPosition();
+    int32_t oldPosition = _stepper->getCurrentPosition();
     pos = constrain(pos, _min, _max);
     enable();
-    _stepper.moveTo(pos);
+    _stepper->moveTo(pos);
     return pos - oldPosition;
   };
 
-  virtual bool isReady() const override { return !_stepper.isRunning(); }
+  virtual bool isReady() const override { return !_stepper->isRunning(); }
 
   virtual void registerPowerManager(ActuatorStepperPowerManager &pwrManager) {
     add_observer(pwrManager);

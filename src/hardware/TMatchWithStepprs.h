@@ -1,10 +1,11 @@
 #pragma once
 
+#include "FastAccelStepper.h"
 #include "SWRMeterAds1115Ad8310.h"
 #include "actuators/ActuatorStepper.h"
+#include "core/Component.h"
 #include "debug.h"
 #include "device/ATU.h"
-#include <AccelStepper.h>
 #include <Arduino.h>
 
 /*
@@ -55,9 +56,11 @@ using namespace Actuators;
 
 static SWRMeterAds1115Ad8310 swr(ADS1115_ALERT_READY_PIN);
 
-AccelStepper stepperL = AccelStepper(AccelStepper::DRIVER, L_DRIVER_PIN_STEP, L_DRIVER_PIN_DIR);
-AccelStepper stepperC1 = AccelStepper(AccelStepper::DRIVER, C1_DRIVER_PIN_STEP, C1_DRIVER_PIN_DIR);
-AccelStepper stepperC2 = AccelStepper(AccelStepper::DRIVER, C2_DRIVER_PIN_STEP, C2_DRIVER_PIN_DIR);
+FastAccelStepperEngine engine = FastAccelStepperEngine();
+
+FastAccelStepper *stepperL = NULL;
+FastAccelStepper *stepperC1 = NULL;
+FastAccelStepper *stepperC2 = NULL;
 
 ActuatorStepperPowerManager pwrManager(ALL_MOTORS_ENABLE_PIN);
 ActuatorStepper actuatorL(stepperL, L_SENSOR_PIN, L_RANGE_IN_STEPS, L_ACTUATOR_NAME);
@@ -79,17 +82,27 @@ public:
   TMatchWithSteppers() : Device::ATU(COMPONENT_CLASS_GENERIC, swr) {}
 
   virtual void init() override {
-    stepperL.setMaxSpeed(L_SPEED);            //  Set maximum rotation speed for "L" Motor 1
-    stepperL.setSpeed(L_SPEED);               //  Set maximum calibration speed for "L" Motor 1
-    stepperL.setAcceleration(L_ACCELERATION); //  Set maximum acceleration for "L" Motor 1
+    engine.init();
+    stepperL = engine.stepperConnectToPin(L_DRIVER_PIN_STEP);
+    if (stepperL) {
+      stepperL->setDirectionPin(L_DRIVER_PIN_DIR);
+      stepperL->setSpeedInHz(L_SPEED);
+      stepperL->setAcceleration(L_ACCELERATION);
+    }
 
-    stepperC1.setMaxSpeed(C1_SPEED);            //  Set maximum rotation speed for "C1" Motor 2
-    stepperC1.setSpeed(C1_SPEED);               //  Set maximum calibration speed for "C1" Motor 2
-    stepperC1.setAcceleration(C1_ACCELERATION); //  Set maximum acceleration for "C1" Motor 2
+    stepperC1 = engine.stepperConnectToPin(C1_DRIVER_PIN_STEP);
+    if (stepperC1) {
+      stepperC1->setDirectionPin(C1_DRIVER_PIN_DIR);
+      stepperC1->setSpeedInHz(C1_SPEED);
+      stepperC1->setAcceleration(C1_ACCELERATION);
+    }
 
-    stepperC2.setMaxSpeed(C2_SPEED);            //  Set maximum rotation speed for "C2" Motor 3
-    stepperC2.setSpeed(C2_SPEED);               //  Set maximum calibration speed for "C2" Motor 3
-    stepperC2.setAcceleration(C2_ACCELERATION); //  Set maximum acceleration for "C2" Motor 3
+    stepperC2 = engine.stepperConnectToPin(C2_DRIVER_PIN_STEP);
+    if (stepperC2) {
+      stepperC2->setDirectionPin(C2_DRIVER_PIN_DIR);
+      stepperC2->setSpeedInHz(C2_SPEED);
+      stepperC2->setAcceleration(C2_ACCELERATION);
+    }
 
     swr.init();
     actuatorL.registerPowerManager(pwrManager);
