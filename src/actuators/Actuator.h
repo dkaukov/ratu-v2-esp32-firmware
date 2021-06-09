@@ -27,6 +27,7 @@ public:
   Actuator(etl::message_router_id_t id, const char *name) : Core::Component(id), _name(name){};
   virtual void calibrate(bool restoreState = false){};
   virtual int32_t getValue() const { return 0; };
+  virtual int32_t getTargetValue() const { return getValue(); };
   int32_t getMin() const { return _min; };
   int32_t getMax() const { return _max; };
   virtual float getPhisicalValue() const { return _a * getValue() + _b; };
@@ -59,29 +60,29 @@ public:
       if (!node["calibrate"].isNull()) {
         bool value = node["calibrate"];
         if (value) {
-          _LOGD("actuator", "Calibrating actuator %s. Will restore value: %d", _name, getValue());
+          _LOGD("actuator", "Calibrating actuator %s. Will restore value: %d", _name, getTargetValue());
           calibrate(true);
         }
       }
       if (!node["value"].isNull()) {
         int32_t value = node["value"];
-        if (value != getValue()) {
+        if (value != getTargetValue()) {
           setValue(value);
-          _LOGD("actuator", "[V] Moving actuator %s to the %d", _name, getValue());
+          _LOGD("actuator", "[V] Moving actuator %s to the %d", _name, getTargetValue());
         }
       }
       if (!node["pct"].isNull()) {
         int32_t value = pctToValue(node["pct"]);
-        if (value != getValue()) {
+        if (value != getTargetValue()) {
           setValue(value);
-          _LOGD("actuator", "[P] Moving actuator %s to the %d", _name, getValue());
+          _LOGD("actuator", "[P] Moving actuator %s to the %d", _name, getTargetValue());
         }
       }
       if (!node["phValue"].isNull()) {
         int32_t value = phToValue(node["phValue"]);
-        if (value != getValue()) {
+        if (value != getTargetValue()) {
           setValue(value);
-          _LOGD("actuator", "[F] Moving actuator %s to the %d", _name, getValue());
+          _LOGD("actuator", "[F] Moving actuator %s to the %d", _name, getTargetValue());
         }
       }
     }

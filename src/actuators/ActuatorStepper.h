@@ -78,8 +78,10 @@ protected:
   FastAccelStepper *&_stepper;
   uint8_t _sensorPin;
   bool _enabled = false;
+  int32_t _targetPosition;
 
-  virtual void enable() {
+  virtual void
+  enable() {
     notify_observers(powerRequest);
   };
 
@@ -99,13 +101,15 @@ public:
     calibrate();
   };
 
-  virtual void loop() override{
-
+  virtual void loop() override {
+    if (_stepper->isRunning()) {
+      enable();
+    }
   };
 
   virtual void calibrate(bool restoreState = false) override {
     _LOGI("calibrate", "Calibration of %s started.", _name);
-    int32_t oldPosition = _stepper->getCurrentPosition();
+    int32_t oldPosition = getTargetValue();
     int32_t range = (_max - _min);
     int32_t stepsTraveled = 0;
     uint32_t oldSpeedInUs = _stepper->getSpeedInUs();
@@ -117,24 +121,28 @@ public:
         _LOGE("calibrate", "Calibration of %s aborted, as end-stop was not riched in %d steps.", _name, stepsTraveled);
         _stepper->forceStopAndNewPosition(0);
         _stepper->setSpeedInUs(oldSpeedInUs);
+        _targetPosition = 0;
         return;
       }
     }
     _LOGI("calibrate", "Calibration of %s finished in %d steps.", _name, stepsTraveled);
     _stepper->forceStopAndNewPosition(0);
     _stepper->setSpeedInUs(oldSpeedInUs);
+    _targetPosition = 0;
     if (restoreState) {
-      _stepper->moveTo(oldPosition);
+      setValue(oldPosition);
     }
   };
 
   virtual int32_t getValue() const override { return _stepper->getCurrentPosition(); };
+  virtual int32_t getTargetValue() const override { return _targetPosition; };
 
   virtual int32_t setValue(int32_t pos) override {
-    int32_t oldPosition = _stepper->getCurrentPosition();
+    int32_t oldPosition = _targetPosition;
     pos = constrain(pos, _min, _max);
     enable();
     _stepper->moveTo(pos);
+    _targetPosition = pos;
     return pos - oldPosition;
   };
 
