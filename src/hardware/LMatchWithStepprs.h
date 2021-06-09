@@ -19,10 +19,6 @@
 #define C1_DRIVER_PIN_DIR 16
 #define C1_SENSOR_PIN 14
 
-#define C2_DRIVER_PIN_STEP 0
-#define C2_DRIVER_PIN_DIR 4
-#define C2_SENSOR_PIN 27
-
 #define ALL_MOTORS_ENABLE_PIN 5
 #define ADS1115_ALERT_READY_PIN 23
 
@@ -37,16 +33,11 @@
 #define C1_SPEED 1000
 #define C1_ACCELERATION 2000
 
-#define C2_RANGE_IN_STEPS 32000
-#define C2_SPEED 1000
-#define C2_ACCELERATION 2000
-
 /*
   System parameters
 */
 #define L_ACTUATOR_NAME "L"
 #define C1_ACTUATOR_NAME "C1"
-#define C2_ACTUATOR_NAME "C2"
 
 namespace Hardware {
 
@@ -61,22 +52,18 @@ FastAccelStepperEngine engine = FastAccelStepperEngine();
 
 FastAccelStepper *stepperL = NULL;
 FastAccelStepper *stepperC1 = NULL;
-FastAccelStepper *stepperC2 = NULL;
 
 ActuatorStepperPowerManager pwrManager(ALL_MOTORS_ENABLE_PIN);
 ActuatorStepper actuatorL(stepperL, L_SENSOR_PIN, L_RANGE_IN_STEPS, L_ACTUATOR_NAME);
 ActuatorStepper actuatorC1(stepperC1, C1_SENSOR_PIN, C1_RANGE_IN_STEPS, C1_ACTUATOR_NAME);
-ActuatorStepper actuatorC2(stepperC2, C2_SENSOR_PIN, C2_RANGE_IN_STEPS, C2_ACTUATOR_NAME);
 
-class TMatchWithSteppers : public Device::TMatch {
+class LMatchWithSteppers : public Device::LMatch {
 public:
-  TMatchWithSteppers() : Device::TMatch(swr, actuatorL, actuatorC1, actuatorC2) {
+  LMatchWithSteppers() : Device::LMatch(swr, actuatorL, actuatorC1) {
     _actuatorLInitial = 3000;
     _actuatorC1Initial = 120;
-    _actuatorC2Initial = 120;
     _actuatorLInitialStep = 100;
     _actuatorC1InitialStep = 100;
-    _actuatorC2InitialStep = 100;
   }
 
   virtual void init() override {
@@ -95,18 +82,10 @@ public:
       stepperC1->setAcceleration(C1_ACCELERATION);
     }
 
-    stepperC2 = engine.stepperConnectToPin(C2_DRIVER_PIN_STEP);
-    if (stepperC2) {
-      stepperC2->setDirectionPin(C2_DRIVER_PIN_DIR);
-      stepperC2->setSpeedInHz(C2_SPEED);
-      stepperC2->setAcceleration(C2_ACCELERATION);
-    }
-
     actuatorL.registerPowerManager(pwrManager);
     actuatorC1.registerPowerManager(pwrManager);
-    actuatorC2.registerPowerManager(pwrManager);
 
-    TMatch::init();
+    LMatch::init();
   };
 
   virtual void timer250() override {
@@ -114,6 +93,6 @@ public:
   };
 };
 
-TMatchWithSteppers atu;
+LMatchWithSteppers atu;
 
 } // namespace Hardware

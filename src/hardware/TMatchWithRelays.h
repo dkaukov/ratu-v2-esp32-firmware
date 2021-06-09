@@ -4,7 +4,7 @@
 #include "actuators/ActuatorDACGPIO.h"
 #include "actuators/ActuatorDACMCP23017.h"
 #include "debug.h"
-#include "device/ATU.h"
+#include "device/TMatch.h"
 #include <Arduino.h>
 
 /*
@@ -68,6 +68,7 @@ namespace Hardware {
 using namespace Sensor;
 using namespace Core;
 using namespace Actuators;
+using namespace Device;
 
 static SWRMeterAds1115Ad8310 swr(ADS1115_ALERT_READY_PIN);
 
@@ -82,39 +83,25 @@ typedef enum {
   ATU_MODE_CL,
 } atu_mode_type_t;
 
-class TMatchWithRelays : public Device::ATU {
-private:
+class TMatchWithRelays : public Device::TMatch {
+protected:
   atu_mode_type_t _mode = ATU_MODE_TMATCH;
 
-  int32_t _actuatorLInitial = 8;
-  int32_t _actuatorC1Initial = 64;
-  int32_t _actuatorC2Initial = 64;
-
-  int32_t _actuatorLInitialStep = 2;
-  int32_t _actuatorC1InitialStep = 2;
-  int32_t _actuatorC2InitialStep = 2;
-  float _historesis = 0.0;
-
 public:
-  TMatchWithRelays() : Device::ATU(COMPONENT_CLASS_GENERIC, swr) {
+  TMatchWithRelays() : Device::TMatch(swr, actuatorL, actuatorC1, actuatorC2) {
+    _actuatorLInitial = 8;
+    _actuatorC1Initial = 64;
+    _actuatorC2Initial = 64;
+    _actuatorLInitialStep = 2;
+    _actuatorC1InitialStep = 2;
+    _actuatorC2InitialStep = 2;
   }
 
   virtual void init() override {
     mcp.begin();
     pinMode(K25, OUTPUT);
     pinMode(K26, OUTPUT);
-    swr.init();
-    actuatorL.init();
-    actuatorC1.init();
-    actuatorC2.init();
-    resetToDefaults();
-  };
-
-  virtual void resetToDefaults() override {
-    _LOGI("resetToDefaults", "Moving actuators to the default positions(s): L=%d, C1=%d, C2=%d", _actuatorLInitial, _actuatorC1Initial, _actuatorC2Initial);
-    actuatorL.setValue(_actuatorLInitial);
-    actuatorC1.setValue(_actuatorC1Initial);
-    actuatorC2.setValue(_actuatorC2Initial);
+    TMatch::init();
   };
 
   virtual void setMode(atu_mode_type_t mode) {
@@ -138,26 +125,18 @@ public:
   }
 
   virtual void tuneCycle() override {
-    ATU::tuneCycle();
+    if (_mode == ATU_MODE_TMATCH) {
+      TMatch::tuneCycle();
+      return;
+    }
+    if (_mode == ATU_MODE_CL) {
+      LMatch::tuneCycle();
+    }
     uint32_t startedTime = millis();
     _LOGI("autoTune", "start: %s=%f(%d), %s=%f(%d), %s=%f(%d)",
           actuatorL.getName(), actuatorL.getPhisicalValue(), actuatorL.getValue(),
           actuatorC1.getName(), actuatorC1.getPhisicalValue(), actuatorC1.getValue(),
           actuatorC2.getName(), actuatorC2.getPhisicalValue(), actuatorC2.getValue());
-    if (_mode == ATU_MODE_TMATCH) {
-      optimise(actuatorL, _actuatorLInitialStep, _historesis);
-      _LOGI("autoTune", "actuatorL finished in %8d ms", (uint32_t)millis() - startedTime);
-      optimise(actuatorC1, _actuatorC1InitialStep, _historesis);
-      _LOGI("autoTune", "actuatorC1 finished in %8d ms", (uint32_t)millis() - startedTime);
-      optimise(actuatorC2, _actuatorC2InitialStep, _historesis);
-      _LOGI("autoTune", "actuatorC2 finished in %8d ms", (uint32_t)millis() - startedTime);
-    }
-    if (_mode == ATU_MODE_CL) {
-      optimise(actuatorC1, _actuatorC1InitialStep, _historesis);
-      _LOGI("autoTune", "actuatorC1 finished in %8d ms", (uint32_t)millis() - startedTime);
-      optimise(actuatorL, _actuatorLInitialStep, _historesis);
-      _LOGI("autoTune", "actuatorL finished in %8d ms", (uint32_t)millis() - startedTime);
-    }
     if (_mode == ATU_MODE_LC) {
       optimise(actuatorC2, _actuatorC2InitialStep, _historesis);
       _LOGI("autoTune", "actuatorC2 finished in %8d ms", (uint32_t)millis() - startedTime);
@@ -171,7 +150,7 @@ public:
   };
 
   virtual void setConfig(const JsonObject &doc) override {
-    Device::ATU::setConfig(doc);
+    TMatch::setConfig(doc);
     auto node = doc["atu"];
     if (!node["mode"].isNull()) {
       atu_mode_type_t mode = node["mode"];
@@ -180,28 +159,10 @@ public:
         _LOGI("atu", "Setting ATU mode: %d", _mode);
       }
     }
-    if (!node["L"]["initial"].isNull()) {
-      _actuatorLInitial = node["L"]["initial"];
-    }
-    if (!node["C1"]["initial"].isNull()) {
-      _actuatorC1Initial = node["C1"]["initial"];
-    }
-    if (!node["C2"]["initial"].isNull()) {
-      _actuatorC2Initial = node["C2"]["initial"];
-    }
-    if (!node["L"]["step"].isNull()) {
-      _actuatorLInitialStep = node["L"]["step"];
-    }
-    if (!node["C1"]["step"].isNull()) {
-      _actuatorC1InitialStep = node["C1"]["step"];
-    }
-    if (!node["C2"]["step"].isNull()) {
-      _actuatorC2InitialStep = node["C2"]["step"];
-    }
   };
 
   virtual void getStatus(JsonObject &doc) const override {
-    Device::ATU::getStatus(doc);
+    TMatch::getStatus(doc);
     auto node = doc["atu"];
     node["mode"] = _mode;
   }

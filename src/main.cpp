@@ -1,7 +1,7 @@
 #define ETL_NO_STL
 #define ARDUINOJSON_ENABLE_ARDUINO_STRING 1
 
-#if not defined(HARDAWARE_TYPE_TMATCH_WITH_RELAYS) && not defined(HARDAWARE_TYPE_TMATCH_WITH_STEPPERS)
+#if not defined(HARDAWARE_TYPE_TMATCH_WITH_RELAYS) && not defined(HARDAWARE_TYPE_TMATCH_WITH_STEPPERS) && not defined(HARDAWARE_TYPE_LMATCH_WITH_STEPPERS)
 #define HARDAWARE_TYPE_TMATCH_WITH_RELAYS
 #endif
 
@@ -12,10 +12,14 @@ const char *getDeviceId();
 #include "config.h"
 #include "core/Component.h"
 #include "debug.h"
+#include "device/LMatch.h"
+#include "device/TMatch.h"
 #if defined(HARDAWARE_TYPE_TMATCH_WITH_RELAYS)
 #include "hardware/TMatchWithRelays.h"
 #elif defined(HARDAWARE_TYPE_TMATCH_WITH_STEPPERS)
 #include "hardware/TMatchWithStepprs.h"
+#elif defined(HARDAWARE_TYPE_LMATCH_WITH_STEPPERS)
+#include "hardware/LMatchWithStepprs.h"
 #endif
 #include "lwip/apps/sntp.h"
 #include "network/MQTT.h"
