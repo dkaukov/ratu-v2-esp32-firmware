@@ -1,4 +1,4 @@
-#define UNITY_OUTPUT_START()
+#undef SYSLOG_SERVER
 
 #include "actuators/ActuatorDACGPIO.h"
 #include "config.h"
@@ -136,7 +136,7 @@ void testOptimiseStabilityStepSize() {
 
 void setup() {
   UNITY_BEGIN();
-  Serial.begin(115200);
+  Serial.begin(921600);
   _LOGI("setup", "Start");
   debugInit();
   Test::actuatorC2.init();
