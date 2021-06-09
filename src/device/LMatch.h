@@ -46,10 +46,10 @@ public:
     _LOGI("autoTune", "start: %s=%f(%d), %s=%f(%d)",
           _actuatorL.getName(), _actuatorL.getPhisicalValue(), _actuatorL.getValue(),
           _actuatorC1.getName(), _actuatorC1.getPhisicalValue(), _actuatorC1.getValue());
+    optimise(_actuatorL, _actuatorLInitialStep, _historesis);
+    _LOGI("autoTune", "%s finished in %8d ms", _actuatorL.getName(), (uint32_t)millis() - startedTime);    
     optimise(_actuatorC1, _actuatorC1InitialStep, _historesis);
     _LOGI("autoTune", "%s finished in %8d ms", _actuatorC1.getName(), (uint32_t)millis() - startedTime);
-    optimise(_actuatorL, _actuatorLInitialStep, _historesis);
-    _LOGI("autoTune", "%s finished in %8d ms", _actuatorL.getName(), (uint32_t)millis() - startedTime);
     _LOGI("autoTune", "finish: %s=%f(%d), %s=%f(%d)",
           _actuatorL.getName(), _actuatorL.getPhisicalValue(), _actuatorL.getValue(),
           _actuatorC1.getName(), _actuatorC1.getPhisicalValue(), _actuatorC1.getValue());
