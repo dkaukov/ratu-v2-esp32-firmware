@@ -90,6 +90,7 @@ public:
   };
 
   virtual void timer250() override {
+    LMatch::timer250();
     digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
   };
 };

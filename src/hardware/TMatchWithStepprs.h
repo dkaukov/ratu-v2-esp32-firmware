@@ -111,6 +111,7 @@ public:
   };
 
   virtual void timer250() override {
+    TMatch::timer250();
     digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
   };
 };
