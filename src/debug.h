@@ -22,12 +22,10 @@ uint8_t __dbg_buff_ptr = 0;
 
 #if defined(ESP32)
 
-#include "ArduinoJson.h"
-#include "WiFi.h"
-#include "config.h"
-#include <Syslog.h>
-
 #if defined(SYSLOG_SERVER)
+
+#include "WiFi.h"
+#include <Syslog.h>
 
 WiFiUDP udpClient;
 Syslog syslog(udpClient, SYSLOG_SERVER, SYSLOG_PORT, SYSLOG_DEVICE_HOSTNAME, SYSLOG_APP_NAME, LOG_KERN, SYSLOG_PROTO_BSD);
