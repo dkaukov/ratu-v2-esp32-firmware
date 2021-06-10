@@ -36,5 +36,10 @@ jobs:
           #pragma once
           #define WIFI_SSID "*"
           #define WIFI_PASSWORD "*"
+    - name: Create config
+      uses: canastro/copy-action@0.0.2
+      with:
+        source: src/config-example.h
+        target: src/config.h
     - name: Run PlatformIO
       run: pio run -e HARDAWARE_TYPE_TMATCH_WITH_RELAYS -e HARDAWARE_TYPE_TMATCH_WITH_STEPPERS -e HARDAWARE_TYPE_LMATCH_WITH_STEPPERS
