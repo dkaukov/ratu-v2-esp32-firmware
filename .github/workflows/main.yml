@@ -28,9 +28,14 @@ jobs:
         python -m pip install --upgrade pip
         pip install --upgrade platformio
     - name: Create secrets
-      run: |
-        echo "#pragma once" > secrets.h
-        echo "#define WIFI_SSID=\"\"" >> secrets.h
-        echo "#define WIFI_PASSWORD=\"\"" >> secrets.h
+      uses: 1arp/create-a-file-action@0.2
+      with:
+       # Path from cwd where file is to be created
+        path: /
+        file: secrets.h
+        content: |
+          #pragma once
+          #define WIFI_SSID "*"
+          ##define WIFI_PASSWORD "*"
     - name: Run PlatformIO
       run: pio run -e HARDAWARE_TYPE_TMATCH_WITH_RELAYS -e HARDAWARE_TYPE_TMATCH_WITH_STEPPERS -e HARDAWARE_TYPE_LMATCH_WITH_STEPPERS
