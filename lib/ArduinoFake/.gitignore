@@ -1,0 +1,12 @@
+.pioenvs
+.piolibdeps
+/external/unity/*-repo/
+/build/
+/.cproject
+/.project
+**/CMakeFiles/*
+**/CMakeCache.txt
+**/*.cmake
+**/Makefile
+!/Makefile
+/Testing/*

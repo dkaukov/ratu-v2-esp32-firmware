@@ -134,15 +134,16 @@ void testOptimiseStabilityStepSize() {
   _LOGI("test", "Measurements: %d", Test::swr.getMeasurementCount());
 }
 
-void setup() {
-  UNITY_BEGIN();
-  Serial.begin(921600);
+void initTests() {
   _LOGI("setup", "Start");
   debugInit();
   Test::actuatorC2.init();
   Test::swr.init();
   Test::atu.init();
   mgr.init();
+}
+
+void runTests() {
   RUN_TEST(testOptimiseWithTinySteps);
   RUN_TEST(testOptimiseWithSmallSteps);
   RUN_TEST(testOptimiseWithBiggerSteps);
@@ -150,6 +151,13 @@ void setup() {
   RUN_TEST(testOptimiseHighLimit);
   RUN_TEST(testOptimiseStability);
   RUN_TEST(testOptimiseStabilityStepSize);
+}
+
+void setup() {
+  UNITY_BEGIN();
+  Serial.begin(921600);
+  initTests();
+  runTests();
   UNITY_END();
 }
 
@@ -157,3 +165,17 @@ void loop() {
   debugLoop();
   mgr.loop();
 }
+
+#if defined(NATIVE)
+using namespace fakeit;
+
+int main() {
+  UNITY_BEGIN();
+  When(Method(ArduinoFake(), digitalWrite)).AlwaysReturn();
+  When(Method(ArduinoFake(), delay)).AlwaysReturn();
+  When(Method(ArduinoFake(), pinMode)).AlwaysReturn();
+  initTests();
+  runTests();
+  return UNITY_END();
+}
+#endif
