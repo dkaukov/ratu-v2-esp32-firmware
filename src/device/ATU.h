@@ -179,8 +179,7 @@ public:
   virtual void tuneCycle(){};
 
   virtual void tune() {
-    tuneCycle();
-    /*
+    //tuneCycle();
     float target = measureAndWait();
     uint16_t cnt = 1;
     while (true) {
@@ -188,13 +187,13 @@ public:
       if (!_swrMeter.isInRange()) {
         break;
       }
-      if (_swrMeter.getTarget() >= target) {
+      if (abs(_swrMeter.getTarget() - target) < 0.001) {
         break;
       }
-      _LOGD("atu", "[%d] Tuning cycle P()=%f", cnt, target);
+      target = _swrMeter.getTarget();
+      _LOGI("atu", "[%d] Tuning cycle P()=%f", cnt, target);
       cnt++;
     }
-    */
   };
 
   virtual void onCommand(Core::command_type_t type, const JsonObject &doc) override {
