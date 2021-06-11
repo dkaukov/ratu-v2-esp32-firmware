@@ -1,7 +1,6 @@
 #undef SYSLOG_SERVER
 
 #include "actuators/ActuatorDACGPIO.h"
-#include "config.h"
 #include "device/ATU.h"
 #include <Arduino.h>
 #include <unity.h>
