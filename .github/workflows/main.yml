@@ -41,5 +41,7 @@ jobs:
       with:
         source: src/config-example.h
         target: src/config.h
-    - name: Run PlatformIO
+    - name: Run PlatformIO build
       run: pio run -e HARDAWARE_TYPE_TMATCH_WITH_RELAYS -e HARDAWARE_TYPE_TMATCH_WITH_STEPPERS -e HARDAWARE_TYPE_LMATCH_WITH_STEPPERS
+    - name: Run PlatformIO tests
+      run: pio test -e test-no-logging-native
