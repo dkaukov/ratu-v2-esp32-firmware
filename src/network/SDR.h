@@ -29,6 +29,9 @@ public:
     if (!node["tune"]["drive"].isNull()) {
       _drive = node["tune"]["drive"];
     }
+    if (!node["tune"]["tune_drive"].isNull()) {
+      _drive = node["tune"]["tune_drive"];
+    }
     if (!node["tune"]["topic"].isNull()) {
       _toSdrTopic = node["tune"]["topic"].as<String>();
     }
@@ -40,7 +43,7 @@ public:
     StaticJsonDocument<256> doc;
     JsonObject obj = doc.to<JsonObject>();
     if (request.tuneEnabled) {
-      obj["cmd"] = "drive";
+      obj["cmd"] = "tune_drive";
       obj["power"] = _drive;
       publish(_toSdrTopic, doc);
     }
