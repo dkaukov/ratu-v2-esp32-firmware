@@ -14,7 +14,7 @@ namespace Network {
 class SDR : public Device::TxTuneRequest_Observer, Core::Component {
 private:
   uint8_t _trx = 0;
-  uint8_t _drive = 100;
+  int8_t _drive = 100;
   String _toSdrTopic = "tci-mqtt-gatewayv2/events/to-sdr";
 
 protected:
@@ -42,16 +42,18 @@ public:
   void notification(Device::TxTuneRequest request) {
     StaticJsonDocument<256> doc;
     JsonObject obj = doc.to<JsonObject>();
-    if (request.tuneEnabled) {
+    if (request.tuneEnabled && (_drive >= 0) && (_drive <= 100)) {
       obj["cmd"] = "tune_drive";
       obj["power"] = _drive;
       publish(_toSdrTopic, doc);
     }
     obj.clear();
-    obj["cmd"] = "tune";
-    obj["trx"] = _trx;
-    obj["enabled"] = request.tuneEnabled;
-    publish(_toSdrTopic, doc);
+    {
+      obj["cmd"] = "tune";
+      obj["trx"] = _trx;
+      obj["enabled"] = request.tuneEnabled;
+      publish(_toSdrTopic, doc);
+    }
   };
 };
 
