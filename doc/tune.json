@@ -16,7 +16,7 @@
         "sdr": {
             "tune": {
                 "trx": 0,
-                "drive": 50
+                "tune_drive": 50
             }
         }
     }
