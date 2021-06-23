@@ -17,12 +17,12 @@ public:
 
   virtual float getFwd() const { return _fwd; };
   virtual float getRfl() const { return _rfl; };
-  virtual float getPct() const { return _rfl / _fwd; };
+  virtual float getRho() const { return _rfl / _fwd; };
   virtual float getSWR() const {
-    float p = getPct();
+    float p = getRho();
     return (1 + p) / (1 - p);
   };
-  virtual float getTarget() const { return getPct(); };
+  virtual float getTarget() const { return getRho(); };
 
   virtual bool isInRange() const {
     return true;
@@ -33,7 +33,7 @@ public:
     node["fwd"] = getFwd();
     node["rfl"] = getRfl();
     if (isInRange()) {
-      node["pct"] = getPct();
+      node["rho"] = getRho();
       node["swr"] = getSWR();
       node["target"] = getTarget();
     }
