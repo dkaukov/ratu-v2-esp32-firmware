@@ -5,6 +5,7 @@ Vue.use(Router);
 
 import Home from './views/Home.vue';
 import Stats from './views/Stats.vue';
+import Log from './views/Log.vue';
 // import Lock from './views/Lock.vue';
 
 export default new Router({
@@ -26,6 +27,11 @@ export default new Router({
       path: '/statistics',
       name: 'Statistics',
       component: Stats
+    },
+    {
+      path: '/log',
+      name: 'Log',
+      component: Log
     }
   ]
 })

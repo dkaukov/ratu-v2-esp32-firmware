@@ -41,6 +41,7 @@ export default {
         wifiMode: null,
         wifiSignal: null
       },
+      log: "",
       cards: [],
       charts: []
     }
@@ -61,6 +62,10 @@ export default {
 
     Socket.$on("message", (json) => {
       this.ws.connected = true;
+
+      if (json.topic === "log") {
+        EventBus.$emit("logLine", json.message);
+      }
 
       if (json.command === "updateLayout") {
         this.stats.enabled = json.statistics.enabled;
