@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Arduino.h>
 #include <ESPAsyncWebServer.h>
 
 #include "core/Component.h"
@@ -7,10 +8,13 @@
 
 namespace Network {
 
+void __debug_transport_web_callback(const char* s);
+
 class WEB : public Core::Component {
  private:
   AsyncWebServer* _server = nullptr;
   AsyncWebSocket* _ws = nullptr;
+  debug_transport_t __debug_transport_chain;
 
  protected:
   virtual void sendStatus() {
@@ -44,6 +48,14 @@ class WEB : public Core::Component {
     _ws->text(id, output);
   }
 
+  virtual void handleRequest(uint32_t from, const JsonObject& doc) {
+    String response;
+    if (doc["command"] == "ping") {
+      response = "{\"command\":\"pong\"}";
+    }
+    _ws->text(from, response);
+  }
+
  public:
   WEB() : Core::Component(Core::COMPONENT_CLASS_NETWORK) {
     static AsyncWebServer server(80);
@@ -61,15 +73,52 @@ class WEB : public Core::Component {
       if (type == WS_EVT_CONNECT) {
         sendConfig(client->id());
       }
+      if (type == WS_EVT_DATA) {
+        AwsFrameInfo* info = (AwsFrameInfo*)arg;
+        if (info->final && info->index == 0 && info->len == len) {
+          if (info->opcode == WS_TEXT) {
+            DynamicJsonDocument doc(ESP.getMaxAllocHeap() - 1024);
+            DeserializationError error = deserializeJson(doc, data, len);
+            if (!error) {
+              doc.shrinkToFit();
+              JsonObject obj = doc.as<JsonObject>();
+              handleRequest(client->id(), obj);
+              doc.clear();
+            } else {
+              _LOGE("ws", "WS request deserialisation failure: %s",
+                    error.c_str());
+            }
+          }
+        }
+      }
     });
     _server->addHandler(_ws);
+    __debug_transport_chain = set_debug_transport(&__debug_transport_web_callback);
   };
 
-  virtual void init() override { _server->begin(); };
-  virtual void loop() override{};
-  virtual void timer1000() override { sendStatus(); }
+  virtual void init() override {
+    _server->begin();
+  };
+
+  virtual void timer1000() override {
+    sendStatus();
+  }
+
+  virtual void log(const char* s) {
+    StaticJsonDocument<512> doc;
+    doc["topic"] = "log";
+    doc["message"] = s;
+    String output;
+    serializeJson(doc, output);
+    _ws->textAll(output);
+    __debug_transport_chain(s);
+  }
 };
 
 WEB web;
+
+void __debug_transport_web_callback(const char* s) {
+  web.log(s);
+}
 
 }  // namespace Network
