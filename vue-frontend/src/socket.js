@@ -1,7 +1,7 @@
 import Vue from "vue"
 
-//let host = "ws://"+document.location.host+"/dashws";
-let host = "ws://atu-01.sphere.home/dashws"; // For Local Testing via npm run serve
+let host = "ws://"+document.location.host+"/dashws";
+//let host = "ws://atu-01.sphere.home/dashws"; // For Local Testing via npm run serve
 
 const socket = new WebSocket(host);
 

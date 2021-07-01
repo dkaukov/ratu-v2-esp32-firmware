@@ -50,7 +50,7 @@ class WEB : public Core::Component {
     _ws->textAll(output);
   }
 
-  virtual void sendConfig(uint32_t id) {
+  virtual void sendConfig(AsyncWebSocketClient* client) {
     StaticJsonDocument<1024> doc;
     doc["topic"] = "config";
     doc["device"]["id"] = getDeviceId();
@@ -68,10 +68,10 @@ class WEB : public Core::Component {
 
     String output;
     serializeJson(doc, output);
-    _ws->text(id, output);
+    client->text(output);
   }
 
-  virtual void sendLogBuffer(uint32_t id) {
+  virtual void sendLogBuffer(AsyncWebSocketClient* client) {
     uint8_t ptr = _logBuffTail;
     while (ptr != _logBuffHead) {
       StaticJsonDocument<512> doc;
@@ -79,17 +79,17 @@ class WEB : public Core::Component {
       doc["message"] = _logBuff[ptr];
       String output;
       serializeJson(doc, output);
-      _ws->text(id, output);
+      client->text(output);
       ptr = (uint8_t)(ptr + 1) % LOG_BUFF_SIZE;
     }
   }
 
-  virtual void handleRequest(uint32_t from, const JsonObject& doc) {
+  virtual void handleRequest(AsyncWebSocketClient* client, const JsonObject& doc) {
     String response;
     if (doc["command"] == "ping") {
       response = "{\"command\":\"pong\"}";
     }
-    _ws->text(from, response);
+    client->text(response);
   }
 
  public:
@@ -107,8 +107,8 @@ class WEB : public Core::Component {
     _ws->onEvent([&](AsyncWebSocket* server, AsyncWebSocketClient* client,
                      AwsEventType type, void* arg, uint8_t* data, size_t len) {
       if (type == WS_EVT_CONNECT) {
-        sendConfig(client->id());
-        sendLogBuffer(client->id());
+        sendConfig(client);
+        sendLogBuffer(client);
       }
       if (type == WS_EVT_DATA) {
         AwsFrameInfo* info = (AwsFrameInfo*)arg;
@@ -119,7 +119,7 @@ class WEB : public Core::Component {
             if (!error) {
               doc.shrinkToFit();
               JsonObject obj = doc.as<JsonObject>();
-              handleRequest(client->id(), obj);
+              handleRequest(client, obj);
               doc.clear();
             } else {
               _LOGE("ws", "WS request deserialisation failure: %s",

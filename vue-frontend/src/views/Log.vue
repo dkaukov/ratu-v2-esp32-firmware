@@ -1,12 +1,11 @@
 <template>
   <div class="container" >
-    <log-viewer :log="log" />
+    <log-viewer :log="log.lines" :hasNumber="false"  />
   </div>
 </template>
 
 <script>
 import LogViewer from "@femessage/log-viewer";
-import EventBus from "@/event-bus.js";
 
 export default {
   name: "log",
@@ -15,18 +14,16 @@ export default {
     LogViewer,
   },
 
-  data() {
-    return {
-      log: "",
-    };
-  },
-
   methods: {},
 
-  mounted() {
-    EventBus.$on("logLine", (data) => {
-      this.log = this.log + "\n" + data;
-    });
-  },
+  props: ['log'],
+
+  mounted() {},
 };
 </script>
+<style lang="less">
+.log-viewer {
+  font-size: 15px !important;
+  font-family: monospace !important;
+}
+</style>

@@ -7,7 +7,7 @@
   </div>
   <div class="section pt-2">
     <transition name="fade" mode="out-in">
-      <router-view :cards="cards" :charts="charts" :stats="stats" />
+      <router-view :cards="cards" :charts="charts" :stats="stats" :log="log"/>
     </transition>
   </div>
 </div>
@@ -39,9 +39,11 @@ export default {
         freeHeap: null,
         heapFragmentation: null,
         wifiMode: null,
-        wifiSignal: null
+        wifiSignal: null,
       },
-      log: "",
+      log: {
+        lines: ""
+      },
       cards: [],
       charts: []
     }
@@ -65,6 +67,7 @@ export default {
 
       if (json.topic === "log") {
         EventBus.$emit("logLine", json.message);
+        this.log.lines = this.log.lines + "\n" + json.message 
       }
 
       if (json.command === "updateLayout") {
