@@ -8,6 +8,8 @@
 
 namespace Network {
 
+#define LOG_BUFF_SIZE (WS_MAX_QUEUED_MESSAGES - 1)
+
 void __debug_transport_web_callback(const char* s);
 
 class WEB : public Core::Component {
@@ -15,6 +17,18 @@ class WEB : public Core::Component {
   AsyncWebServer* _server = nullptr;
   AsyncWebSocket* _ws = nullptr;
   debug_transport_t __debug_transport_chain;
+  String _logBuff[LOG_BUFF_SIZE];
+  uint8_t _logBuffHead = 0;
+  uint8_t _logBuffTail = 0;
+
+  const String& buffPush(const String& val) {
+    _logBuff[_logBuffHead] = String(val);
+    _logBuffHead = ((uint8_t)(_logBuffHead + 1) % LOG_BUFF_SIZE);
+    if (_logBuffHead == _logBuffTail) {
+      _logBuffTail = ((uint8_t)(_logBuffTail + 1) % LOG_BUFF_SIZE);
+    }
+    return val;
+  }
 
  protected:
   virtual void sendStatus() {
@@ -22,6 +36,15 @@ class WEB : public Core::Component {
     JsonObject obj = doc.to<JsonObject>();
     doc["topic"] = "status";
     getGlobalStatus(obj);
+    String output;
+    serializeJson(doc, output);
+    _ws->textAll(output);
+  }
+
+  virtual void logMessade(const String& message) {
+    StaticJsonDocument<512> doc;
+    doc["topic"] = "log";
+    doc["message"] = message;
     String output;
     serializeJson(doc, output);
     _ws->textAll(output);
@@ -48,6 +71,19 @@ class WEB : public Core::Component {
     _ws->text(id, output);
   }
 
+  virtual void sendLogBuffer(uint32_t id) {
+    uint8_t ptr = _logBuffTail;
+    while (ptr != _logBuffHead) {
+      StaticJsonDocument<512> doc;
+      doc["topic"] = "log";
+      doc["message"] = _logBuff[ptr];
+      String output;
+      serializeJson(doc, output);
+      _ws->text(id, output);
+      ptr = (uint8_t)(ptr + 1) % LOG_BUFF_SIZE;
+    }
+  }
+
   virtual void handleRequest(uint32_t from, const JsonObject& doc) {
     String response;
     if (doc["command"] == "ping") {
@@ -72,6 +108,7 @@ class WEB : public Core::Component {
                      AwsEventType type, void* arg, uint8_t* data, size_t len) {
       if (type == WS_EVT_CONNECT) {
         sendConfig(client->id());
+        sendLogBuffer(client->id());
       }
       if (type == WS_EVT_DATA) {
         AwsFrameInfo* info = (AwsFrameInfo*)arg;
@@ -93,32 +130,22 @@ class WEB : public Core::Component {
       }
     });
     _server->addHandler(_ws);
-    __debug_transport_chain = set_debug_transport(&__debug_transport_web_callback);
+    __debug_transport_chain =
+        set_debug_transport(&__debug_transport_web_callback);
   };
 
-  virtual void init() override {
-    _server->begin();
-  };
+  virtual void init() override { _server->begin(); };
 
-  virtual void timer1000() override {
-    sendStatus();
-  }
+  virtual void timer1000() override { sendStatus(); }
 
   virtual void log(const char* s) {
-    StaticJsonDocument<512> doc;
-    doc["topic"] = "log";
-    doc["message"] = s;
-    String output;
-    serializeJson(doc, output);
-    _ws->textAll(output);
+    logMessade(buffPush(String(s)));
     __debug_transport_chain(s);
   }
 };
 
 WEB web;
 
-void __debug_transport_web_callback(const char* s) {
-  web.log(s);
-}
+void __debug_transport_web_callback(const char* s) { web.log(s); }
 
 }  // namespace Network
