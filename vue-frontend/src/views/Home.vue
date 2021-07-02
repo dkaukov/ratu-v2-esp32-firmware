@@ -2,31 +2,28 @@
   <div>
     <div class="container" v-if="true">
       <div class="section">
-        <div class="row">
-            <div class="columns" style="font-weight: 400; font-size: 18px">
-              <div class="column">
-              </div>
-              <div class="column" style="is-gapless">
-                  <linear-gauge :value="1.1" :options="swr"></linear-gauge>
-                  <linear-gauge :value="10" :options="pwr" style="margin-top: -118px;"></linear-gauge>
-              </div>
-              <div class="column">
-              </div>
+        <div class="columns is-vcentered">
+          <div class="column">
+            <div class="ml-4">
+            <status-card  :key="'cardid'" :card="home.status"></status-card>
             </div>
-        </div>
-        <div class="row">
-          <div class="columns" style="font-weight: 400; font-size: 18px">
-            <div class="column">
-              <radial-gauge :options="C1" :value="50" ></radial-gauge>
-            </div>
-            <div class="column">
-              <radial-gauge :options="L"></radial-gauge>
-            </div>
-            <div class="column">
-              <radial-gauge :options="C2"></radial-gauge>
-            </div>
+          </div>  
+          <div class="column is-two-thirds has-text-centered">
+            <linear-gauge :value="home.swr.value" :options="home.swr"></linear-gauge>
+            <linear-gauge :value="home.pwr.value" :options="home.pwr" style="margin-top: -118px;"></linear-gauge>
           </div>
-        </div>
+        </div>  
+        <div class="columns is-gapless">
+          <div class="column has-text-centered">
+            <radial-gauge :options="home.C1" :value="home.C1.value"></radial-gauge>
+          </div>
+          <div class="column has-text-centered">
+            <radial-gauge :options="home.L" :value="home.L.value" ></radial-gauge>
+          </div>
+          <div class="column has-text-centered">
+            <radial-gauge :options="home.C2" :value="home.C2.value" ></radial-gauge>
+          </div>
+        </div>  
       </div>
     </div>
     <div class="container" v-else>
@@ -69,7 +66,7 @@ import RadialGauge from 'vue-canvas-gauges/src/RadialGauge'
 export default {
   name: 'home',
 
-  props: ['cards', 'charts'],
+  props: ['cards', 'charts', 'home'],
 
   components: {
     GenericCard,
@@ -87,103 +84,6 @@ export default {
 
   data() {
     return {
-      C1: {
-        value: 50, 
-        width: 270, 
-        height: 270, 
-        title: "C\u2081",
-        fontTitleWeight: "bold",
-        units: "\u338a",
-        minValue: 5.0,
-        maxValue: 1304.0,
-        majorTicks: this.getTicks(5.0, 1304.0, 8),
-        highlights: [],
-        minorTicks: 20,
-        strokeTicks: true,
-        animationRule: 'bounce'
-      },
-      L: {
-        value: 233, 
-        width: 300, 
-        height: 300, 
-        title: "L",
-        fontTitleWeight: "bold",
-        units: "mH",
-        minValue: 0.05,
-        maxValue: 12.75,
-        majorTicks: this.getTicks(0.05, 12.75, 10),
-        highlights: [],
-        minorTicks: 20,
-        strokeTicks: true,
-        animationRule: 'bounce'
-      },
-      C2: {
-        value: 233, 
-        width: 270, 
-        height: 270, 
-        title: "C\u2082",
-        fontTitleWeight: "bold",
-        units: "\u338a",
-        minValue: 5.0,
-        maxValue: 1304.0,
-        majorTicks: this.getTicks(5.0, 1304.0, 8),
-        highlights: [],
-        minorTicks: 20,
-        strokeTicks: true,
-        animationRule: 'bounce'
-      },
-      swr: {
-        width: 600, 
-        height: 150, 
-        title: false,
-        units: false,
-        minValue: 1.0,
-        maxValue: 10.0,
-        majorTicks: this.getTicks(1.0, 10.0, 5),
-        highlights: [],
-        //minorTicks: 20,
-        strokeTicks: true,
-        barBeginCircle: false,
-        needleSide: "left",
-        tickSide: "left",
-        numberSide: "left",
-        borders: false,
-        borderShadowWidth: 0,
-        needleType: "line",
-        needleWidth: 2,
-        barWidth: 5,
-        valueBox: true,
-        animationRule: 'bounce',
-        colorPlate: "rgba(0,0,0,0)"
-      },
-      pwr: {
-        width: 600, 
-        height: 150, 
-        title: false,
-        units: false,
-        minValue: 0,
-        maxValue: 100.0,
-        majorTicks: this.getTicks(0, 100.0, 10),
-        highlights: [],
-        //minorTicks: 20,
-        strokeTicks: true,
-        barBeginCircle: false,
-        needleSide: "right",
-        tickSide: "right",
-        numberSide: "right",
-        borders: false,
-        borderShadowWidth: 0,
-        needleType: "line",
-        needleWidth: 2,
-        barWidth: 5,
-        valueBox: true,
-        animationRule: 'bounce',
-        colorPlate: "rgba(0,0,0,0)"
-      },
-      status: {
-        symbol: "success",
-        value: "Idle"
-      },
       chart: {
         id: "",
         type: "line",
@@ -195,31 +95,6 @@ export default {
   },
 
   methods: {
-    getParticularCards(type) {
-      let cards = [];
-      for(let card of this.cards){
-        if(card.type === type){
-          cards.push(card);
-        }
-      }
-      return cards;
-    },
-    getParticularCharts(type) {
-      let charts = [];
-      for(let chart of this.charts){
-        if(chart.type === type){
-          charts.push(chart);
-        }
-      }
-      return charts;
-    },
-    getTicks(min, max, count) {
-      let res = [];
-      for (let i = 0; i <= count; i++) {
-        res.push(Number(min + (max - min) / count * i).toFixed(2));
-      }
-      return res;
-    }
   }
 }
 </script>

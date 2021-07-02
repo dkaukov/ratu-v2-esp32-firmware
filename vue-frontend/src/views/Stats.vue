@@ -17,7 +17,7 @@
           <hr class="my-4" style="height: 0px"/>
           <div class="px-5"><b>MAC Address:</b> &nbsp; {{stats.macAddress}}</div>
           <hr class="my-4" style="height: 0px"/>
-          <div class="px-5"><b>Connection Type:</b> &nbsp; {{getWifiMode}}</div>
+          <div class="px-5"><b>Host name:</b> &nbsp; {{stats.hostname}}</div>
           <hr class="my-4" style="height: 0px"/>
           <div class="px-5"><b>Signal Level (RSSI):</b> &nbsp; {{stats.wifiSignal}}</div>
         </div>
