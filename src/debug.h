@@ -13,7 +13,7 @@
 
 void __null_debug_transport(const char *) {};
 
-typedef _VOID (*debug_transport_t)(const char *);
+typedef void (*debug_transport_t)(const char *);
 debug_transport_t __debug_transport = __null_debug_transport;
 
 debug_transport_t set_debug_transport(debug_transport_t new_transport) {
