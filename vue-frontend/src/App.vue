@@ -53,7 +53,7 @@ export default {
       },
       home: {
         C1: {
-          value: 600,
+          value: 1304.0,
           width: 270,
           height: 270,
           title: "C\u2081",
@@ -68,7 +68,7 @@ export default {
           animationRule: "bounce",
         },
         L: {
-          value: 6,
+          value: 12.75,
           width: 300,
           height: 300,
           title: "L",
@@ -83,7 +83,7 @@ export default {
           animationRule: "bounce",
         },
         C2: {
-          value: 233,
+          value: 1304.0,
           width: 270,
           height: 270,
           title: "C\u2082",
@@ -98,7 +98,7 @@ export default {
           animationRule: "bounce",
         },
         swr: {
-          value: 1.2,
+          value: 10.0,
           width: 600,
           height: 150,
           title: false,
@@ -123,7 +123,7 @@ export default {
           colorPlate: "rgba(0,0,0,0)",
         },
         pwr: {
-          value: 50,
+          value: 100.0,
           width: 600,
           height: 150,
           title: false,
