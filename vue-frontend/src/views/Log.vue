@@ -21,6 +21,7 @@ export default {
   mounted() {},
 };
 </script>
+
 <style lang="less">
 .log-viewer {
   font-size: 15px !important;

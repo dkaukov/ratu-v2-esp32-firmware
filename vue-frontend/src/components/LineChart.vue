@@ -7,13 +7,7 @@
           <div class="column is-narrow has-text-primary">
             <div class="card-icon pb-1 pt-2 px-2 has-background-link-light has-text-link">
               <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <g fill="none" fill-rule="evenodd">
-                  <path d="M0 0h24v24H0z"></path>
-                  <rect fill="currentColor" opacity=".6" x="12" y="4" width="3" height="13" rx="1.5"></rect>
-                  <rect fill="currentColor" opacity=".6" x="7" y="9" width="3" height="8" rx="1.5"></rect>
-                  <path d="M5 19h15a1 1 0 010 2H4a1 1 0 01-1-1V4a1 1 0 112 0v15z" fill="currentColor"></path>
-                  <rect fill="currentColor" opacity=".6" x="17" y="11" width="3" height="6" rx="1.5"></rect>
-                </g>
+                <path d="M5 3v16h16v2H3V3h2zm15.293 3.293l1.414 1.414L16 13.414l-3-2.999-4.293 4.292-1.414-1.414L13 7.586l3 2.999 4.293-4.292z"/>
               </svg>
             </div>
           </div>
@@ -23,7 +17,7 @@
         </div>
         <div class="columns">
           <div class="column is-12">
-            <bar-chartjs :chart-data="chartData" :options="options" height="200px"></bar-chartjs>
+            <line-chart :chart-data="chartData" :options="options" height="200px"></line-chart>
           </div>
         </div>
       </div>
@@ -32,13 +26,13 @@
 </template>
 
 <script>
-  import BarChartjs from './Charts/BarChart';
+  import LineChart from './Charts/LineChart';
 
   export default {
     props: ['chart'],
 
     components: {
-      BarChartjs
+      LineChart
     },
 
     data() {
@@ -53,9 +47,8 @@
           },
           scales: {
             xAxes: [{
-              barPercentage: 0.6,
               gridLines: {
-                display: false
+                display: true
               }
             }],
           }
@@ -95,7 +88,8 @@
           datasets: [{
             label: '',
             backgroundColor: '#4c73f5',
-            data: this.chart.y_axis
+            data: this.chart.y_axis,
+            fill: false
           }]
         }
       }

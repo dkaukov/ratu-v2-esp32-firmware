@@ -2,6 +2,18 @@
 
 ESP-DASH Vuejs Files for customization and trust. Please try to give back to the open source community after customizing. It is a open source property and should NOT be transformed into a closed source project or get rebranded.
 
+# css
+
+https://bulma.io/documentation/overview/start/
+
+# Charts
+
+https://vue-chartjs.org/guide/#introduction
+
+# Icons
+
+https://remixicon.com/
+
 ## Project setup
 ```
 npm install
