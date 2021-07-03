@@ -65,7 +65,10 @@ export default {
           highlights: [],
           minorTicks: 20,
           strokeTicks: true,
-          animationRule: "bounce",
+          animation: true,
+          animationRule: "quad",
+          animationDuration: 200,
+          animatedValue: false
         },
         L: {
           value: 12.75,
@@ -80,7 +83,10 @@ export default {
           highlights: [],
           minorTicks: 20,
           strokeTicks: true,
-          animationRule: "bounce",
+          animation: true,
+          animationRule: "quad",
+          animationDuration: 200,
+          animatedValue: false
         },
         C2: {
           value: 1304.0,
@@ -95,7 +101,10 @@ export default {
           highlights: [],
           minorTicks: 20,
           strokeTicks: true,
-          animationRule: "bounce",
+          animation: true,
+          animationRule: "quad",
+          animationDuration: 200,
+          animatedValue: false
         },
         swr: {
           value: 10.0,
@@ -119,8 +128,11 @@ export default {
           needleWidth: 2,
           barWidth: 5,
           valueBox: true,
-          animationRule: "bounce",
           colorPlate: "rgba(0,0,0,0)",
+          animation: true,
+          animationRule: "quad",
+          animationDuration: 200,
+          animatedValue: false
         },
         pwr: {
           value: 100.0,
@@ -144,8 +156,11 @@ export default {
           needleWidth: 2,
           barWidth: 5,
           valueBox: true,
-          animationRule: "bounce",
           colorPlate: "rgba(0,0,0,0)",
+          animation: true,
+          animationRule: "quad",
+          animationDuration: 200,
+          animatedValue: false
         },
         status: {
           symbol: "success",
