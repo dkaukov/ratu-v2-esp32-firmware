@@ -108,7 +108,7 @@ export default {
         },
         swr: {
           value: 10.0,
-          width: 600,
+          width: null,
           height: 150,
           title: false,
           units: false,
@@ -136,7 +136,7 @@ export default {
         },
         pwr: {
           value: 100.0,
-          width: 600,
+          width: null,
           height: 150,
           title: false,
           units: false,
@@ -163,9 +163,9 @@ export default {
           animatedValue: false
         },
         status: {
-          symbol: "success",
+          symbol: "danger",
           name: "ATU status",
-          value: "Idle",
+          value: "Booting up",
         },
       },
       cards: [],
@@ -227,8 +227,12 @@ export default {
         this.home.pwr.value = json.sensor.SWRMeterAds1115Ad8310.fwd || 0;
         this.home.swr.value = json.sensor.SWRMeterAds1115Ad8310.swr || 1;
         this.home.status.value = json.atu.state;
+        if (this.home.status.value === "ready") {
+          this.home.status.symbol = "success";
+        } else {
+          this.home.status.symbol = "warning";
+        }
       }
-
     });
 
     EventBus.$on("buttonClicked", (data) => {
