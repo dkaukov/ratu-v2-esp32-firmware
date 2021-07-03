@@ -43,7 +43,9 @@ export default {
         sketchHash: null,
         macAddress: null,
         freeHeap: null,
-        heapFragmentation: null,
+        minFreeHeap: null,
+        maxAllocHeap: null,
+        stackHighWaterMark: null,
         wifiMode: null,
         hostname: "",
         wifiSignal: null,
@@ -212,7 +214,7 @@ export default {
         this.stats.releaseTag = json.device.sketchMD5;
         this.stats.chipId = json.device.chipModel;
         this.stats.sketchHash = json.device.sketchMD5;
-        this.stats.macAddress = json.device.wifi.bssid;
+        this.stats.macAddress = json.device.wifi.macAddress;
         this.stats.wifiMode = 1;
         this.stats.hostname = json.device.wifi.hostname;
       }
@@ -220,6 +222,9 @@ export default {
       if (json.topic === "status") {
         EventBus.$emit("status", json);
         this.stats.freeHeap = json.system.freeHeap;
+        this.stats.minFreeHeap = json.system.minFreeHeap;
+        this.stats.maxAllocHeap = json.system.maxAllocHeap;
+        this.stats.stackHighWaterMark = json.system.stackHighWaterMark;
         this.stats.wifiSignal = json.system.rssi;
         this.home.C1.value = json.actuator.C1.phValue;
         this.home.C2.value = json.actuator.C2.phValue;

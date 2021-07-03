@@ -61,7 +61,8 @@ private:
     doc["device"]["wifi"]["bssid"] = WiFi.BSSIDstr();
     doc["device"]["wifi"]["ip"] = net.localIP().toString();
     doc["device"]["wifi"]["hostname"] = WiFi.getHostname();
-    doc["device"]["wifi"]["mqtt-local-port"] = net.localPort();
+    doc["device"]["wifi"]["mqttLocalPort"] = net.localPort();
+    doc["device"]["wifi"]["macAddress"] = WiFi.macAddress();
 
     String output;
     serializeJson(doc, output);
@@ -123,6 +124,8 @@ public:
   virtual void getStatus(JsonObject &doc) const override {
     doc["system"]["timestamp"] = getTime();
     doc["system"]["freeHeap"] = ESP.getFreeHeap();
+    doc["system"]["minFreeHeap"] = ESP.getMinFreeHeap();
+    doc["system"]["maxAllocHeap"] = ESP.getMaxAllocHeap();
     doc["system"]["stackHighWaterMark"] = uxTaskGetStackHighWaterMark(NULL);
     doc["system"]["rssi"] = WiFi.RSSI();
     doc["system"]["mqtt-reconnects"] = _mqttReconnectCount;

@@ -11,8 +11,12 @@
           <hr class="my-4" style="height: 0px"/>
           <div class="px-5"><b>Free Heap:</b> &nbsp; {{stats.freeHeap}} bytes</div>
           <hr class="my-4" style="height: 0px"/>
-          <div v-if="stats.heapFragmentation" class="px-5"><b>Heap Fragmentation:</b> &nbsp; {{stats.heapFragmentation}}</div>
-          <hr v-if="stats.heapFragmentation"/>
+          <div class="px-5"><b>Min. Free Heap:</b> &nbsp; {{stats.minFreeHeap}} bytes</div>
+          <hr class="my-4" style="height: 0px"/>
+          <div class="px-5"><b>Heap Max alloc block:</b> &nbsp; {{stats.maxAllocHeap}} bytes</div>
+          <hr class="my-4" style="height: 0px"/>
+          <div class="px-5"><b>Stack size:</b> &nbsp; {{stats.stackHighWaterMark}} bytes</div>
+          <hr class="my-4" style="height: 0px"/>
           <div class="px-5"><b>Sketch Hash:</b> &nbsp; {{stats.sketchHash}}</div>
           <hr class="my-4" style="height: 0px"/>
           <div class="px-5"><b>MAC Address:</b> &nbsp; {{stats.macAddress}}</div>

@@ -64,7 +64,8 @@ class WEB : public Core::Component {
     doc["device"]["wifi"]["bssid"] = WiFi.BSSIDstr();
     doc["device"]["wifi"]["ip"] = net.localIP().toString();
     doc["device"]["wifi"]["hostname"] = WiFi.getHostname();
-    doc["device"]["wifi"]["mqtt-local-port"] = net.localPort();
+    doc["device"]["wifi"]["mqttLocalPort"] = net.localPort();
+    doc["device"]["wifi"]["macAddress"] = WiFi.macAddress();
 
     String output;
     serializeJson(doc, output);
