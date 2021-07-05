@@ -71,7 +71,7 @@ export default {
           strokeTicks: true,
           animation: true,
           animationRule: "quad",
-          animationDuration: 200,
+          animationDuration: 1000,
           animatedValue: false
         },
         L: {
@@ -89,7 +89,7 @@ export default {
           strokeTicks: true,
           animation: true,
           animationRule: "quad",
-          animationDuration: 200,
+          animationDuration: 1000,
           animatedValue: false
         },
         C2: {
@@ -107,7 +107,7 @@ export default {
           strokeTicks: true,
           animation: true,
           animationRule: "quad",
-          animationDuration: 200,
+          animationDuration: 1000,
           animatedValue: false
         },
         swr: {
@@ -135,7 +135,7 @@ export default {
           colorPlate: "rgba(0,0,0,0)",
           animation: true,
           animationRule: "quad",
-          animationDuration: 200,
+          animationDuration: 1000,
           animatedValue: false
         },
         pwr: {
@@ -163,7 +163,7 @@ export default {
           colorPlate: "rgba(0,0,0,0)",
           animation: true,
           animationRule: "quad",
-          animationDuration: 200,
+          animationDuration: 1000,
           animatedValue: false
         },
         status: {

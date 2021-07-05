@@ -9,19 +9,19 @@
             </div>
           </div>  
           <div class="column is-two-thirds has-text-centered">
-            <linear-gauge :value="home.swr.value" :options="home.swr"></linear-gauge>
-            <linear-gauge :value="home.pwr.value" :options="home.pwr" style="margin-top: -118px;"></linear-gauge>
+            <linear-gauge :value="home.swr.value" :options="home.swr" ref="swr"></linear-gauge>
+            <linear-gauge :value="home.pwr.value" :options="home.pwr" ref="pwr" style="margin-top: -118px;"></linear-gauge>
           </div>
         </div>  
         <div class="columns is-gapless">
           <div class="column has-text-centered">
-            <radial-gauge :options="home.C1" :value="home.C1.value"></radial-gauge>
+            <radial-gauge :options="home.C1" :value="home.C1.value" ref="c1"></radial-gauge>
           </div>
           <div class="column has-text-centered">
-            <radial-gauge :options="home.L" :value="home.L.value" ></radial-gauge>
+            <radial-gauge :options="home.L" :value="home.L.value"  ref="l" ></radial-gauge>
           </div>
           <div class="column has-text-centered">
-            <radial-gauge :options="home.C2" :value="home.C2.value" ></radial-gauge>
+            <radial-gauge :options="home.C2" :value="home.C2.value" ref="c2"></radial-gauge>
           </div>
         </div>  
       </div>
@@ -95,6 +95,34 @@ export default {
   },
 
   methods: {
-  }
+  },
+
+  mounted() {
+    this.$refs.c1.$watch('value', function (newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.chart._value = newVal;
+      }
+    });
+    this.$refs.c2.$watch('value', function (newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.chart._value = newVal;
+      }
+    });
+    this.$refs.l.$watch('value', function (newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.chart._value = newVal;
+      }
+    });
+    this.$refs.swr.$watch('value', function (newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.chart._value = newVal;
+      }
+    });
+    this.$refs.pwr.$watch('value', function (newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.chart._value = newVal;
+      }
+    });
+  },
 }
 </script>
