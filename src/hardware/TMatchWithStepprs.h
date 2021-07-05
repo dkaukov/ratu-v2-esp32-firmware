@@ -57,6 +57,8 @@
 #define C2_ACTUATOR_MIN 5.0
 #define C2_ACTUATOR_MAX 1304.0
 
+#define HW_INFO "AD8310/3xSteppers"
+
 
 namespace Hardware {
 

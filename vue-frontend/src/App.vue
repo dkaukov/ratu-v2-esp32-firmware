@@ -50,6 +50,7 @@ export default {
         hostname: "",
         wifiSignal: null,
         upTime: null,
+        hardware: null,
       },
       log: {
         lines: "",
@@ -218,6 +219,7 @@ export default {
         this.stats.macAddress = json.device.wifi.macAddress;
         this.stats.wifiMode = 1;
         this.stats.hostname = json.device.wifi.hostname;
+         this.stats.hardware = json.device.hardware;
       }
 
       if (json.topic === "status") {

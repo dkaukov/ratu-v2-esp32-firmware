@@ -39,6 +39,9 @@
 #define L_ACTUATOR_NAME "L"
 #define C1_ACTUATOR_NAME "C1"
 
+#define HW_INFO "AD8310/2xSteppers"
+
+
 namespace Hardware {
 
 using namespace Sensor;

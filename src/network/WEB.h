@@ -59,6 +59,7 @@ class WEB : public Core::Component {
     doc["device"]["cpuFreqMHz"] = ESP.getCpuFreqMHz();
     doc["device"]["sketchMD5"] = ESP.getSketchMD5();
     doc["device"]["chipModel"] = ESP.getChipModel();
+    doc["device"]["hardware"] = HW_INFO;
 
     doc["device"]["wifi"]["ssid"] = WiFi.SSID();
     doc["device"]["wifi"]["bssid"] = WiFi.BSSIDstr();
