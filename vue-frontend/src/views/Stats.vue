@@ -5,6 +5,8 @@
         <div class="card-content py-6">
           <div class="px-5"><b>Hardware:</b> &nbsp; {{stats.hardware}}</div>
           <hr class="my-4" style="height: 0px"/>
+          <div class="px-5"><b>Uptime:</b> &nbsp; {{stats.upTime}}</div>
+          <hr class="my-4" style="height: 0px"/>
           <div class="px-5"><b>SDK Version:</b> &nbsp; {{stats.sdk}}</div>
           <hr class="my-4" style="height: 0px"/>
           <div class="px-5"><b>Chip ID:</b> &nbsp; {{stats.chipId}}</div>

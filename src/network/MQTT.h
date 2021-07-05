@@ -129,6 +129,7 @@ public:
     doc["system"]["stackHighWaterMark"] = uxTaskGetStackHighWaterMark(NULL);
     doc["system"]["rssi"] = WiFi.RSSI();
     doc["system"]["mqtt-reconnects"] = _mqttReconnectCount;
+    doc["system"]["upTime"] = (uint32_t)(esp_timer_get_time() / 1000 / 1000);
   };
 
   virtual void setConfig(const JsonObject &doc) override {

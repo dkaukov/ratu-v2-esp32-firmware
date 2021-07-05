@@ -49,6 +49,7 @@ export default {
         wifiMode: null,
         hostname: "",
         wifiSignal: null,
+        upTime: null,
       },
       log: {
         lines: "",
@@ -232,6 +233,9 @@ export default {
         this.home.pwr.value = json.sensor.SWRMeterAds1115Ad8310.fwd || 0;
         this.home.swr.value = json.sensor.SWRMeterAds1115Ad8310.swr || 1;
         this.home.status.value = json.atu.state;
+        let upTime = new Date(0);
+        upTime.setSeconds(json.system.upTime || 0);
+        this.stats.upTime = upTime.toISOString().substr(11, 8);
         if (this.home.status.value === "ready") {
           this.home.status.symbol = "success";
         } else {
