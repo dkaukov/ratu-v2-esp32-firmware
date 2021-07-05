@@ -49,16 +49,16 @@
 </template>
 
 <script>
-import GenericCard from '@/components/GenericCard.vue';
-import TemperatureCard from '@/components/TemperatureCard.vue';
-import HumdidityCard from '@/components/HumidityCard.vue';
+//import GenericCard from '@/components/GenericCard.vue';
+//import TemperatureCard from '@/components/TemperatureCard.vue';
+//import HumdidityCard from '@/components/HumidityCard.vue';
 import StatusCard from '@/components/StatusCard.vue';
-import ProgressCard from '@/components/ProgressCard.vue';
-import SliderCard from '@/components/SliderCard.vue';
-import ButtonCard from '@/components/ButtonCard.vue';
+//import ProgressCard from '@/components/ProgressCard.vue';
+//import SliderCard from '@/components/SliderCard.vue';
+//import ButtonCard from '@/components/ButtonCard.vue';
 
-import BarChart from '@/components/BarChart.vue';
-import LineChart from '@/components/LineChart.vue';
+//import BarChart from '@/components/BarChart.vue';
+//import LineChart from '@/components/LineChart.vue';
 
 import LinearGauge from 'vue-canvas-gauges/src/LinearGauge'
 import RadialGauge from 'vue-canvas-gauges/src/RadialGauge'
@@ -69,17 +69,17 @@ export default {
   props: ['cards', 'charts', 'home'],
 
   components: {
-    GenericCard,
-    TemperatureCard,
-    HumdidityCard,
+    //GenericCard,
+    //TemperatureCard,
+    //HumdidityCard,
     StatusCard,
-    ProgressCard,
-    ButtonCard,
-    SliderCard,
-    BarChart,
+    //ProgressCard,
+    //ButtonCard,
+    //SliderCard,
+    //BarChart,
     LinearGauge,
     RadialGauge,
-    LineChart
+    //LineChart
   },
 
   data() {

@@ -28,7 +28,7 @@ function chunkArray(myArray, chunk_size) {
   const arrayLength = myArray.length;
   const tempArray = [];
   for (index = 0; index < arrayLength; index += chunk_size) {
-    myChunk = myArray.slice(index, index + chunk_size);
+    let myChunk = myArray.slice(index, index + chunk_size);
     // Do something if you want with the group
     tempArray.push(myChunk);
   }
@@ -48,9 +48,11 @@ function addLineBreaks(buffer) {
 }
 
 
-gzip(HTML, { numiterations: 15 }, (err, output) => {
+gzip(HTML, { numiterations: 15, blocksplittingmax: 100 }, (err, output) => {
   if (err) {
+    /* eslint-disable no-console */
     return console.error(err);
+    /* eslint-enable no-console */
   }
 
   const FILE = `#ifndef DashWebpage_h
@@ -63,5 +65,7 @@ ${addLineBreaks(output)}
 `;
 
   FS.writeFileSync(path.resolve(__dirname, '../src/network/webpage.h'), FILE);
+  /* eslint-disable no-console */
   console.log(`[COMPRESS] Compressed Build Files to webpage.h: ${ (output.length/1024).toFixed(2) }KB`);
+  /* eslint-enable no-console */
 });
