@@ -158,6 +158,14 @@ public:
   virtual void registerPowerManager(ActuatorStepperPowerManager &pwrManager) {
     add_observer(pwrManager);
   }
+
+  virtual void getInfo(JsonObject &doc) const override {
+    Actuator::getInfo(doc);
+    doc["actuator"][_name]["type"] = "stepper";
+    doc["actuator"][_name]["sensorPin"] = _sensorPin;
+    doc["actuator"][_name]["dirPin"] = _stepper->getDirectionPin();
+    doc["actuator"][_name]["stepPin"] = _stepper->getStepPin();
+  }
 };
 
 } // namespace Actuators

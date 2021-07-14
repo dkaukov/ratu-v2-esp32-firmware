@@ -54,6 +54,13 @@ public:
     doc["actuator"][_name]["isAtLimit"] = isAtLimit();
   };
 
+  virtual void getInfo(JsonObject &doc) const override {
+    doc["actuator"][_name]["min"] = _min;
+    doc["actuator"][_name]["max"] = _max;
+    doc["actuator"][_name]["minPh"] = _a * _min + _b;
+    doc["actuator"][_name]["maxPh"] = _a * _max + _b;
+  };
+
   virtual void onCommand(Core::command_type_t type, const JsonObject &doc) override {
     if (type == Core::COMMAND_TYPE_ACTUATE) {
       auto node = doc["actuator"][_name];
