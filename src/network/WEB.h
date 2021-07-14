@@ -52,22 +52,9 @@ class WEB : public Core::Component {
 
   virtual void sendConfig(AsyncWebSocketClient* client) {
     StaticJsonDocument<1024> doc;
-    doc["topic"] = "config";
-    doc["device"]["id"] = getDeviceId();
-    doc["device"]["heapSize"] = ESP.getHeapSize();
-    doc["device"]["sdkVersion"] = ESP.getSdkVersion();
-    doc["device"]["cpuFreqMHz"] = ESP.getCpuFreqMHz();
-    doc["device"]["sketchMD5"] = ESP.getSketchMD5();
-    doc["device"]["chipModel"] = ESP.getChipModel();
-    doc["device"]["hardware"] = HW_INFO;
-
-    doc["device"]["wifi"]["ssid"] = WiFi.SSID();
-    doc["device"]["wifi"]["bssid"] = WiFi.BSSIDstr();
-    doc["device"]["wifi"]["ip"] = net.localIP().toString();
-    doc["device"]["wifi"]["hostname"] = WiFi.getHostname();
-    doc["device"]["wifi"]["mqttLocalPort"] = net.localPort();
-    doc["device"]["wifi"]["macAddress"] = WiFi.macAddress();
-
+    JsonObject obj = doc.to<JsonObject>();
+    getGlobalInfo(obj);
+    obj["topic"] = "config";
     String output;
     serializeJson(doc, output);
     client->text(output);

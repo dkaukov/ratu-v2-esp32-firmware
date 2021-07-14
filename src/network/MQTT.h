@@ -44,9 +44,7 @@ private:
     return buf;
   }
 
-  void setupMqttConnection() {
-    StaticJsonDocument<1024> doc;
-    net.setNoDelay(true);
+  virtual void getInfo(JsonObject &doc) const override {
     doc["commandTopic"] = _commandTopic;
     doc["statusTopic"] = _statusTopic;
 
@@ -56,6 +54,7 @@ private:
     doc["device"]["cpuFreqMHz"] = ESP.getCpuFreqMHz();
     doc["device"]["sketchMD5"] = ESP.getSketchMD5();
     doc["device"]["chipModel"] = ESP.getChipModel();
+    doc["device"]["hardware"] = HW_INFO;
 
     doc["device"]["wifi"]["ssid"] = WiFi.SSID();
     doc["device"]["wifi"]["bssid"] = WiFi.BSSIDstr();
@@ -63,7 +62,13 @@ private:
     doc["device"]["wifi"]["hostname"] = WiFi.getHostname();
     doc["device"]["wifi"]["mqttLocalPort"] = net.localPort();
     doc["device"]["wifi"]["macAddress"] = WiFi.macAddress();
+  };
 
+  void setupMqttConnection() {
+    net.setNoDelay(true);
+    StaticJsonDocument<1024> doc;
+    JsonObject obj = doc.to<JsonObject>();
+    getGlobalInfo(obj);
     String output;
     serializeJson(doc, output);
     _client->publish(_configurationTopic, output, true, 2);
