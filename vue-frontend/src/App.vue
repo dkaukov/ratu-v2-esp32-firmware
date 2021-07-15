@@ -72,7 +72,8 @@ export default {
           animation: true,
           animationRule: "quad",
           animationDuration: 1000,
-          animatedValue: false
+          animatedValue: false,
+          visible: false,
         },
         L: {
           value: 12.75,
@@ -90,7 +91,8 @@ export default {
           animation: true,
           animationRule: "quad",
           animationDuration: 1000,
-          animatedValue: false
+          animatedValue: false,
+          visible: false,
         },
         C2: {
           value: 1304.0,
@@ -108,7 +110,8 @@ export default {
           animation: true,
           animationRule: "quad",
           animationDuration: 1000,
-          animatedValue: false
+          animatedValue: false,
+          visible: false,
         },
         swr: {
           value: 10.0,
@@ -136,7 +139,7 @@ export default {
           animation: true,
           animationRule: "quad",
           animationDuration: 1000,
-          animatedValue: false
+          animatedValue: false,
         },
         pwr: {
           value: 100.0,
@@ -164,7 +167,7 @@ export default {
           animation: true,
           animationRule: "quad",
           animationDuration: 1000,
-          animatedValue: false
+          animatedValue: false,
         },
         status: {
           symbol: "danger",
@@ -220,18 +223,49 @@ export default {
         this.stats.wifiMode = 1;
         this.stats.hostname = json.device.wifi.hostname;
         this.stats.hardware = json.device.hardware;
-        this.home.C1.minValue = json.actuator.C1.minPh;
-        this.home.C1.maxValue = json.actuator.C1.maxPh;
-        this.home.C1.majorTicks = this.getTicks(this.home.C1.minValue, this.home.C1.maxValue, 8);
-        this.home.C1.value = json.actuator.C1.maxPh;
-        this.home.C2.minValue = json.actuator.C2.minPh;
-        this.home.C2.maxValue = json.actuator.C2.maxPh;
-        this.home.C2.majorTicks = this.getTicks(this.home.C2.minValue, this.home.C2.maxValue, 8);
-        this.home.C2.value = json.actuator.C2.maxPh;
-        this.home.L.minValue = json.actuator.L.minPh;
-        this.home.L.maxValue = json.actuator.L.maxPh;
-        this.home.L.majorTicks = this.getTicks(this.home.L.minValue, this.home.L.maxValue, 10);
-        this.home.L.value = json.actuator.L.maxPh;
+        if (json.actuator.C1) {
+          this.home.C1.minValue = json.actuator.C1.minPh;
+          this.home.C1.maxValue = json.actuator.C1.maxPh;
+          this.home.C1.majorTicks = this.getTicks(
+            this.home.C1.minValue,
+            this.home.C1.maxValue,
+            8
+          );
+          this.home.C1.value = json.actuator.C1.maxPh;
+          this.home.C1.visible = true;
+        } else {
+          this.home.C1.visible = false;
+          this.home.C2.width = this.home.L.width;
+          this.home.C2.height = this.home.L.height;
+        }
+        if (json.actuator.C2) {
+          this.home.C2.minValue = json.actuator.C2.minPh;
+          this.home.C2.maxValue = json.actuator.C2.maxPh;
+          this.home.C2.majorTicks = this.getTicks(
+            this.home.C2.minValue,
+            this.home.C2.maxValue,
+            8
+          );
+          this.home.C2.value = json.actuator.C2.maxPh;
+          this.home.C2.visible = true;
+        } else {
+          this.home.C2.visible = false;
+          this.home.C1.width = this.home.L.width;
+          this.home.C1.height = this.home.L.height;
+        }
+        if (json.actuator.L) {
+          this.home.L.minValue = json.actuator.L.minPh;
+          this.home.L.maxValue = json.actuator.L.maxPh;
+          this.home.L.majorTicks = this.getTicks(
+            this.home.L.minValue,
+            this.home.L.maxValue,
+            10
+          );
+          this.home.L.value = json.actuator.L.maxPh;
+          this.home.L.visible = true;
+        } else {
+          this.home.L.visible = false;
+        }
       }
 
       if (json.topic === "status") {
@@ -241,15 +275,18 @@ export default {
         this.stats.maxAllocHeap = json.system.maxAllocHeap;
         this.stats.stackHighWaterMark = json.system.stackHighWaterMark;
         this.stats.wifiSignal = json.system.rssi;
-        this.home.C1.value = json.actuator.C1.phValue;
-        this.home.C2.value = json.actuator.C2.phValue;
-        this.home.L.value = json.actuator.L.phValue;
+        this.home.C1.value = (json.actuator.C1 || {}).phValue;
+        this.home.C2.value = (json.actuator.C2 || {}).phValue;
+        this.home.L.value = (json.actuator.L || {}).phValue;
         this.home.pwr.value = json.sensor.SWRMeterAds1115Ad8310.fwd || 0;
         this.home.swr.value = json.sensor.SWRMeterAds1115Ad8310.swr || 1;
         this.home.status.value = json.atu.state;
         let upTime = new Date(0);
         upTime.setSeconds(json.system.upTime || 0);
-        this.stats.upTime = ((json.system.upTime || 0) / 60 / 60 / 24).toFixed(0) + " days " + upTime.toISOString().substr(11, 8);
+        this.stats.upTime =
+          ((json.system.upTime || 0) / 60 / 60 / 24).toFixed(0) +
+          " days " +
+          upTime.toISOString().substr(11, 8);
         if (this.home.status.value === "ready") {
           this.home.status.symbol = "success";
         } else {
