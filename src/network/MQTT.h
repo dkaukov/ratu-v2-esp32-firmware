@@ -44,9 +44,7 @@ private:
     return buf;
   }
 
-  void setupMqttConnection() {
-    StaticJsonDocument<1024> doc;
-    net.setNoDelay(true);
+  virtual void getInfo(JsonObject &doc) const override {
     doc["commandTopic"] = _commandTopic;
     doc["statusTopic"] = _statusTopic;
 
@@ -56,13 +54,21 @@ private:
     doc["device"]["cpuFreqMHz"] = ESP.getCpuFreqMHz();
     doc["device"]["sketchMD5"] = ESP.getSketchMD5();
     doc["device"]["chipModel"] = ESP.getChipModel();
+    doc["device"]["hardware"] = HW_INFO;
 
     doc["device"]["wifi"]["ssid"] = WiFi.SSID();
     doc["device"]["wifi"]["bssid"] = WiFi.BSSIDstr();
     doc["device"]["wifi"]["ip"] = net.localIP().toString();
     doc["device"]["wifi"]["hostname"] = WiFi.getHostname();
-    doc["device"]["wifi"]["mqtt-local-port"] = net.localPort();
+    doc["device"]["wifi"]["mqttLocalPort"] = net.localPort();
+    doc["device"]["wifi"]["macAddress"] = WiFi.macAddress();
+  };
 
+  void setupMqttConnection() {
+    net.setNoDelay(true);
+    StaticJsonDocument<1024> doc;
+    JsonObject obj = doc.to<JsonObject>();
+    getGlobalInfo(obj);
     String output;
     serializeJson(doc, output);
     _client->publish(_configurationTopic, output, true, 2);
@@ -78,7 +84,7 @@ public:
   };
 
   void messageReceived(MQTTClient *client, char topic[], char bytes[], int length) {
-    DynamicJsonDocument doc(ESP.getMaxAllocHeap() - 1024);
+    DynamicJsonDocument doc(2048);
     DeserializationError error = deserializeJson(doc, bytes, length);
     if (!error) {
       doc.shrinkToFit();
@@ -123,9 +129,12 @@ public:
   virtual void getStatus(JsonObject &doc) const override {
     doc["system"]["timestamp"] = getTime();
     doc["system"]["freeHeap"] = ESP.getFreeHeap();
+    doc["system"]["minFreeHeap"] = ESP.getMinFreeHeap();
+    doc["system"]["maxAllocHeap"] = ESP.getMaxAllocHeap();
     doc["system"]["stackHighWaterMark"] = uxTaskGetStackHighWaterMark(NULL);
     doc["system"]["rssi"] = WiFi.RSSI();
     doc["system"]["mqtt-reconnects"] = _mqttReconnectCount;
+    doc["system"]["upTime"] = (uint32_t)(esp_timer_get_time() / 1000 / 1000);
   };
 
   virtual void setConfig(const JsonObject &doc) override {

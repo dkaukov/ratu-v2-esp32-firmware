@@ -63,6 +63,8 @@
 #define C2_ACTUATOR_MIN 5.0
 #define C2_ACTUATOR_MAX 1304.0
 
+#define HW_INFO "AD8310/8x8x8"
+
 namespace Hardware {
 
 using namespace Sensor;
@@ -165,6 +167,14 @@ public:
     TMatch::getStatus(doc);
     auto node = doc["atu"];
     node["mode"] = _mode;
+  }
+
+  virtual void getInfo(JsonObject &doc) const override {
+    TMatch::getInfo(doc);
+    auto node = doc["atu"];
+    node["modes"][0] = "ATU_MODE_TMATCH";
+    node["modes"][1] = "ATU_MODE_LC";
+    node["modes"][2] = "ATU_MODE_CL";
   }
 };
 

@@ -89,6 +89,12 @@ public:
       _LOGD("actuator", "Actuator: %s. Setting delay to %d", _name, _delay);
     }
   };
+
+  virtual void getInfo(JsonObject &doc) const override {
+    Actuator::getInfo(doc);
+    doc["actuator"][_name]["type"] = "dac";
+  }
+
 };
 
 } // namespace Actuators

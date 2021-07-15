@@ -30,6 +30,7 @@ enum {
   MESSAGE_TIMER,
   MESSAGE_COMMAND,
   MESSAGE_PUBLISH,
+  MESSAGE_GET_INFO,
 };
 
 enum {
@@ -85,13 +86,19 @@ struct MessagePublish : public etl::message<MESSAGE_PUBLISH> {
   const JsonDocument &doc;
 };
 
+struct MessageGetInfo : public etl::message<MESSAGE_GET_INFO> {
+  MessageGetInfo(JsonObject &doc_) : doc(doc_){};
+  JsonObject &doc;
+};
+
+
 typedef etl::message_bus<16> MessageBus_t;
 typedef etl::message_timer<TIMER_TYPE_COUNT> MessageTimer_t;
 
 static MessageBus_t bus;
 static MessageTimer_t timer;
 
-class Component : public etl::message_router<Component, MessageLoop, MessageGetStatus, MessageSetConfig, MessageTimer, MessageCommand, MessagePublish> {
+class Component : public etl::message_router<Component, MessageLoop, MessageGetStatus, MessageSetConfig, MessageTimer, MessageCommand, MessagePublish, MessageGetInfo> {
 private:
   MessageBus_t *_bus;
 
@@ -149,10 +156,14 @@ public:
   void on_receive(etl::imessage_router &sender, const MessagePublish &msg) { on_receive(msg); }
   void on_receive(const MessagePublish &msg) { onPublish(msg.topic, msg.doc); };
 
+  void on_receive(etl::imessage_router &sender, const MessageGetInfo &msg) { getInfo(msg.doc); }
+  void on_receive(const MessageGetInfo &msg) { getInfo(msg.doc); };
+
   virtual void getStatus(JsonObject &doc) const {};
   virtual void setConfig(const JsonObject &doc){};
   virtual void onCommand(command_type_t type, const JsonObject &doc){};
   virtual void onPublish(const char *topic, const JsonDocument &doc){};
+  virtual void getInfo(JsonObject &doc) const {};
 
   virtual void init(){};
   virtual void loop(){};
@@ -181,6 +192,10 @@ public:
   };
   void publish(const String &topic, const JsonDocument &doc) const {
     MessagePublish msg = {topic.c_str(), doc};
+    _bus->receive(msg);
+  };
+  void getGlobalInfo(JsonObject &doc) const {
+    MessageGetInfo msg = {doc};
     _bus->receive(msg);
   };
 };

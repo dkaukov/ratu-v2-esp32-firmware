@@ -24,9 +24,11 @@ const char *getDeviceId();
 #include "lwip/apps/sntp.h"
 #include "network/MQTT.h"
 #include "network/SDR.h"
+#include "network/WEB.h"
 #include "secrets.h"
 #include <Arduino.h>
 #include <ArduinoOTA.h>
+#include <FS.h>
 
 #define CLIENT_ID_TEMPLATE "ATU-%06X"
 #define CLIENT_ID_SIZE (sizeof(CLIENT_ID_TEMPLATE) + 5)
@@ -110,6 +112,7 @@ void setup() {
   ArduinoOTA.begin();
   Network::mqtt.init();
   Network::sdr.init();
+  Network::web.init();
   Hardware::atu.init();
   Hardware::atu.registerObserver(Network::sdr);
   mgr.init();

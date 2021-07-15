@@ -11,14 +11,46 @@
 #include <Arduino.h>
 #include <stdio.h>
 
+void __null_debug_transport(const char *) {};
+
+typedef void (*debug_transport_t)(const char *);
+debug_transport_t __debug_transport = __null_debug_transport;
+
+debug_transport_t set_debug_transport(debug_transport_t new_transport) {
+  debug_transport_t res = __debug_transport;
+  __debug_transport = new_transport;
+  return res;
+}
+
 #if defined(MECH_DEBUG)
+
+int debug_log_printf(const char* format, ...) {
+  static char loc_buf[64];
+  char* temp = loc_buf;
+  int len;
+  va_list arg;
+  va_list copy;
+  va_start(arg, format);
+  va_copy(copy, arg);
+  len = vsnprintf(NULL, 0, format, arg);
+  va_end(copy);
+  if (len >= sizeof(loc_buf)) {
+    temp = (char*)malloc(len + 1);
+    if (temp == NULL) {
+      return 0;
+    }
+  }
+  vsnprintf(temp, len + 1, format, arg);
+  __debug_transport(temp);
+  va_end(arg);
+  if (len >= sizeof(loc_buf)) {
+    free(temp);
+  }
+  return len;
+}
 
 #define __ASSERT_USE_STDERR
 #include <assert.h>
-
-#define BUFF_SIZE 8
-char __dbg_buff[BUFF_SIZE];
-uint8_t __dbg_buff_ptr = 0;
 
 #if defined(ESP32)
 
@@ -40,30 +72,35 @@ static bool __sysLogEnabled = false;
     ESP_LOGE(tag, fmt, ##__VA_ARGS__);                                 \
     if (__sysLogEnabled)                                               \
       syslog.logf(LOG_ERR, ARDUHAL_LOG_FORMAT(E, fmt), ##__VA_ARGS__); \
+    debug_log_printf(ARDUHAL_LOG_FORMAT(E, fmt), ##__VA_ARGS__);       \
   }
 #define _LOGW(tag, fmt, ...)                                               \
   {                                                                        \
     ESP_LOGW(tag, fmt, ##__VA_ARGS__);                                     \
     if (__sysLogEnabled)                                                   \
       syslog.logf(LOG_WARNING, ARDUHAL_LOG_FORMAT(W, fmt), ##__VA_ARGS__); \
+    debug_log_printf(ARDUHAL_LOG_FORMAT(E, fmt), ##__VA_ARGS__);       \
   }
 #define _LOGI(tag, fmt, ...)                                            \
   {                                                                     \
     ESP_LOGI(tag, fmt, ##__VA_ARGS__);                                  \
     if (__sysLogEnabled)                                                \
       syslog.logf(LOG_INFO, ARDUHAL_LOG_FORMAT(I, fmt), ##__VA_ARGS__); \
+    debug_log_printf(ARDUHAL_LOG_FORMAT(E, fmt), ##__VA_ARGS__);       \
   }
 #define _LOGD(tag, fmt, ...)                                             \
   {                                                                      \
     ESP_LOGD(tag, fmt, ##__VA_ARGS__);                                   \
     if (__sysLogEnabled)                                                 \
       syslog.logf(LOG_DEBUG, ARDUHAL_LOG_FORMAT(D, fmt), ##__VA_ARGS__); \
+    debug_log_printf(ARDUHAL_LOG_FORMAT(E, fmt), ##__VA_ARGS__);       \
   }
 #define _LOGV(tag, fmt, ...)                                             \
   {                                                                      \
     ESP_LOGV(tag, fmt, ##__VA_ARGS__);                                   \
     if (__sysLogEnabled)                                                 \
       syslog.logf(LOG_DEBUG, ARDUHAL_LOG_FORMAT(V, fmt), ##__VA_ARGS__); \
+    debug_log_printf(ARDUHAL_LOG_FORMAT(E, fmt), ##__VA_ARGS__);       \
   }
 
 #else
@@ -71,22 +108,27 @@ static bool __sysLogEnabled = false;
 #define _LOGE(tag, fmt, ...)           \
   {                                    \
     ESP_LOGE(tag, fmt, ##__VA_ARGS__); \
+    debug_log_printf(ARDUHAL_LOG_FORMAT(E, fmt), ##__VA_ARGS__);       \
   }
 #define _LOGW(tag, fmt, ...)           \
   {                                    \
     ESP_LOGW(tag, fmt, ##__VA_ARGS__); \
+    debug_log_printf(ARDUHAL_LOG_FORMAT(E, fmt), ##__VA_ARGS__);       \
   }
 #define _LOGI(tag, fmt, ...)           \
   {                                    \
     ESP_LOGI(tag, fmt, ##__VA_ARGS__); \
+    debug_log_printf(ARDUHAL_LOG_FORMAT(E, fmt), ##__VA_ARGS__);       \
   }
 #define _LOGD(tag, fmt, ...)           \
   {                                    \
     ESP_LOGD(tag, fmt, ##__VA_ARGS__); \
+    debug_log_printf(ARDUHAL_LOG_FORMAT(E, fmt), ##__VA_ARGS__);       \
   }
 #define _LOGV(tag, fmt, ...)           \
   {                                    \
     ESP_LOGV(tag, fmt, ##__VA_ARGS__); \
+    debug_log_printf(ARDUHAL_LOG_FORMAT(E, fmt), ##__VA_ARGS__);       \
   }
 
 #endif

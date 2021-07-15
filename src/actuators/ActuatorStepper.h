@@ -88,12 +88,19 @@ protected:
 public:
   ActuatorStepper(FastAccelStepper *&stepper,
                   const uint8_t sensorPin,
-                  const uint32_t max,
-                  const char *name) : Actuator(Core::COMPONENT_CLASS_ACTUATOR, name),
+                  const uint32_t maxSteps,
+                  const char *name,
+                  const float min,
+                  const float max) : Actuator(Core::COMPONENT_CLASS_ACTUATOR, name),
                                       _stepper(stepper),
                                       _sensorPin(sensorPin) {
-    _max = max;
-  };
+    _max = maxSteps;
+    _a = (max - min) / (_max - _min);
+    _b = min - _min * _a;
+
+    __a = 1.0 / _a;
+    __b = _b / _a;
+};
 
   virtual void init() override {
     pinMode(_sensorPin, INPUT);
@@ -150,6 +157,14 @@ public:
 
   virtual void registerPowerManager(ActuatorStepperPowerManager &pwrManager) {
     add_observer(pwrManager);
+  }
+
+  virtual void getInfo(JsonObject &doc) const override {
+    Actuator::getInfo(doc);
+    doc["actuator"][_name]["type"] = "stepper";
+    doc["actuator"][_name]["sensorPin"] = _sensorPin;
+    doc["actuator"][_name]["dirPin"] = _stepper->getDirectionPin();
+    doc["actuator"][_name]["stepPin"] = _stepper->getStepPin();
   }
 };
 

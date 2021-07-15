@@ -33,11 +33,19 @@
 #define C1_SPEED 1000
 #define C1_ACCELERATION 2000
 
+#define L_ACTUATOR_MIN 0.05
+#define L_ACTUATOR_MAX 12.75
+
+#define C1_ACTUATOR_MIN 5.0
+#define C1_ACTUATOR_MAX 1304.0
+
 /*
   System parameters
 */
 #define L_ACTUATOR_NAME "L"
 #define C1_ACTUATOR_NAME "C1"
+
+#define HW_INFO "AD8310/2xSteppers"
 
 namespace Hardware {
 
@@ -54,8 +62,8 @@ FastAccelStepper *stepperL = NULL;
 FastAccelStepper *stepperC1 = NULL;
 
 ActuatorStepperPowerManager pwrManager(ALL_MOTORS_ENABLE_PIN);
-ActuatorStepper actuatorL(stepperL, L_SENSOR_PIN, L_RANGE_IN_STEPS, L_ACTUATOR_NAME);
-ActuatorStepper actuatorC1(stepperC1, C1_SENSOR_PIN, C1_RANGE_IN_STEPS, C1_ACTUATOR_NAME);
+ActuatorStepper actuatorL(stepperL, L_SENSOR_PIN, L_RANGE_IN_STEPS, L_ACTUATOR_NAME, L_ACTUATOR_MIN, L_ACTUATOR_MAX);
+ActuatorStepper actuatorC1(stepperC1, C1_SENSOR_PIN, C1_RANGE_IN_STEPS, C1_ACTUATOR_NAME, C1_ACTUATOR_MIN, C1_ACTUATOR_MAX);
 
 class LMatchWithSteppers : public Device::LMatch {
 public:
