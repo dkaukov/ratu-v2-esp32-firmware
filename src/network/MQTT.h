@@ -84,7 +84,7 @@ public:
   };
 
   void messageReceived(MQTTClient *client, char topic[], char bytes[], int length) {
-    DynamicJsonDocument doc(ESP.getMaxAllocHeap() - 1024);
+    DynamicJsonDocument doc(2048);
     DeserializationError error = deserializeJson(doc, bytes, length);
     if (!error) {
       doc.shrinkToFit();

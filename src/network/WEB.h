@@ -10,18 +10,18 @@ namespace Network {
 
 #define LOG_BUFF_SIZE (WS_MAX_QUEUED_MESSAGES - 1)
 
-void __debug_transport_web_callback(const char* s);
+void __debug_transport_web_callback(const char *s);
 
 class WEB : public Core::Component {
- private:
-  AsyncWebServer* _server = nullptr;
-  AsyncWebSocket* _ws = nullptr;
+private:
+  AsyncWebServer *_server = nullptr;
+  AsyncWebSocket *_ws = nullptr;
   debug_transport_t __debug_transport_chain;
   String _logBuff[LOG_BUFF_SIZE];
   uint8_t _logBuffHead = 0;
   uint8_t _logBuffTail = 0;
 
-  const String& buffPush(const String& val) {
+  const String &buffPush(const String &val) {
     _logBuff[_logBuffHead] = String(val);
     _logBuffHead = ((uint8_t)(_logBuffHead + 1) % LOG_BUFF_SIZE);
     if (_logBuffHead == _logBuffTail) {
@@ -30,7 +30,7 @@ class WEB : public Core::Component {
     return val;
   }
 
- protected:
+protected:
   virtual void sendStatus() {
     StaticJsonDocument<1024> doc;
     JsonObject obj = doc.to<JsonObject>();
@@ -41,7 +41,7 @@ class WEB : public Core::Component {
     _ws->textAll(output);
   }
 
-  virtual void logMessade(const String& message) {
+  virtual void logMessade(const String &message) {
     StaticJsonDocument<512> doc;
     doc["topic"] = "log";
     doc["message"] = message;
@@ -50,7 +50,7 @@ class WEB : public Core::Component {
     _ws->textAll(output);
   }
 
-  virtual void sendConfig(AsyncWebSocketClient* client) {
+  virtual void sendConfig(AsyncWebSocketClient *client) {
     StaticJsonDocument<1024> doc;
     JsonObject obj = doc.to<JsonObject>();
     getGlobalInfo(obj);
@@ -60,7 +60,7 @@ class WEB : public Core::Component {
     client->text(output);
   }
 
-  virtual void sendLogBuffer(AsyncWebSocketClient* client) {
+  virtual void sendLogBuffer(AsyncWebSocketClient *client) {
     uint8_t ptr = _logBuffTail;
     while (ptr != _logBuffHead) {
       StaticJsonDocument<512> doc;
@@ -73,7 +73,7 @@ class WEB : public Core::Component {
     }
   }
 
-  virtual void handleRequest(AsyncWebSocketClient* client, const JsonObject& doc) {
+  virtual void handleRequest(AsyncWebSocketClient *client, const JsonObject &doc) {
     String response;
     if (doc["command"] == "ping") {
       response = "{\"command\":\"pong\"}";
@@ -81,29 +81,29 @@ class WEB : public Core::Component {
     client->text(response);
   }
 
- public:
+public:
   WEB() : Core::Component(Core::COMPONENT_CLASS_NETWORK) {
     static AsyncWebServer server(80);
     _server = &server;
     _ws = new AsyncWebSocket("/dashws");
-    _server->on("/", HTTP_GET, [this](AsyncWebServerRequest* request) {
+    _server->on("/", HTTP_GET, [this](AsyncWebServerRequest *request) {
       // respond with the compressed frontend
-      AsyncWebServerResponse* response =
+      AsyncWebServerResponse *response =
           request->beginResponse_P(200, "text/html", DASH_HTML, DASH_HTML_SIZE);
       response->addHeader("Content-Encoding", "gzip");
       request->send(response);
     });
-    _ws->onEvent([&](AsyncWebSocket* server, AsyncWebSocketClient* client,
-                     AwsEventType type, void* arg, uint8_t* data, size_t len) {
+    _ws->onEvent([&](AsyncWebSocket *server, AsyncWebSocketClient *client,
+                     AwsEventType type, void *arg, uint8_t *data, size_t len) {
       if (type == WS_EVT_CONNECT) {
         sendConfig(client);
         sendLogBuffer(client);
       }
       if (type == WS_EVT_DATA) {
-        AwsFrameInfo* info = (AwsFrameInfo*)arg;
+        AwsFrameInfo *info = (AwsFrameInfo *)arg;
         if (info->final && info->index == 0 && info->len == len) {
           if (info->opcode == WS_TEXT) {
-            DynamicJsonDocument doc(ESP.getMaxAllocHeap() - 1024);
+            DynamicJsonDocument doc(2048);
             DeserializationError error = deserializeJson(doc, data, len);
             if (!error) {
               doc.shrinkToFit();
@@ -127,7 +127,7 @@ class WEB : public Core::Component {
 
   virtual void timer1000() override { sendStatus(); }
 
-  virtual void log(const char* s) {
+  virtual void log(const char *s) {
     logMessade(buffPush(String(s)));
     __debug_transport_chain(s);
   }
@@ -135,6 +135,6 @@ class WEB : public Core::Component {
 
 WEB web;
 
-void __debug_transport_web_callback(const char* s) { web.log(s); }
+void __debug_transport_web_callback(const char *s) { web.log(s); }
 
-}  // namespace Network
+} // namespace Network

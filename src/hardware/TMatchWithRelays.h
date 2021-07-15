@@ -168,6 +168,14 @@ public:
     auto node = doc["atu"];
     node["mode"] = _mode;
   }
+
+  virtual void getInfo(JsonObject &doc) const override {
+    TMatch::getInfo(doc);
+    auto node = doc["atu"];
+    node["modes"][0] = "ATU_MODE_TMATCH";
+    node["modes"][1] = "ATU_MODE_LC";
+    node["modes"][2] = "ATU_MODE_CL";
+  }
 };
 
 TMatchWithRelays atu;
