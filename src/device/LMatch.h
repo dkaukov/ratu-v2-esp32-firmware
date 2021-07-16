@@ -11,6 +11,11 @@ using namespace Sensor;
 using namespace Core;
 using namespace Actuators;
 
+typedef enum {
+  ATU_TUNING_TYPE_L,
+  ATU_TUNING_TYPE_C,
+} atu_tuning_type_t;
+
 class LMatch : public Device::ATU {
 protected:
   Actuators::Actuator &_actuatorL;
@@ -23,6 +28,29 @@ protected:
   int32_t _actuatorC1InitialStep = 0;
 
   float _historesis = 0.0;
+
+  atu_tuning_type_t _tuningMode = ATU_TUNING_TYPE_L;
+
+  atu_tuning_type_t stringToTuningType(const String &val) const {
+    if (val == "ATU_TUNING_TYPE_L") {
+      return ATU_TUNING_TYPE_L;
+    }
+    if (val == "ATU_TUNING_TYPE_C") {
+      return ATU_TUNING_TYPE_C;
+    }
+    return ATU_TUNING_TYPE_L;
+  }
+
+  const char *tuningTypeToString(const atu_tuning_type_t val) const {
+    switch (val) {
+    case ATU_TUNING_TYPE_L:
+      return "ATU_TUNING_TYPE_L";
+    case ATU_TUNING_TYPE_C:
+      return "ATU_TUNING_TYPE_C";
+    default:
+      return "";
+    }
+  }
 
 public:
   LMatch(SWRMeter &swrMeter,
@@ -46,10 +74,19 @@ public:
     _LOGI("autoTune", "start: %s=%f(%d), %s=%f(%d)",
           _actuatorL.getName(), _actuatorL.getPhisicalValue(), _actuatorL.getValue(),
           _actuatorC1.getName(), _actuatorC1.getPhisicalValue(), _actuatorC1.getValue());
-    optimise(_actuatorL, _actuatorLInitialStep, _historesis);
-    _LOGI("autoTune", "%s finished in %8d ms", _actuatorL.getName(), (uint32_t)millis() - startedTime);    
-    optimise(_actuatorC1, _actuatorC1InitialStep, _historesis);
-    _LOGI("autoTune", "%s finished in %8d ms", _actuatorC1.getName(), (uint32_t)millis() - startedTime);
+
+    if (_tuningMode == ATU_TUNING_TYPE_L) {
+      optimise(_actuatorL, _actuatorLInitialStep, _historesis);
+      _LOGI("autoTune", "%s finished in %8d ms", _actuatorL.getName(), (uint32_t)millis() - startedTime);
+      optimise(_actuatorC1, _actuatorC1InitialStep, _historesis);
+      _LOGI("autoTune", "%s finished in %8d ms", _actuatorC1.getName(), (uint32_t)millis() - startedTime);
+    } else {
+      optimise(_actuatorC1, _actuatorC1InitialStep, _historesis);
+      _LOGI("autoTune", "%s finished in %8d ms", _actuatorC1.getName(), (uint32_t)millis() - startedTime);
+      optimise(_actuatorL, _actuatorLInitialStep, _historesis);
+      _LOGI("autoTune", "%s finished in %8d ms", _actuatorL.getName(), (uint32_t)millis() - startedTime);
+    }
+
     _LOGI("autoTune", "finish: %s=%f(%d), %s=%f(%d)",
           _actuatorL.getName(), _actuatorL.getPhisicalValue(), _actuatorL.getValue(),
           _actuatorC1.getName(), _actuatorC1.getPhisicalValue(), _actuatorC1.getValue());
@@ -70,6 +107,9 @@ public:
     if (!node["C1"]["step"].isNull()) {
       _actuatorC1InitialStep = node["C1"]["step"];
     }
+    if (!node["tuningMode"].isNull()) {
+      _tuningMode = stringToTuningType(node["tuningMode"]);
+    }
   };
 
   virtual void resetToDefaults() override {
@@ -79,6 +119,12 @@ public:
   };
 
   virtual bool isReady() const override { return _actuatorL.isReady() && _actuatorC1.isReady(); }
+
+  virtual void getStatus(JsonObject &doc) const override {
+    ATU::getStatus(doc);
+    auto node = doc["atu"];
+    node["tuningMode"] = tuningTypeToString(_tuningMode);
+  }
 };
 
 } // namespace Device

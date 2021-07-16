@@ -7,6 +7,7 @@
     },
     "atu": {
         "mode": 1,
+        "tuningMode": "ATU_TUNING_TYPE_C",
         "L": {
             "step": 2,
             "initial": 20

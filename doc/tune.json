@@ -3,6 +3,7 @@
     "config": {
         "atu": {
             "mode": 0,
+            "tuningMode": "ATU_TUNING_TYPE_C",
             "L": {
                 "step": 2
             },
