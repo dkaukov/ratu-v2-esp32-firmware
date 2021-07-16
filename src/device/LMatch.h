@@ -108,7 +108,9 @@ public:
       _actuatorC1InitialStep = node["C1"]["step"];
     }
     if (!node["tuningMode"].isNull()) {
+#ifndef UNIT_TEST
       _tuningMode = stringToTuningType(node["tuningMode"]);
+#endif
     }
   };
 
