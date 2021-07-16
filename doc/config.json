@@ -18,12 +18,14 @@
         "C2": {
             "step": -8,
             "initial": 20
-        }
+        },
+        "swrMeterCyclesCount": 16
     },
     "sensor": {
         "SWRMeterAds1115Ad8310": {
             "fwdIntercept": 100.0,
-            "rflIntercept": 100.0
+            "rflIntercept": 100.0,
+            "sps": "ADS1115_128_SPS"
         }
     },
     "actuator": {
@@ -40,7 +42,7 @@
     "sdr": {
         "tune": {
             "trx": 0,
-            "tune_drive": 100   
+            "tune_drive": 100
         }
     }
 }

@@ -23,10 +23,62 @@ private:
   float _rflRaw;
   float _fwdIntercept = 840;
   float _rflIntercept = 840;
+  ADS1115_CONV_RATE _sps = ADS1115_16_SPS;
 
   ADS1115_WE &getAdc(int addr) {
     static ADS1115_WE __adc(addr);
     return __adc;
+  }
+
+  ADS1115_CONV_RATE stringToSPS(const String &sps) const {
+    if (sps == "ADS1115_8_SPS") {
+      return ADS1115_8_SPS;
+    }
+    if (sps == "ADS1115_16_SPS") {
+      return ADS1115_16_SPS;
+    }
+    if (sps == "ADS1115_32_SPS") {
+      return ADS1115_32_SPS;
+    }
+    if (sps == "ADS1115_64_SPS") {
+      return ADS1115_64_SPS;
+    }
+    if (sps == "ADS1115_128_SPS") {
+      return ADS1115_128_SPS;
+    }
+    if (sps == "ADS1115_250_SPS") {
+      return ADS1115_250_SPS;
+    }
+    if (sps == "ADS1115_475_SPS") {
+      return ADS1115_475_SPS;
+    }
+    if (sps == "ADS1115_860_SPS") {
+      return ADS1115_860_SPS;
+    }
+    return ADS1115_8_SPS;
+  }
+
+  const char *spsToString(const ADS1115_CONV_RATE sps) const {
+    switch (sps) {
+    case ADS1115_8_SPS:
+      return "ADS1115_8_SPS";
+    case ADS1115_16_SPS:
+      return "ADS1115_16_SPS";
+    case ADS1115_32_SPS:
+      return "ADS1115_32_SPS";
+    case ADS1115_64_SPS:
+      return "ADS1115_64_SPS";
+    case ADS1115_128_SPS:
+      return "ADS1115_128_SPS";
+    case ADS1115_250_SPS:
+      return "ADS1115_250_SPS";
+    case ADS1115_475_SPS:
+      return "ADS1115_475_SPS";
+    case ADS1115_860_SPS:
+      return "ADS1115_860_SPS";
+    default:
+      return "";
+    }
   }
 
 public:
@@ -67,7 +119,7 @@ public:
     pinMode(_alertReadyPin, INPUT_PULLUP);
     _adc.init();
     _adc.setVoltageRange_mV(ADS1115_RANGE_4096);
-    _adc.setConvRate(ADS1115_16_SPS);
+    _adc.setConvRate(_sps);
     _adc.setMeasureMode(ADS1115_SINGLE);
     _adc.setAlertPinMode(ADS1115_ASSERT_AFTER_1);
     _adc.setAlertPinToConversionReady();
@@ -93,6 +145,7 @@ public:
     node["rflRaw"] = _rflRaw;
     node["fwdIntercept"] = _fwdIntercept;
     node["rflIntercept"] = _rflIntercept;
+    node["sps"] = spsToString(_sps);
     SWRMeter::getStatus(doc);
   };
 
@@ -104,6 +157,13 @@ public:
     }
     if (!node["rflIntercept"].isNull()) {
       _rflIntercept = node["rflIntercept"];
+    }
+    if (!node["sps"].isNull()) {
+      auto sps = stringToSPS(node["sps"]);
+      if (_sps != sps) {
+        _sps = sps;
+        _adc.setConvRate(_sps);
+      }
     }
   };
 

@@ -249,6 +249,13 @@ public:
     }
   }
 
+  virtual void setConfig(const JsonObject &doc) override {
+    auto node = doc["atu"];
+    if (!node["swrMeterCyclesCount"].isNull()) {
+      _swrMeterCyclesCount = node["swrMeterCyclesCount"];
+    }
+  }
+
   virtual void registerObserver(TxTuneRequest_Observer &observer) {
     add_observer(observer);
   }
