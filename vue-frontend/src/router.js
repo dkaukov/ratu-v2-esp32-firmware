@@ -6,6 +6,7 @@ Vue.use(Router);
 import Home from './views/Home.vue';
 import Stats from './views/Stats.vue';
 import Log from './views/Log.vue';
+import Control from './views/Control.vue';
 // import Lock from './views/Lock.vue';
 
 export default new Router({
@@ -32,6 +33,11 @@ export default new Router({
       path: '/log',
       name: 'Log',
       component: Log
+    },
+    {
+      path: '/control',
+      name: 'Control',
+      component: Control
     }
   ]
 })
