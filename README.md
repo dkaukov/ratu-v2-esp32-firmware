@@ -1,7 +1,7 @@
 <p align="center">
 <img src="https://img.shields.io/github/last-commit/dkaukov/ratu-v2-esp32-firmware/main?style=for-the-badge" />
 &nbsp;
-<img src="https://github.com/dkaukov/ratu-v2-esp32-firmware/actions/workflows/main.yml/badge.svg" />
+<img src="https://img.shields.io/github/workflow/dkaukov/ratu-v2-esp32-firmware/main.yml?style=for-the-badge" />
 &nbsp;
 <img src="https://img.shields.io/github/license/dkaukov/ratu-v2-esp32-firmware.svg?style=for-the-badge" />
 </p>
