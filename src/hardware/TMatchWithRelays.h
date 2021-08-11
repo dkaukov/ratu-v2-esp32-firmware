@@ -60,7 +60,7 @@
 #define K25 27 // bypass C2         // ESP32 GPI027
 */
 
-#define ADS1115_ALERT_READY_PIN 19
+#define ADS1115_ALERT_READY_PIN 23
 
 /*
   System parameters
