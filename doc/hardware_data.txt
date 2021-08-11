@@ -1,0 +1,30 @@
+PCB (HW) Version 0.6
+
+Parisitic inductance of the board = 180uH. It remains  constant with regards of L-metwork relay(s) engaged.
+
+Parasitic capacitance of C1 is 25pF. It remains  constant with regards of C1-metwork relay(s) engaged.
+
+Parasitic capacitance of C2 is 33pF. It remains  constant with regards of C2-metwork relay(s) engaged.
+
+Construction details for Coils:
+            No of Turns     Coil inner Dea (mm)     Step (mm)       Frame
+0.05 uH         3                   8                   5           none
+0.1 uH          4                   10                  4           none
+0.2 uH          5                   12                  3           none
+0.4 uH          5                   20                  3           none
+0.8 uH          7                   22                  3-4         none
+1.5 uH          11                  n/a                 5           1x T130-2
+3.2 uH          11                  n/a                 5           2x T130-2
+6.4 uH          13                  n/a                 5           3x T130-2
+
+*Step = distance from wire center to wire center (i.e NOT space between steps)
+
+Coils coarse measurement should be done prior soldering to board. Lease some extra length of wire.
+Once soldered (with ewlays), fine tuning has to be performed to make coil inductance as much close as possible to 
+nominal. Adjustments +/- 10-50 nH can be done by increasing-decreasing step between the turns. Decreasing 
+step = more inductive, increasing step = less inductive.
+
+Capacitors fine tuning has to be done on board with relays soldered. Combine capacitors to keep total 
+capacitance of each C as much closer to monimal as possible.
+
+To perform measurements, use well calibrated instrument (like OSA103M or similar).
