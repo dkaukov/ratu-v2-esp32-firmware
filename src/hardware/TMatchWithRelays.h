@@ -7,33 +7,47 @@
 #include "device/TMatch.h"
 #include <Arduino.h>
 
+//HW PCB version 0.6 (current)
 /*
   Board pin definitions
 */
 // ****** L network  MCP23017 GPA ******
-#define K1 0 // 0.05 uH    1        // GPA7
-#define K2 1 // 0.1 uH     2        // GPA6
-#define K3 2 // 0.2 uH     4        // GPA5
-#define K4 3 // 0.4 uH     8        // GPA4
-#define K5 4 // 0.8 uH     16       // GPA3
-#define K6 5 // 1.6 uH     32       // GPA2
-#define K7 6 // 3.2 uH     64       // GPA1
-#define K8 7 // 6.4 uH     128      // GPA0
+#define K1 0 // 0.05 uH    1        // GPA0
+#define K2 1 // 0.1 uH     2        // GPA1
+#define K3 2 // 0.2 uH     4        // GPA2
+#define K4 3 // 0.4 uH     8        // GPA3
+#define K5 4 // 0.8 uH     16       // GPA4
+#define K6 5 // 1.6 uH     32       // GPA5
+#define K7 6 // 3.2 uH     64       // GPA6
+#define K8 7 // 6.4 uH     128      // GPA7
 
 // ****** C1 network  MCP23017 GPB  ******
 #define K9 15  // 5 pF       1       // GPB7
 #define K10 14 // 10 pF      2       // GPB6
-#define K11 13 // 22 pF      4      // GPB5
-#define K12 12 // 39 pF      8      // GPB4
-#define K13 11 // 78 pF      16     // GPB3
-#define K14 10 // 160 pF     32     // GPB2
-#define K15 9  // 330 pF     64     // GPB1
-#define K16 8  // 660 pF     128    // GPB0
+#define K11 13 // 20 pF      4       // GPB5
+#define K12 12 // 40 pF      8       // GPB4
+#define K13 11 // 80 pF      16      // GPB3
+#define K14 10 // 160 pF     32      // GPB2
+#define K15 9  // 320 pF     64      // GPB1
+#define K16 8  // 640 pF     128     // GPB0
 
 #define K26 26 // bypass C1         // ESP32 GPI026
 
 // ****** C2 network ESP32 GPIO ******
-// PCB version 4
+#define K17 14  // 5 pF        1    // ESP32 GPI014
+#define K18 12  // 10 pF       2    // ESP32 GPI012
+#define K19 26  // 20 pF       4    // ESP32 GPI026
+#define K20 19  // 40 pF       8    // ESP32 GPI019
+#define K21 17  // 80 pF       16   // ESP32 GPI017
+#define K22 16  // 160 pF      32   // ESP32 GPI016
+#define K23 2   // 320 pF      64   // ESP32 GPI02
+#define K24 18  // 640 pF      128  // ESP32 GPI018
+
+#define K25 27 // bypass C2         // ESP32 GPI027
+
+//HW PCB version 0.5
+// ****** C2 network ESP32 GPIO ******
+/*
 #define K17 18 // 5 pF        1    // ESP32 GPI018
 #define K18 5  // 10 pF       2    // ESP32 GPI05
 #define K19 17 // 22 pF       4    // ESP32 GPI017
@@ -44,6 +58,7 @@
 #define K24 23 // 660 pF      128  // ESP32 GPI023
 
 #define K25 27 // bypass C2         // ESP32 GPI027
+*/
 
 #define ADS1115_ALERT_READY_PIN 19
 
