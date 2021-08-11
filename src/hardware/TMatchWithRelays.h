@@ -40,7 +40,7 @@
 #define K20 19  // 40 pF       8    // ESP32 GPI019
 #define K21 17  // 80 pF       16   // ESP32 GPI017
 #define K22 16  // 160 pF      32   // ESP32 GPI016
-#define K23 2   // 320 pF      64   // ESP32 GPI02
+#define K23 15   // 320 pF      64   // ESP32 GPI15
 #define K24 18  // 640 pF      128  // ESP32 GPI018
 
 #define K25 27 // bypass C2         // ESP32 GPI027
