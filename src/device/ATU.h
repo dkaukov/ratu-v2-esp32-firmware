@@ -163,12 +163,12 @@ protected:
   }
 
   void turnOnTrx() {
-    TxTuneRequest txTuneRequest = {tuneEnabled : true};
+    TxTuneRequest txTuneRequest = {.tuneEnabled = true};
     notify_observers(txTuneRequest);
   }
 
   void turnOffTrx() {
-    TxTuneRequest txTuneRequest = {tuneEnabled : false};
+    TxTuneRequest txTuneRequest = {.tuneEnabled = false};
     notify_observers(txTuneRequest);
   }
 

@@ -22,9 +22,9 @@ using namespace Core;
 using namespace Actuators;
 using namespace Model;
 
-ActuatorDACGPIO actuatorC1("C1", {pin : {0, 0, 0, 0, 0, 0, 0, 0}}, C1_ACTUATOR_MIN, C1_ACTUATOR_MAX);
-ActuatorDACGPIO actuatorC2("C2", {pin : {0, 0, 0, 0, 0, 0, 0, 0}}, C2_ACTUATOR_MIN, C2_ACTUATOR_MAX);
-ActuatorDACGPIO actuatorL("L", {pin : {0, 0, 0, 0, 0, 0, 0, 0}}, L_ACTUATOR_MIN, L_ACTUATOR_MAX);
+ActuatorDACGPIO actuatorC1("C1", {.pin = {0, 0, 0, 0, 0, 0, 0, 0}}, C1_ACTUATOR_MIN, C1_ACTUATOR_MAX);
+ActuatorDACGPIO actuatorC2("C2", {.pin = {0, 0, 0, 0, 0, 0, 0, 0}}, C2_ACTUATOR_MIN, C2_ACTUATOR_MAX);
+ActuatorDACGPIO actuatorL("L", {.pin = {0, 0, 0, 0, 0, 0, 0, 0}}, L_ACTUATOR_MIN, L_ACTUATOR_MAX);
 TMatchModel model;
 
 class TestSWRMeter : public SWRMeter {

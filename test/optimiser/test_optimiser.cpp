@@ -20,7 +20,7 @@ using namespace Sensor;
 using namespace Core;
 using namespace Actuators;
 
-ActuatorDACGPIO actuatorC2("test", {pin : {K17, K18, K19, K20, K21, K22, K23, K24}}, 1, 255);
+ActuatorDACGPIO actuatorC2("test", {.pin = {K17, K18, K19, K20, K21, K22, K23, K24}}, 1, 255);
 
 class TestSWRMeter : public SWRMeter {
 private:
