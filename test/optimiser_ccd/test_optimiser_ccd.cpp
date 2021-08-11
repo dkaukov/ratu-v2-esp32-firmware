@@ -27,7 +27,7 @@ ActuatorDACGPIO actuatorC2("C2", {pin : {0, 0, 0, 0, 0, 0, 0, 0}}, C2_ACTUATOR_M
 ActuatorDACGPIO actuatorL("L", {pin : {0, 0, 0, 0, 0, 0, 0, 0}}, L_ACTUATOR_MIN, L_ACTUATOR_MAX);
 TMatchModel model;
 
-class TestSWRMeter : public Sensor::SWRMeter {
+class TestSWRMeter : public SWRMeter {
 private:
   Actuator &_actuatorC1;
   Actuator &_actuatorC2;
