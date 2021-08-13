@@ -76,8 +76,9 @@ void printState() {
          Test::actuatorC1.getName(), Test::actuatorC1.getPhisicalValue(), Test::actuatorC1.getValue(),
          Test::actuatorL.getName(), Test::actuatorL.getPhisicalValue(), Test::actuatorL.getValue(),
          Test::actuatorC2.getName(), Test::actuatorC2.getPhisicalValue(), Test::actuatorC2.getValue());
-  printf("SWR=%f\n", Test::model.getSwr());
-  printf("Loss=%f\n", Test::model.getLoss() * 100.0);
+  printf("SWR         = %f\n", Test::model.getSwr());
+  printf("Loss        = %f%%\n", Test::model.getLoss() * 100.0);
+  printf("Est.Loss    = %f%%\n", Model::TMatchModel::estimateLoss(Test::model.getFreq(), Test::actuatorC1.getPhisicalValue(), Test::actuatorL.getPhisicalValue(), 100.0) * 100.0);
   printf("Measurements: %d\n", Test::swr.getMeasurementCount());
   printf("\n");
 }

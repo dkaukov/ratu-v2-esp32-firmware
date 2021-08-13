@@ -39,6 +39,10 @@ public:
     f = freq;
   }
 
+  float getFreq() {
+    return f;
+  }
+
   double getRho() {
     double zinr, zini, zl2r, zl2i, tr, ti, t, r;
     tr = zlr + z3r + z2r;
@@ -89,7 +93,7 @@ public:
     z2i = 2.0 * PI * f * el;
     z2r = z2i / qel;
 
-    z1r *= .02; 
+    z1r *= .02;
     z1i *= .02;
     z2r *= .02;
     z2i *= .02;
@@ -101,8 +105,16 @@ public:
     zlr = azlr;
     zli = azli;
 
-    zlr *= .02; 
+    zlr *= .02;
     zli *= .02;
+  }
+
+  static float estimateLoss(float frMhz, float c1Pf, float lMh, float qel) {
+    float pi = 4.0 * atan(1);
+    float xc = 1.0 / ((2.0 * pi * frMhz * c1Pf) / 1e6);
+    float xl = 2.0 * pi * frMhz * lMh;
+    float vlvi = sqrt(pow(50, 2) + pow(xc, 2)) / 50.0;
+    return (pow(vlvi, 2.0) / xl / qel) * 50.0;
   }
 };
 

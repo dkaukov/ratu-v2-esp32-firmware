@@ -18,10 +18,14 @@ void testModel() {
   model.setFreq(1.83);
   model.setLoad(10.0, 0.0);
   model.setComponents(140.45026012886674, 19.425302153551996, 249.99999999999994);
-  _LOGI("model", "SWR=%f", model.getSwr());
-  _LOGI("model", "Loss=%f", model.getLoss());
+  float estLoss = TMatchModel::estimateLoss(1.83, 140.45026012886674, 19.425302153551996, 100.0);
+  printf("\n");
+  printf("SWR      = %f\n", model.getSwr());
+  printf("Loss     = %f\n", model.getLoss());
+  printf("Est.Loss = %f\n", estLoss);
   TEST_ASSERT_DOUBLE_WITHIN(0.0001, 1.0, model.getSwr());
   TEST_ASSERT_DOUBLE_WITHIN(0.0001, 0.362792, model.getLoss());
+  TEST_ASSERT_DOUBLE_WITHIN(0.05, model.getLoss(), estLoss);
 }
 
 void runTests() {
