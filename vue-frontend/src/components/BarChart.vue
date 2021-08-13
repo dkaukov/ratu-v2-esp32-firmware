@@ -1,7 +1,7 @@
 <template>
   <div class="column is-12-mobile is-6-tablet is-5-desktop">
     <div class="card">
-      <span class="dot" :class="{'active': activity}"></span>
+      <span class="dot" :class="{ active: activity }"></span>
       <div class="card-content">
         <div class="columns is-mobile is-vcentered">
           <div class="column is-narrow has-text-primary">
@@ -18,7 +18,7 @@
             </div>
           </div>
           <div class="column">
-            <h6 class="is-size-6 has-text-muted">{{chart.name}}</h6>
+            <h6 class="is-size-6 has-text-muted">{{ chart.name }}</h6>
           </div>
         </div>
         <div class="columns">
@@ -32,79 +32,83 @@
 </template>
 
 <script>
-  import BarChartjs from './Charts/BarChart';
+import BarChartjs from "./Charts/BarChart";
 
-  export default {
-    props: ['chart'],
+export default {
+  props: ["chart"],
 
-    components: {
-      BarChartjs
-    },
+  components: {
+    BarChartjs,
+  },
 
-    data() {
-      return {
-        activity: true,
-        options: {
-          responsive: true,
-          aspectRatio: 1,
-          height: 200,
-          legend: {
-            display: false
-          },
-          scales: {
-            xAxes: [{
+  data() {
+    return {
+      activity: true,
+      options: {
+        responsive: true,
+        aspectRatio: 1,
+        height: 200,
+        legend: {
+          display: false,
+        },
+        scales: {
+          xAxes: [
+            {
               barPercentage: 0.6,
               gridLines: {
-                display: false
-              }
-            }],
-          }
-        }
-      }
-    },
-
-    watch: {
-      'chart.x_axis': {
-        deep: true,
-        handler() {
-          if (this.activity === false) {
-            this.activity = true;
-            setTimeout(() => {
-              this.activity = false
-            }, 100);
-          }
-        }
+                display: false,
+              },
+            },
+          ],
+        },
       },
-      'chart.y_axis': {
-        deep: true,
-        handler() {
-          if (this.activity === false) {
-            this.activity = true;
-            setTimeout(() => {
-              this.activity = false
-            }, 100);
-          }
+    };
+  },
+
+  watch: {
+    "chart.x_axis": {
+      deep: true,
+      handler() {
+        if (this.activity === false) {
+          this.activity = true;
+          setTimeout(() => {
+            this.activity = false;
+          }, 100);
         }
       },
     },
-
-    computed: {
-      chartData() {
-        return {
-          labels: this.chart.x_axis,
-          datasets: [{
-            label: '',
-            backgroundColor: '#4c73f5',
-            data: this.chart.y_axis
-          }]
+    "chart.y_axis": {
+      deep: true,
+      handler() {
+        if (this.activity === false) {
+          this.activity = true;
+          setTimeout(() => {
+            this.activity = false;
+          }, 100);
         }
-      }
+      },
     },
+  },
 
-    mounted() {
-      setTimeout(() => {
-        this.activity = false
-      }, 500);
-    }
-  }
+  computed: {
+    chartData() {
+      return {
+        labels: this.chart.x_axis,
+        datasets: [
+          {
+            label: "",
+            backgroundColor: "#4c73f5",
+            data: this.chart.y_axis,
+          },
+        ],
+      };
+    },
+  },
+
+  mounted() {
+    setTimeout(() => {
+      this.activity = false;
+    }, 500);
+  },
+};
 </script>

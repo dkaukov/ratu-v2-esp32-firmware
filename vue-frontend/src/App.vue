@@ -7,13 +7,7 @@
     </div>
     <div class="section pt-2">
       <transition name="fade" mode="out-in">
-        <router-view
-          :cards="cards"
-          :charts="charts"
-          :stats="stats"
-          :log="log"
-          :home="home"
-        />
+        <router-view :cards="cards" :charts="charts" :stats="stats" :log="log" :home="home" />
       </transition>
     </div>
   </div>
@@ -226,11 +220,7 @@ export default {
         if (json.actuator.C1) {
           this.home.C1.minValue = json.actuator.C1.minPh;
           this.home.C1.maxValue = json.actuator.C1.maxPh;
-          this.home.C1.majorTicks = this.getTicks(
-            this.home.C1.minValue,
-            this.home.C1.maxValue,
-            8
-          );
+          this.home.C1.majorTicks = this.getTicks(this.home.C1.minValue, this.home.C1.maxValue, 8);
           this.home.C1.value = json.actuator.C1.maxPh;
           this.home.C1.visible = true;
         } else {
@@ -241,11 +231,7 @@ export default {
         if (json.actuator.C2) {
           this.home.C2.minValue = json.actuator.C2.minPh;
           this.home.C2.maxValue = json.actuator.C2.maxPh;
-          this.home.C2.majorTicks = this.getTicks(
-            this.home.C2.minValue,
-            this.home.C2.maxValue,
-            8
-          );
+          this.home.C2.majorTicks = this.getTicks(this.home.C2.minValue, this.home.C2.maxValue, 8);
           this.home.C2.value = json.actuator.C2.maxPh;
           this.home.C2.visible = true;
         } else {
@@ -256,11 +242,7 @@ export default {
         if (json.actuator.L) {
           this.home.L.minValue = json.actuator.L.minPh;
           this.home.L.maxValue = json.actuator.L.maxPh;
-          this.home.L.majorTicks = this.getTicks(
-            this.home.L.minValue,
-            this.home.L.maxValue,
-            10
-          );
+          this.home.L.majorTicks = this.getTicks(this.home.L.minValue, this.home.L.maxValue, 10);
           this.home.L.value = json.actuator.L.maxPh;
           this.home.L.visible = true;
         } else {
@@ -283,10 +265,7 @@ export default {
         this.home.status.value = json.atu.state;
         let upTime = new Date(0);
         upTime.setSeconds(json.system.upTime || 0);
-        this.stats.upTime =
-          ((json.system.upTime || 0) / 60 / 60 / 24).toFixed(0) +
-          " days " +
-          upTime.toISOString().substr(11, 8);
+        this.stats.upTime = ((json.system.upTime || 0) / 60 / 60 / 24).toFixed(0) + " days " + upTime.toISOString().substr(11, 8);
         if (this.home.status.value === "ready") {
           this.home.status.symbol = "success";
         } else {
