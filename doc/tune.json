@@ -4,6 +4,7 @@
         "atu": {
             "mode": 0,
             "tuningMode": "ATU_TUNING_TYPE_C",
+            "swrMeterCyclesCount": 16,
             "L": {
                 "step": 2
             },
