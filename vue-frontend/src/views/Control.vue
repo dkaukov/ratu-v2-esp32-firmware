@@ -8,9 +8,9 @@
             <linear-gauge :value="home.pwr.value" :options="home.pwr" ref="pwr" style="margin-top: -118px"></linear-gauge>
           </div>
         </div>
-        <v-sevenseg :value="home.C1.value" color-back="transparent" color-on="green" color-off="rgb(255, 240, 255)" height=40 digits=7 slant=10></v-sevenseg>
-        <v-sevenseg :value="home.L.value" color-back="transparent" color-on="green" color-off="rgb(255, 240, 255)" height=40 digits=7 slant=10></v-sevenseg>
-        <v-sevenseg :value="home.C2.value" color-back="transparent" color-on="green" color-off="rgb(255, 240, 255)" height=40 digits=7 slant=10></v-sevenseg>
+        <v-sevenseg :value="round(home.C1.value)" color-back="transparent" color-on="green" color-off="rgb(255, 240, 255)" height=40 digits=7 slant=10></v-sevenseg>
+        <v-sevenseg :value="round(home.L.value)" color-back="transparent" color-on="green" color-off="rgb(255, 240, 255)" height=40 digits=7 slant=10></v-sevenseg>
+        <v-sevenseg :value="round(home.C2.value)" color-back="transparent" color-on="green" color-off="rgb(255, 240, 255)" height=40 digits=7 slant=10></v-sevenseg>
         <div class="columns is-vcentered">
           <div class="column is-1">
             <h6>{{ home.C1.title }}</h6>
@@ -98,7 +98,11 @@ export default {
     };
   },
 
-  methods: {},
+  methods: {
+    round(val) {
+      return val.toFixed(2);
+    },
+  },
 
   mounted() {
     this.$refs.c1.$watch("value", function (newVal, oldVal) {
