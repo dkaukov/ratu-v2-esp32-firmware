@@ -81,6 +81,23 @@ public:
   };
 
   virtual bool isReady() const override { return _actuatorL.isReady() && _actuatorC1.isReady() && _actuatorC2.isReady(); }
+
+  virtual void tune() override {
+    LMatch::tune();
+    if (_swrMeter.isInRange() && (_swrMeter.getSWR() > 1.5)) {
+      if (_tuningMode == ATU_TUNING_TYPE_C) {
+        _tuningMode = ATU_TUNING_TYPE_L;
+      } else {
+        _tuningMode = ATU_TUNING_TYPE_C;
+      }
+      _actuatorC1.setPct(1.0);
+      _actuatorC2.setPct(1.0);
+      _actuatorL.setPct(0.0);
+      busyWait([this]() { return !isReady(); });
+      LMatch::tune();
+    }
+  }
+
 };
 
 } // namespace Device
