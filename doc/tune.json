@@ -5,6 +5,7 @@
             "mode": 0,
             "tuningMode": "ATU_TUNING_TYPE_C",
             "swrMeterCyclesCount": 16,
+            "optimizerPrecision": 0.0015,
             "L": {
                 "step": 2
             },
