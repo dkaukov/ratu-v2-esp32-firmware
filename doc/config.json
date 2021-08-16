@@ -20,7 +20,8 @@
             "step": -8,
             "initial": 20
         },
-        "swrMeterCyclesCount": 16
+        "swrMeterCyclesCount": 16,
+        "optimizerPrecision": 0.0015
     },
     "sensor": {
         "SWRMeterAds1115Ad8310": {

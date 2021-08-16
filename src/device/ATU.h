@@ -29,6 +29,7 @@ protected:
   Sensor::SWRMeter &_swrMeter;
   uint8_t _swrMeterCyclesCount = 8;
   uint8_t _waitTickTimeout;
+  float _optimizerPrecision = 0.0015;
 
   float measureAndWait() {
     _swrMeter.startMeasurementCycle(_swrMeterCyclesCount);
@@ -163,12 +164,12 @@ protected:
   }
 
   void turnOnTrx() {
-    TxTuneRequest txTuneRequest = {tuneEnabled : true};
+    TxTuneRequest txTuneRequest = {.tuneEnabled = true};
     notify_observers(txTuneRequest);
   }
 
   void turnOffTrx() {
-    TxTuneRequest txTuneRequest = {tuneEnabled : false};
+    TxTuneRequest txTuneRequest = {.tuneEnabled = false};
     notify_observers(txTuneRequest);
   }
 
@@ -187,7 +188,7 @@ public:
       if (!_swrMeter.isInRange()) {
         break;
       }
-      if (abs(_swrMeter.getTarget() - target) < 0.001) {
+      if (abs(_swrMeter.getTarget() - target) < _optimizerPrecision) {
         break;
       }
       target = _swrMeter.getTarget();
@@ -253,6 +254,9 @@ public:
     auto node = doc["atu"];
     if (!node["swrMeterCyclesCount"].isNull()) {
       _swrMeterCyclesCount = node["swrMeterCyclesCount"];
+    }
+    if (!node["optimizerPrecision"].isNull()) {
+      _optimizerPrecision = node["optimizerPrecision"];
     }
   }
 
