@@ -31,14 +31,18 @@ private:
   }
 
 protected:
-  virtual void sendStatus() {
+  virtual void sendStatus(AsyncWebSocketClient *client = NULL) {
     StaticJsonDocument<1024> doc;
     JsonObject obj = doc.to<JsonObject>();
     doc["topic"] = "status";
     getGlobalStatus(obj);
     String output;
     serializeJson(doc, output);
-    _ws->textAll(output);
+    if (client == NULL) {
+      _ws->textAll(output);
+    } else {
+      client->text(output);
+    }
   }
 
   virtual void logMessade(const String &message) {
@@ -97,6 +101,7 @@ public:
                      AwsEventType type, void *arg, uint8_t *data, size_t len) {
       if (type == WS_EVT_CONNECT) {
         sendConfig(client);
+        sendStatus(client);
         sendLogBuffer(client);
       }
       if (type == WS_EVT_DATA) {
