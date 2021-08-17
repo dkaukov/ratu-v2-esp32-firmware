@@ -8,15 +8,14 @@
             <linear-gauge :value="home.pwr.value" :options="home.pwr" ref="pwr" style="margin-top: -118px"></linear-gauge>
           </div>
         </div>
-
         <div class="card-content">
           <div class="columns is-vcentered">
-            <actuator-card :key="card_c1" :actuator="home.C1"></actuator-card>
-            <div class="column"></div>
-            <actuator-card :key="card_l" :actuator="home.L"></actuator-card>
-            <div class="column"></div>
-            <actuator-card :key="card_c2" :actuator="home.C2"></actuator-card>
-            <div class="column"></div>
+            <actuator-card :key="card_c1" :actuator="home.C1" v-if="home.C1.visible"></actuator-card>
+            <div class="column" v-if="home.C1.visible"></div>
+            <actuator-card :key="card_l" :actuator="home.L" v-if="home.L.visible"></actuator-card>
+            <div class="column" v-if="home.L.visible"></div>
+            <actuator-card :key="card_c2" :actuator="home.C2" v-if="home.C2.visible"></actuator-card>
+            <div class="column" v-if="home.C2.visible"></div>
           </div>
         </div>
       </div>
