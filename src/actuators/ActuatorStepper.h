@@ -131,6 +131,7 @@ public:
         _targetPosition = 0;
         return;
       }
+      yeld();
     }
     _LOGI("calibrate", "Calibration of %s finished in %d steps.", _name, stepsTraveled);
     _stepper->forceStopAndNewPosition(0);
