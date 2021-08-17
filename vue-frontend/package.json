@@ -14,6 +14,7 @@
     "bulma": "^0.9.1",
     "bulma-slider": "^2.0.4",
     "chart.js": "^2.9.3",
+    "v-sevenseg": "^1.0.3",
     "vue": "^2.6.12",
     "vue-canvas-gauges": "^0.0.0",
     "vue-chartjs": "^3.5.1",

@@ -3,25 +3,19 @@
     <div class="container" v-if="true">
       <div class="section">
         <div class="columns is-vcentered">
-          <div class="column">
-            <div class="ml-4">
-              <status-card :key="'cardid'" :card="home.status"></status-card>
-            </div>
-          </div>
-          <div class="column is-two-thirds has-text-centered">
+          <div class="column is-full has-text-centered">
             <linear-gauge :value="home.swr.value" :options="home.swr" ref="swr"></linear-gauge>
             <linear-gauge :value="home.pwr.value" :options="home.pwr" ref="pwr" style="margin-top: -118px"></linear-gauge>
           </div>
         </div>
-        <div class="columns is-gapless">
-          <div class="column has-text-centered" v-if="home.C1.visible">
-            <radial-gauge :options="home.C1" :value="home.C1.value" ref="c1"></radial-gauge>
-          </div>
-          <div class="column has-text-centered" v-if="home.L.visible">
-            <radial-gauge :options="home.L" :value="home.L.value" ref="l"></radial-gauge>
-          </div>
-          <div class="column has-text-centered" v-if="home.C2.visible">
-            <radial-gauge :options="home.C2" :value="home.C2.value" ref="c2"></radial-gauge>
+        <div class="card-content">
+          <div class="columns is-vcentered">
+            <actuator-card :key="'card_c1'" :actuator="home.C1" v-if="home.C1.visible"></actuator-card>
+            <div class="column" v-if="home.C1.visible"></div>
+            <actuator-card :key="'card_l'" :actuator="home.L" v-if="home.L.visible"></actuator-card>
+            <div class="column" v-if="home.L.visible"></div>
+            <actuator-card :key="'card_c2'" :actuator="home.C2" v-if="home.C2.visible"></actuator-card>
+            <div class="column" v-if="home.C2.visible"></div>
           </div>
         </div>
       </div>
@@ -52,7 +46,7 @@
 //import GenericCard from '@/components/GenericCard.vue';
 //import TemperatureCard from '@/components/TemperatureCard.vue';
 //import HumdidityCard from '@/components/HumidityCard.vue';
-import StatusCard from "@/components/StatusCard.vue";
+//import StatusCard from "@/components/StatusCard.vue";
 //import ProgressCard from '@/components/ProgressCard.vue';
 //import SliderCard from '@/components/SliderCard.vue';
 //import ButtonCard from '@/components/ButtonCard.vue';
@@ -61,10 +55,12 @@ import StatusCard from "@/components/StatusCard.vue";
 //import LineChart from '@/components/LineChart.vue';
 
 import LinearGauge from "vue-canvas-gauges/src/LinearGauge";
-import RadialGauge from "vue-canvas-gauges/src/RadialGauge";
+//import RadialGauge from "vue-canvas-gauges/src/RadialGauge";
+
+import ActuatorCard from "@/components/ActuatorCard.vue";
 
 export default {
-  name: "home",
+  name: "control",
 
   props: ["cards", "charts", "home"],
 
@@ -72,14 +68,15 @@ export default {
     //GenericCard,
     //TemperatureCard,
     //HumdidityCard,
-    StatusCard,
+    //StatusCard,
     //ProgressCard,
     //ButtonCard,
     //SliderCard,
     //BarChart,
     LinearGauge,
-    RadialGauge,
+    //RadialGauge,
     //LineChart
+    ActuatorCard,
   },
 
   data() {
@@ -94,34 +91,13 @@ export default {
     };
   },
 
-  methods: {},
+  methods: {
+    round(val) {
+      return val.toFixed(2);
+    },
+  },
 
   mounted() {
-    this.$refs.c1.$watch("value", function (newVal, oldVal) {
-      if (newVal !== oldVal) {
-        this.chart._value = newVal;
-      }
-    });
-    this.$refs.c2.$watch("value", function (newVal, oldVal) {
-      if (newVal !== oldVal) {
-        this.chart._value = newVal;
-      }
-    });
-    this.$refs.l.$watch("value", function (newVal, oldVal) {
-      if (newVal !== oldVal) {
-        this.chart._value = newVal;
-      }
-    });
-    this.$refs.swr.$watch("value", function (newVal, oldVal) {
-      if (newVal !== oldVal) {
-        this.chart._value = newVal;
-      }
-    });
-    this.$refs.pwr.$watch("value", function (newVal, oldVal) {
-      if (newVal !== oldVal) {
-        this.chart._value = newVal;
-      }
-    });
   },
 };
 </script>

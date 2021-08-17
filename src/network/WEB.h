@@ -31,14 +31,18 @@ private:
   }
 
 protected:
-  virtual void sendStatus() {
+  virtual void sendStatus(AsyncWebSocketClient *client = NULL) {
     StaticJsonDocument<1024> doc;
     JsonObject obj = doc.to<JsonObject>();
     doc["topic"] = "status";
     getGlobalStatus(obj);
     String output;
     serializeJson(doc, output);
-    _ws->textAll(output);
+    if (client == NULL) {
+      _ws->textAll(output);
+    } else {
+      client->text(output);
+    }
   }
 
   virtual void logMessade(const String &message) {
@@ -75,10 +79,22 @@ protected:
 
   virtual void handleRequest(AsyncWebSocketClient *client, const JsonObject &doc) {
     String response;
-    if (doc["command"] == "ping") {
-      response = "{\"command\":\"pong\"}";
+    if (!doc["command"].isNull()) {
+      String cmd = doc["command"];
+      if (cmd == "ping") {
+        response = "{\"command\":\"pong\"}";
+        client->text(response);
+        return;
+      }
+      auto c = parseCommand(cmd);
+      if (c != Core::COMMAND_TYPE_UNKNOWN) {
+        broadcastCommand(c, doc);
+        sendStatus(client);
+      } else {
+        response = "{\"error\":\"Unknown command\"}";
+        client->text(response);
+      }
     }
-    client->text(response);
   }
 
 public:
@@ -97,6 +113,7 @@ public:
                      AwsEventType type, void *arg, uint8_t *data, size_t len) {
       if (type == WS_EVT_CONNECT) {
         sendConfig(client);
+        sendStatus(client);
         sendLogBuffer(client);
       }
       if (type == WS_EVT_DATA) {

@@ -1,6 +1,6 @@
 <template>
-  <div class="container" >
-    <log-viewer :log="log.lines" :hasNumber="false"  />
+  <div class="container">
+    <log-viewer :log="log.lines" :hasNumber="false" />
   </div>
 </template>
 
@@ -16,7 +16,7 @@ export default {
 
   methods: {},
 
-  props: ['log'],
+  props: ["log"],
 
   mounted() {},
 };
