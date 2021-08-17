@@ -1,7 +1,10 @@
 <template>
-  <div class="column box">
-    <h4 class="title is-4 is-pulled-right">{{ actuator.title }}</h4>
-    <v-sevenseg :value="displayValue" color-back="transparent" color-on="rgb(100, 100, 100)" color-off="rgb(250, 250, 250)" height="45" digits="6" slant="10"></v-sevenseg>
+  <div class="column box is-4">
+    <h4 class="title is-4 is-pulled-left">{{ actuator.title }}</h4>
+    <div class="is-pulled-right">
+      <v-sevenseg :value="displayValue" color-back="transparent" color-on="rgb(100, 100, 100)" color-off="rgb(245, 245, 245)" height="45" digits="6" slant="10" width="200"></v-sevenseg>
+      {{ actuator.units }}
+    </div>
     <div class="block" />
     <div>
       <input class="slider is-fullwidth s-circle is-large" :min="0" :max="1000" v-model="pct" @change="sendValue" type="range" style="opacity: 0.7" />
@@ -46,7 +49,7 @@ export default {
     return {
       activity: true,
       displayValue: this.round(this.actuator.value),
-      pct: (this.actuator.value - this.actuator.minValue) / (this.actuator.maxValue - this.actuator.minValue) * 1000
+      pct: ((this.actuator.value - this.actuator.minValue) / (this.actuator.maxValue - this.actuator.minValue)) * 1000,
     };
   },
 

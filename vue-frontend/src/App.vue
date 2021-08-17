@@ -310,6 +310,15 @@ export default {
       );
     });
 
+    EventBus.$on("tune", (data) => {
+      Socket.send(
+        JSON.stringify({
+          command: "tune",
+          config: data.config,
+        })
+      );
+    });
+
     EventBus.$on("buttonClicked", (data) => {
       Socket.send(
         JSON.stringify({

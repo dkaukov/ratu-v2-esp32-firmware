@@ -34,14 +34,14 @@
 #define K26 26 // bypass C1         // ESP32 GPI026
 
 // ****** C2 network ESP32 GPIO ******
-#define K17 14  // 5 pF        1    // ESP32 GPI014
-#define K18 12  // 10 pF       2    // ESP32 GPI012
-#define K19 26  // 20 pF       4    // ESP32 GPI026
-#define K20 19  // 40 pF       8    // ESP32 GPI019
-#define K21 17  // 80 pF       16   // ESP32 GPI017
-#define K22 16  // 160 pF      32   // ESP32 GPI016
-#define K23 15   // 320 pF      64   // ESP32 GPI15
-#define K24 18  // 640 pF      128  // ESP32 GPI018
+#define K17 14 // 5 pF        1    // ESP32 GPI014
+#define K18 12 // 10 pF       2    // ESP32 GPI012
+#define K19 26 // 20 pF       4    // ESP32 GPI026
+#define K20 19 // 40 pF       8    // ESP32 GPI019
+#define K21 17 // 80 pF       16   // ESP32 GPI017
+#define K22 16 // 160 pF      32   // ESP32 GPI016
+#define K23 15 // 320 pF      64   // ESP32 GPI15
+#define K24 18 // 640 pF      128  // ESP32 GPI018
 
 #define K25 27 // bypass C2         // ESP32 GPI027
 
@@ -109,9 +109,9 @@ public:
     _actuatorLInitial = 8;
     _actuatorC1Initial = 64;
     _actuatorC2Initial = 64;
-    _actuatorLInitialStep = 2;
-    _actuatorC1InitialStep = 2;
-    _actuatorC2InitialStep = 2;
+    _actuatorLInitialStep = 4;
+    _actuatorC1InitialStep = 4;
+    _actuatorC2InitialStep = 4;
   }
 
   virtual void init() override {

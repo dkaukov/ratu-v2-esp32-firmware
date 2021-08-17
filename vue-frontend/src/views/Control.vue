@@ -3,18 +3,19 @@
     <div class="container" v-if="true">
       <div class="section">
         <div class="columns is-vcentered">
-          <div class="column is-full has-text-centered">
+          <div class="column is-four-fifths has-text-centered">
             <linear-gauge :value="home.swr.value" :options="home.swr" ref="swr"></linear-gauge>
             <linear-gauge :value="home.pwr.value" :options="home.pwr" ref="pwr" style="margin-top: -118px"></linear-gauge>
           </div>
+          <div class="column is-1 has-text-centered">
+            <button class="button is-primary" style="cursor: pointer" @click="sendTune" :disabled="!this.isTuneEnabled">Tune</button>
+          </div>
         </div>
         <div class="card-content">
-          <div class="columns is-vcentered">
-            <actuator-card :key="'card_c1'" :actuator="home.C1" v-if="home.C1.visible"></actuator-card>
-            <div class="column" v-if="home.C1.visible"></div>
-            <actuator-card :key="'card_l'" :actuator="home.L" v-if="home.L.visible"></actuator-card>
-            <div class="column" v-if="home.L.visible"></div>
-            <actuator-card :key="'card_c2'" :actuator="home.C2" v-if="home.C2.visible"></actuator-card>
+          <div class="columns ml-2">
+            <actuator-card class="ml-2" :key="'card_c1'" :actuator="home.C1" v-if="home.C1.visible"></actuator-card>
+            <actuator-card class="ml-2" :key="'card_l'" :actuator="home.L" v-if="home.L.visible"></actuator-card>
+            <actuator-card class="ml-2" :key="'card_c2'" :actuator="home.C2" v-if="home.C2.visible"></actuator-card>
             <div class="column" v-if="home.C2.visible"></div>
           </div>
         </div>
@@ -58,6 +59,7 @@ import LinearGauge from "vue-canvas-gauges/src/LinearGauge";
 //import RadialGauge from "vue-canvas-gauges/src/RadialGauge";
 
 import ActuatorCard from "@/components/ActuatorCard.vue";
+import EventBus from "@/event-bus.js";
 
 export default {
   name: "control",
@@ -92,12 +94,17 @@ export default {
   },
 
   methods: {
-    round(val) {
-      return val.toFixed(2);
+    sendTune() {
+      this.msg = {
+        config: {},
+      };
+      EventBus.$emit("tune", this.msg);
+    },
+    isTuneEnabled() {
+      return this.home.status.value === "ready";
     },
   },
 
-  mounted() {
-  },
+  mounted() {},
 };
 </script>
