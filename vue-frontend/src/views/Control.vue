@@ -8,23 +8,17 @@
             <linear-gauge :value="home.pwr.value" :options="home.pwr" ref="pwr" style="margin-top: -118px"></linear-gauge>
           </div>
         </div>
-        <v-sevenseg :value="round(home.C1.value)" color-back="transparent" color-on="green" color-off="rgb(255, 240, 255)" height=40 digits=7 slant=10></v-sevenseg>
-        <v-sevenseg :value="round(home.L.value)" color-back="transparent" color-on="green" color-off="rgb(255, 240, 255)" height=40 digits=7 slant=10></v-sevenseg>
-        <v-sevenseg :value="round(home.C2.value)" color-back="transparent" color-on="green" color-off="rgb(255, 240, 255)" height=40 digits=7 slant=10></v-sevenseg>
-        <div class="columns is-vcentered">
-          <div class="column is-1">
-            <h6>{{ home.C1.title }}</h6>
-          </div>
-          <div class="column has-text-centered">
-            <input class="slider is-fullwidth s-circle is-large" :min="home.C1.minValue" :max="home.C1.maxValue" v-model="home.C1.value" type="range" />
-          </div>
-          <div class="column is-1">
-            <button class="button is-primary is-light is-outlined">
-              {{ home.C1.value }}
-            </button>
+
+        <div class="card-content">
+          <div class="columns is-vcentered">
+            <actuator-card :key="card_c1" :actuator="home.C1"></actuator-card>
+            <div class="column"></div>
+            <actuator-card :key="card_l" :actuator="home.L"></actuator-card>
+            <div class="column"></div>
+            <actuator-card :key="card_c2" :actuator="home.L"></actuator-card>
+            <div class="column"></div>
           </div>
         </div>
-        
       </div>
     </div>
     <div class="container" v-else>
@@ -64,7 +58,7 @@
 import LinearGauge from "vue-canvas-gauges/src/LinearGauge";
 //import RadialGauge from "vue-canvas-gauges/src/RadialGauge";
 
-import VSevenseg from 'v-sevenseg/src/components/VSevenseg.vue';
+import ActuatorCard from "@/components/ActuatorCard.vue";
 
 export default {
   name: "control",
@@ -83,7 +77,7 @@ export default {
     LinearGauge,
     //RadialGauge,
     //LineChart
-    VSevenseg
+    ActuatorCard,
   },
 
   data() {
