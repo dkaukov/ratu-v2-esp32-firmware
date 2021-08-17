@@ -15,7 +15,7 @@
             <div class="column"></div>
             <actuator-card :key="card_l" :actuator="home.L"></actuator-card>
             <div class="column"></div>
-            <actuator-card :key="card_c2" :actuator="home.L"></actuator-card>
+            <actuator-card :key="card_c2" :actuator="home.C2"></actuator-card>
             <div class="column"></div>
           </div>
         </div>
