@@ -79,10 +79,22 @@ protected:
 
   virtual void handleRequest(AsyncWebSocketClient *client, const JsonObject &doc) {
     String response;
-    if (doc["command"] == "ping") {
-      response = "{\"command\":\"pong\"}";
+    if (!doc["command"].isNull()) {
+      String cmd = doc["command"];
+      if (cmd == "ping") {
+        response = "{\"command\":\"pong\"}";
+        client->text(response);
+        return;
+      }
+      auto c = parseCommand(cmd);
+      if (c != Core::COMMAND_TYPE_UNKNOWN) {
+        broadcastCommand(c, doc);
+        sendStatus(client);
+      } else {
+        response = "{\"error\":\"Unknown command\"}";
+        client->text(response);
+      }
     }
-    client->text(response);
   }
 
 public:

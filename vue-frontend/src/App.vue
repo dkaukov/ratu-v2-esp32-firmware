@@ -51,7 +51,9 @@ export default {
       },
       home: {
         C1: {
+          id: "C1",
           value: 1304.0,
+          rawValue: 255,
           width: 270,
           height: 270,
           title: "C\u2081",
@@ -68,9 +70,13 @@ export default {
           animationDuration: 1000,
           animatedValue: false,
           visible: false,
+          step: 1,
+          isReady: false,
         },
         L: {
+          id: "L",
           value: 12.75,
+          rawValue: 255,
           width: 300,
           height: 300,
           title: "L",
@@ -87,9 +93,13 @@ export default {
           animationDuration: 1000,
           animatedValue: false,
           visible: false,
+          step: 1,
+          isReady: false,
         },
         C2: {
+          id: "C2",
           value: 1304.0,
+          rawValue: 255,
           width: 270,
           height: 270,
           title: "C\u2082",
@@ -106,6 +116,8 @@ export default {
           animationDuration: 1000,
           animatedValue: false,
           visible: false,
+          step: 1,
+          isReady: false,
         },
         swr: {
           value: 3.0,
@@ -223,6 +235,9 @@ export default {
           this.home.C1.majorTicks = this.getTicks(this.home.C1.minValue, this.home.C1.maxValue, 8);
           this.home.C1.value = json.actuator.C1.maxPh;
           this.home.C1.visible = true;
+          if (json.actuator.C1.max - json.actuator.C1.min > 1000) {
+            this.home.C1.step = 10;
+          }
         } else {
           this.home.C1.visible = false;
           this.home.C2.width = this.home.L.width;
@@ -234,6 +249,9 @@ export default {
           this.home.C2.majorTicks = this.getTicks(this.home.C2.minValue, this.home.C2.maxValue, 8);
           this.home.C2.value = json.actuator.C2.maxPh;
           this.home.C2.visible = true;
+          if (json.actuator.C2.max - json.actuator.C2.min > 1000) {
+            this.home.C2.step = 10;
+          }
         } else {
           this.home.C2.visible = false;
           this.home.C1.width = this.home.L.width;
@@ -245,6 +263,9 @@ export default {
           this.home.L.majorTicks = this.getTicks(this.home.L.minValue, this.home.L.maxValue, 10);
           this.home.L.value = json.actuator.L.maxPh;
           this.home.L.visible = true;
+          if (json.actuator.L.max - json.actuator.L.min > 1000) {
+            this.home.L.step = 10;
+          }
         } else {
           this.home.L.visible = false;
         }
@@ -260,6 +281,12 @@ export default {
         this.home.C1.value = (json.actuator.C1 || {}).phValue;
         this.home.C2.value = (json.actuator.C2 || {}).phValue;
         this.home.L.value = (json.actuator.L || {}).phValue;
+        this.home.C1.rawValue = (json.actuator.C1 || {}).value;
+        this.home.C2.rawValue = (json.actuator.C2 || {}).value;
+        this.home.L.rawValue = (json.actuator.L || {}).value;
+        this.home.C1.isReady = (json.actuator.C1 || {}).isReady;
+        this.home.C2.isReady = (json.actuator.C2 || {}).isReady;
+        this.home.L.isReady = (json.actuator.L || {}).isReady;
         this.home.pwr.value = json.sensor.SWRMeterAds1115Ad8310.fwd || 0;
         this.home.swr.value = json.sensor.SWRMeterAds1115Ad8310.swr || 1;
         this.home.status.value = json.atu.state;
@@ -272,6 +299,15 @@ export default {
           this.home.status.symbol = "warning";
         }
       }
+    });
+
+    EventBus.$on("actuate", (data) => {
+      Socket.send(
+        JSON.stringify({
+          command: "actuate",
+          actuator: data.actuator,
+        })
+      );
     });
 
     EventBus.$on("buttonClicked", (data) => {

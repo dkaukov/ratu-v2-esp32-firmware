@@ -10,11 +10,11 @@
         </div>
         <div class="card-content">
           <div class="columns is-vcentered">
-            <actuator-card :key="card_c1" :actuator="home.C1" v-if="home.C1.visible"></actuator-card>
+            <actuator-card :key="'card_c1'" :actuator="home.C1" v-if="home.C1.visible"></actuator-card>
             <div class="column" v-if="home.C1.visible"></div>
-            <actuator-card :key="card_l" :actuator="home.L" v-if="home.L.visible"></actuator-card>
+            <actuator-card :key="'card_l'" :actuator="home.L" v-if="home.L.visible"></actuator-card>
             <div class="column" v-if="home.L.visible"></div>
-            <actuator-card :key="card_c2" :actuator="home.C2" v-if="home.C2.visible"></actuator-card>
+            <actuator-card :key="'card_c2'" :actuator="home.C2" v-if="home.C2.visible"></actuator-card>
             <div class="column" v-if="home.C2.visible"></div>
           </div>
         </div>
@@ -98,31 +98,6 @@ export default {
   },
 
   mounted() {
-    this.$refs.c1.$watch("value", function (newVal, oldVal) {
-      if (newVal !== oldVal) {
-        this.chart._value = newVal;
-      }
-    });
-    this.$refs.c2.$watch("value", function (newVal, oldVal) {
-      if (newVal !== oldVal) {
-        this.chart._value = newVal;
-      }
-    });
-    this.$refs.l.$watch("value", function (newVal, oldVal) {
-      if (newVal !== oldVal) {
-        this.chart._value = newVal;
-      }
-    });
-    this.$refs.swr.$watch("value", function (newVal, oldVal) {
-      if (newVal !== oldVal) {
-        this.chart._value = newVal;
-      }
-    });
-    this.$refs.pwr.$watch("value", function (newVal, oldVal) {
-      if (newVal !== oldVal) {
-        this.chart._value = newVal;
-      }
-    });
   },
 };
 </script>
