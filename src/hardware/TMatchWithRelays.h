@@ -31,7 +31,8 @@
 #define K15 9  // 320 pF     64      // GPB1
 #define K16 8  // 640 pF     128     // GPB0
 
-#define K26 26 // bypass C1         // ESP32 GPI026
+#define K26 25 // bypass C1         // ESP32 GPI025 HW ver 0.6
+//#define K26 26 // bypass C1         // ESP32 GPI026 HW ver 0.4
 
 // ****** C2 network ESP32 GPIO ******
 #define K17 14 // 5 pF        1    // ESP32 GPI014
