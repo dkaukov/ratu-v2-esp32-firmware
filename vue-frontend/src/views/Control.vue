@@ -8,7 +8,10 @@
             <linear-gauge :value="home.pwr.value" :options="home.pwr" ref="pwr" style="margin-top: -118px"></linear-gauge>
           </div>
           <div class="column is-1 has-text-centered">
-            <button class="button is-primary" style="cursor: pointer" @click="sendTune" :disabled="!this.isTuneEnabled">Tune</button>
+            <button class="button is-primary" style="cursor: pointer" @click="sendTuneL" :disabled="this.tuneDisabled">Tune L</button>
+          </div>
+          <div class="column is-1 has-text-centered">
+            <button class="button is-primary" style="cursor: pointer" @click="sendTuneC" :disabled="this.tuneDisabled">Tune C</button>
           </div>
         </div>
         <div class="card-content">
@@ -90,13 +93,28 @@ export default {
         x_axis: [1, 2, 3, 4, 5],
         y_axis: [1, 2, 3, 4, 5],
       },
+      tuneDisabled: !(this.home.status.value === "ready"),
     };
   },
 
   methods: {
-    sendTune() {
+    sendTuneL() {
       this.msg = {
-        config: {},
+        config: {
+          atu: {
+            tuningMode: "ATU_TUNING_TYPE_L",
+          },
+        },
+      };
+      EventBus.$emit("tune", this.msg);
+    },
+    sendTuneC() {
+      this.msg = {
+        config: {
+          atu: {
+            tuningMode: "ATU_TUNING_TYPE_C",
+          },
+        },
       };
       EventBus.$emit("tune", this.msg);
     },
@@ -106,5 +124,11 @@ export default {
   },
 
   mounted() {},
+
+  watch: {
+    "home.status.value": function () {
+      this.tuneDisabled = !(this.home.status.value === "ready");
+    },
+  },
 };
 </script>
