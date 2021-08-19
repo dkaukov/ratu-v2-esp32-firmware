@@ -92,15 +92,15 @@ public:
                   const char *name,
                   const float min,
                   const float max) : Actuator(Core::COMPONENT_CLASS_ACTUATOR, name),
-                                      _stepper(stepper),
-                                      _sensorPin(sensorPin) {
+                                     _stepper(stepper),
+                                     _sensorPin(sensorPin) {
     _max = maxSteps;
     _a = (max - min) / (_max - _min);
     _b = min - _min * _a;
 
     __a = 1.0 / _a;
     __b = _b / _a;
-};
+  };
 
   virtual void init() override {
     pinMode(_sensorPin, INPUT);
