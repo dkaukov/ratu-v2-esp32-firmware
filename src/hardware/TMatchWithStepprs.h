@@ -59,7 +59,6 @@
 
 #define HW_INFO "AD8310/3xSteppers"
 
-
 namespace Hardware {
 
 using namespace Sensor;
@@ -86,9 +85,9 @@ public:
     _actuatorLInitial = 3000;
     _actuatorC1Initial = 120;
     _actuatorC2Initial = 120;
-    _actuatorLInitialStep = 100;
-    _actuatorC1InitialStep = 100;
-    _actuatorC2InitialStep = 100;
+    _actuatorLInitialStep = 10;
+    _actuatorC1InitialStep = 10;
+    _actuatorC2InitialStep = 10;
   }
 
   virtual void init() override {

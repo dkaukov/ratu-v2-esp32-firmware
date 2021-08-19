@@ -70,8 +70,8 @@ public:
   LMatchWithSteppers() : Device::LMatch(swr, actuatorL, actuatorC1) {
     _actuatorLInitial = 3000;
     _actuatorC1Initial = 120;
-    _actuatorLInitialStep = 100;
-    _actuatorC1InitialStep = 100;
+    _actuatorLInitialStep = 10;
+    _actuatorC1InitialStep = 10;
   }
 
   virtual void init() override {
