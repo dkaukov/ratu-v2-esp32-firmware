@@ -19,7 +19,7 @@
             <actuator-card class="ml-2" :key="'card_c1'" :actuator="home.C1" v-if="home.C1.visible"></actuator-card>
             <actuator-card class="ml-2" :key="'card_l'" :actuator="home.L" v-if="home.L.visible"></actuator-card>
             <actuator-card class="ml-2" :key="'card_c2'" :actuator="home.C2" v-if="home.C2.visible"></actuator-card>
-            <div class="column" v-if="home.C2.visible"></div>
+            <div class="column"></div>
           </div>
         </div>
       </div>
