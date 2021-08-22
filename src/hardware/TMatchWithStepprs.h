@@ -49,13 +49,13 @@
 #define C2_ACTUATOR_NAME "C2"
 
 #define L_ACTUATOR_MIN 0.05
-#define L_ACTUATOR_MAX 12.75
+#define L_ACTUATOR_MAX 10.7
 
 #define C1_ACTUATOR_MIN 150.0
-#define C1_ACTUATOR_MAX 150.0 + 260.0
+#define C1_ACTUATOR_MAX 150.0 + 360.0
 
 #define C2_ACTUATOR_MIN 150.0
-#define C2_ACTUATOR_MAX 150.0 + 260.0
+#define C2_ACTUATOR_MAX 150.0 + 360.0
 
 #define HW_INFO "AD8310/3xSteppers"
 
