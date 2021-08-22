@@ -106,6 +106,7 @@ export default {
           },
         },
       };
+      this.tuneDisabled = true;
       EventBus.$emit("tune", this.msg);
     },
     sendTuneC() {
@@ -116,6 +117,7 @@ export default {
           },
         },
       };
+      this.tuneDisabled = true;
       EventBus.$emit("tune", this.msg);
     },
     isTuneEnabled() {

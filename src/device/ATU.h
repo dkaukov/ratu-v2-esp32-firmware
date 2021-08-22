@@ -16,6 +16,7 @@ typedef enum {
   ATU_STATE_OFFLINE,
   ATU_STATE_READY,
   ATU_STATE_BUSY,
+  ATU_STATE_TUNING,
 } atu_state_type_t;
 
 struct TxTuneRequest {
@@ -23,6 +24,8 @@ struct TxTuneRequest {
 };
 
 typedef etl::observer<TxTuneRequest> TxTuneRequest_Observer;
+
+static bool _tuneGlobalLock = false;  
 
 class ATU : public Core::Component, etl::observable<TxTuneRequest_Observer, 1> {
 protected:
@@ -199,12 +202,11 @@ public:
 
   virtual void onCommand(Core::command_type_t type, const JsonObject &doc) override {
     if (type == Core::COMMAND_TYPE_TUNE) {
-      static bool lock = false;
-      if (lock) {
+      if (_tuneGlobalLock) {
         _LOGE("atu", "Core::COMMAND_TYPE_TUNE: Command execution in progress, aborting.");
         return;
       }
-      lock = true;
+      _tuneGlobalLock = true;
       if (!doc["config"].isNull()) {
         setGlobalConfig(doc["config"].as<JsonObject>());
       }
@@ -220,13 +222,16 @@ public:
         _LOGE("atu", "Core::COMMAND_TYPE_TUNE: Timeout waiting for swrMeter.isInRange(), aborting.");
       }
       turnOffTrx();
-      lock = false;
+      _tuneGlobalLock = false;
     }
   };
 
   virtual bool isReady() const { return true; }
 
   virtual atu_state_type_t getState() const {
+    if (_tuneGlobalLock) {
+      return ATU_STATE_TUNING;
+    }
     if (isReady()) {
       return ATU_STATE_READY;
     }
@@ -244,6 +249,9 @@ public:
       break;
     case ATU_STATE_READY:
       node["state"] = "ready";
+      break;
+    case ATU_STATE_TUNING:
+      node["state"] = "tuning";
       break;
     default:
       break;
