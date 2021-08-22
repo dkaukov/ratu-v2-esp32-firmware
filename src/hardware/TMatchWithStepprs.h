@@ -29,7 +29,7 @@
 /*
   Mechanical parameters
 */
-#define L_RANGE_IN_STEPS 2964 * 15
+#define L_RANGE_IN_STEPS 2964 * 14
 #define L_SPEED 5500
 #define L_ACCELERATION 4000
 
