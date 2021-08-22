@@ -1,3 +1,36 @@
+VAR COIL
+=========================================================================================================
+Current motors with planetary gear (L and C) and with current settings of drivers 
+makes 2964 steps for 360 degrees revolutiion 
+
+Current C1/C2 setup: 150pF (NPO MLCC) static capacitor + 5-360pF variable capacitor
+
+P140 variable coil
+Calubration point = 300 nH
+1 turn            = 453 nH
+2 turn            = 747 nH
+3 turn            = 1.22 uH
+4 turn            = 1.75 uH
+5 turn            = 2.34 uH
+6 turn            = 3.06 uH
+7 turn            = 3.82 uH
+8 turn            = 4.77 uH
+9 turn            = 5.65 uH
+10 turn           = 6.48 uH
+11 turn           = 7.38 uH
+12 turn           = 9.43 uH
+13 turn           = 8.43 uH
+14 turn           = 10.7 uH
+15 turn           = 11.9 uH
+16 turn           = 12.8 uH
+17 turn           = 13.7 uH
+18 turn           = 14.5 uH
+19 turn           = 15.9 uH
+20 turn           = 17.1 uH
+21 turn           = 18.7 uH
+
+RELAYS
+=========================================================================================================
 PCB (HW) Version 0.6
 
 Parisitic inductance of the board = 180uH. It remains  constant with regards of L-metwork relay(s) engaged.
