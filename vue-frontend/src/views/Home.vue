@@ -97,21 +97,27 @@ export default {
   methods: {},
 
   mounted() {
-    this.$refs.c1.$watch("value", function (newVal, oldVal) {
-      if (newVal !== oldVal) {
-        this.chart._value = newVal;
-      }
-    });
-    this.$refs.c2.$watch("value", function (newVal, oldVal) {
-      if (newVal !== oldVal) {
-        this.chart._value = newVal;
-      }
-    });
-    this.$refs.l.$watch("value", function (newVal, oldVal) {
-      if (newVal !== oldVal) {
-        this.chart._value = newVal;
-      }
-    });
+    if (this.$refs.c1) {
+      this.$refs.c1.$watch("value", function (newVal, oldVal) {
+        if (newVal !== oldVal) {
+          this.chart._value = newVal;
+        }
+      });
+    }
+    if (this.$refs.c2) {
+      this.$refs.c2.$watch("value", function (newVal, oldVal) {
+        if (newVal !== oldVal) {
+          this.chart._value = newVal;
+        }
+      });
+    }
+    if (this.$refs.l) {
+      this.$refs.l.$watch("value", function (newVal, oldVal) {
+        if (newVal !== oldVal) {
+          this.chart._value = newVal;
+        }
+      });
+    }
     this.$refs.swr.$watch("value", function (newVal, oldVal) {
       if (newVal !== oldVal) {
         this.chart._value = newVal;

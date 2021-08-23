@@ -125,7 +125,18 @@ export default {
     },
   },
 
-  mounted() {},
+  mounted() {
+    this.$refs.swr.$watch("value", function (newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.chart._value = newVal;
+      }
+    });
+    this.$refs.pwr.$watch("value", function (newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.chart._value = newVal;
+      }
+    });
+  },
 
   watch: {
     "home.status.value": function () {

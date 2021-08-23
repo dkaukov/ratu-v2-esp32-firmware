@@ -142,9 +142,9 @@ export default {
           barWidth: 5,
           valueBox: true,
           colorPlate: "rgba(0,0,0,0)",
-          animation: false,
+          animation: true,
           animationRule: "quad",
-          animationDuration: 1000,
+          animationDuration: 500,
           animatedValue: false,
         },
         pwr: {
@@ -170,9 +170,9 @@ export default {
           barWidth: 5,
           valueBox: true,
           colorPlate: "rgba(0,0,0,0)",
-          animation: false,
+          animation: true,
           animationRule: "quad",
-          animationDuration: 1000,
+          animationDuration: 500,
           animatedValue: false,
         },
         status: {
@@ -194,6 +194,15 @@ export default {
       }
       return res;
     },
+    constrain(val, min, max) {
+      if (val < min) {
+        return min;
+      }
+      if (val > max) {
+        return max;
+      }
+      return val;
+    }
   },
 
   mounted() {
@@ -287,8 +296,8 @@ export default {
         this.home.C1.isReady = (json.actuator.C1 || {}).isReady;
         this.home.C2.isReady = (json.actuator.C2 || {}).isReady;
         this.home.L.isReady = (json.actuator.L || {}).isReady;
-        this.home.pwr.value = json.sensor.SWRMeterAds1115Ad8310.fwd || 0;
-        this.home.swr.value = json.sensor.SWRMeterAds1115Ad8310.swr || 1;
+        this.home.pwr.value = this.constrain(json.sensor.SWRMeterAds1115Ad8310.fwd || 0, this.home.pwr.minValue, this.home.pwr.maxValue);
+        this.home.swr.value = this.constrain(json.sensor.SWRMeterAds1115Ad8310.swr || 1, this.home.swr.minValue, this.home.swr.maxValue);
         this.home.status.value = json.atu.state;
         let upTime = new Date(0);
         upTime.setSeconds(json.system.upTime || 0);
