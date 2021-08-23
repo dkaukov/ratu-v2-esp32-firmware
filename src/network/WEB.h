@@ -142,7 +142,7 @@ public:
 
   virtual void init() override { _server->begin(); };
 
-  virtual void timer1000() override { sendStatus(); }
+  virtual void timer250() override { sendStatus(); }
 
   virtual void log(const char *s) {
     logMessade(buffPush(String(s)));

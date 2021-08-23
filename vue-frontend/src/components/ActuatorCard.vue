@@ -8,7 +8,7 @@
     <div class="block" />
     <div>
       <input class="slider is-fullwidth s-circle is-large" :min="0" :max="1000" v-model="pct" @change="sendValue" type="range" style="opacity: 0.7" />
-      <progress class="progress is-small is-primary is-fullwidth" :min="actuator.minValue" :max="actuator.maxValue" :value="actuator.value" style="margin-top: -22px; height: 11px" />
+      <progress class="progress is-small is-primary is-fullwidth" :min="0" :max="actuator.maxValue - actuator.minValue" :value="actuator.value - actuator.minValue" style="margin-top: -22px; height: 11px" />
     </div>
     <div class="block" />
     <div class="buttons are-small is-pulled-right">
