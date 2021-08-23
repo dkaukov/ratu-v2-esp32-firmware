@@ -45,6 +45,7 @@
         "tune": {
             "trx": 0,
             "tune_drive": 100
-        }
+        },
+        "tci_version": "TCI_VER_15"
     }
 }

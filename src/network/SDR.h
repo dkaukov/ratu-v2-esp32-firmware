@@ -11,11 +11,35 @@
 
 namespace Network {
 
+typedef enum {
+  TCI_VER_14,
+  TCI_VER_15,
+} sdr_version_type_t;
+
 class SDR : public Device::TxTuneRequest_Observer, Core::Component {
 private:
   uint8_t _trx = 0;
   int8_t _drive = 100;
   String _toSdrTopic = "tci-mqtt-gatewayv2/events/to-sdr";
+  sdr_version_type_t _ver = TCI_VER_14;
+
+  sdr_version_type_t stringToTCIVersion(const String &val) const {
+    if (val == "TCI_VER_14") {
+      return TCI_VER_14;
+    }
+    return TCI_VER_15;
+  }
+
+  const char *tciVersionToString(const sdr_version_type_t val) const {
+    switch (val) {
+    case TCI_VER_14:
+      return "TCI_VER_14";
+    case TCI_VER_15:
+      return "TCI_VER_15";
+    default:
+      return "";
+    }
+  }
 
 protected:
 public:
@@ -35,6 +59,9 @@ public:
     if (!node["tune"]["topic"].isNull()) {
       _toSdrTopic = node["tune"]["topic"].as<String>();
     }
+    if (!node["tci_version"].isNull()) {
+      _ver = stringToTCIVersion(node["tci_version"]);
+    }
   };
 
   virtual void init() override{};
@@ -45,6 +72,9 @@ public:
     if (request.tuneEnabled && (_drive >= 0) && (_drive <= 100)) {
       obj["cmd"] = "tune_drive";
       obj["power"] = _drive;
+      if (_ver == TCI_VER_15) {
+        obj["trx"] = _trx;
+      }
       publish(_toSdrTopic, doc);
     }
     obj.clear();

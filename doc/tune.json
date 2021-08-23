@@ -20,7 +20,8 @@
             "tune": {
                 "trx": 0,
                 "tune_drive": 50
-            }
+            },
+            "tci_version": "TCI_VER_15"
         }
     }
 }
