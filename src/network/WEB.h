@@ -34,6 +34,9 @@ private:
 
 protected:
   virtual void sendStatus(AsyncWebSocketClient *client = NULL) {
+    if ((_ws->count() == 0) && (client == NULL)) {
+      return;
+    }
     StaticJsonDocument<1024> doc;
     JsonObject obj = doc.to<JsonObject>();
     doc["topic"] = "status";
