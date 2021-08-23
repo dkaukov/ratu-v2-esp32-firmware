@@ -29,17 +29,17 @@
 /*
   Mechanical parameters
 */
-#define L_RANGE_IN_STEPS 2964 * 14
+#define L_RANGE_IN_STEPS 2964 * 21
 #define L_SPEED 5500
 #define L_ACCELERATION 4000
 
 #define C1_RANGE_IN_STEPS 2964
-#define C1_SPEED 1000
-#define C1_ACCELERATION 2000
+#define C1_SPEED 5500
+#define C1_ACCELERATION 4000
 
 #define C2_RANGE_IN_STEPS 2964
-#define C2_SPEED 1000
-#define C2_ACCELERATION 2000
+#define C2_SPEED 5500
+#define C2_ACCELERATION 4000
 
 /*
   System parameters
@@ -48,13 +48,13 @@
 #define C1_ACTUATOR_NAME "C1"
 #define C2_ACTUATOR_NAME "C2"
 
-#define L_ACTUATOR_MIN 0.05
-#define L_ACTUATOR_MAX 10.7
+#define L_ACTUATOR_MIN 0.03
+#define L_ACTUATOR_MAX 18.7
 
-#define C1_ACTUATOR_MIN 150.0
+#define C1_ACTUATOR_MIN 150.0 + 5.0
 #define C1_ACTUATOR_MAX 150.0 + 360.0
 
-#define C2_ACTUATOR_MIN 150.0
+#define C2_ACTUATOR_MIN 150.0 + 5.0
 #define C2_ACTUATOR_MAX 150.0 + 360.0
 
 #define HW_INFO "AD8310/3xSteppers"
