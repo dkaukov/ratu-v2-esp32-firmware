@@ -29,6 +29,7 @@ const char *getDeviceId();
 #include <Arduino.h>
 #include <ArduinoOTA.h>
 #include <FS.h>
+#include <esp_task_wdt.h>
 
 #define CLIENT_ID_TEMPLATE "ATU-%06X"
 #define CLIENT_ID_SIZE (sizeof(CLIENT_ID_TEMPLATE) + 5)
@@ -119,6 +120,7 @@ void setup() {
 }
 
 void loop() {
+  esp_task_wdt_reset();
   debugLoop();
   ArduinoOTA.handle();
   mgr.loop();

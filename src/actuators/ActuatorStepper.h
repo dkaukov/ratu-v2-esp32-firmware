@@ -5,6 +5,7 @@
 #include "core/Component.h"
 #include "etl/observer.h"
 #include <Arduino.h>
+#include <esp_task_wdt.h>
 
 namespace Actuators {
 
@@ -131,7 +132,7 @@ public:
         _targetPosition = 0;
         return;
       }
-      yeld();
+      esp_task_wdt_reset();
     }
     _LOGI("calibrate", "Calibration of %s finished in %d steps.", _name, stepsTraveled);
     _stepper->forceStopAndNewPosition(0);
