@@ -20,6 +20,8 @@ private:
   String _logBuff[LOG_BUFF_SIZE];
   uint8_t _logBuffHead = 0;
   uint8_t _logBuffTail = 0;
+  char *_cmd = nullptr;
+  AsyncWebSocketClient *_client = nullptr;
 
   const String &buffPush(const String &val) {
     _logBuff[_logBuffHead] = String(val);
@@ -120,17 +122,14 @@ public:
         AwsFrameInfo *info = (AwsFrameInfo *)arg;
         if (info->final && info->index == 0 && info->len == len) {
           if (info->opcode == WS_TEXT) {
-            DynamicJsonDocument doc(2048);
-            DeserializationError error = deserializeJson(doc, data, len);
-            if (!error) {
-              doc.shrinkToFit();
-              JsonObject obj = doc.as<JsonObject>();
-              handleRequest(client, obj);
-              doc.clear();
-            } else {
-              _LOGE("ws", "WS request deserialisation failure: %s",
-                    error.c_str());
+            if (_cmd != nullptr) {
+              free(_cmd);
+              _cmd = nullptr;
             }
+            _cmd = (char *)malloc(len + 1);
+            bzero(_cmd, len + 1);
+            bcopy(data, _cmd, len);
+            _client = client;
           }
         }
       }
@@ -143,6 +142,24 @@ public:
   virtual void init() override { _server->begin(); };
 
   virtual void timer250() override { sendStatus(); }
+
+  virtual void loop() override {
+    if (_cmd != nullptr) {
+      DynamicJsonDocument doc(2048);
+      DeserializationError error = deserializeJson(doc, _cmd);
+      free(_cmd);
+      _cmd = nullptr;
+      if (!error) {
+        doc.shrinkToFit();
+        JsonObject obj = doc.as<JsonObject>();
+        handleRequest(_client, obj);
+        doc.clear();
+      } else {
+        _LOGE("ws", "WS request deserialisation failure: %s",
+              error.c_str());
+      }
+    }
+  }
 
   virtual void log(const char *s) {
     logMessade(buffPush(String(s)));
