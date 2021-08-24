@@ -42,8 +42,11 @@ public:
         _actuatorL(actuatorL){};
   virtual bool isReady() const override { return true; };
   virtual float getTarget() const override {
+    return getRho() /*+ (_actuatorL.getValue() / 256.0)*/;
+  };
+  virtual float getRho() const override {
     model.setComponents(_actuatorC1.getPhisicalValue(), _actuatorL.getPhisicalValue(), _actuatorC2.getPhisicalValue());
-    return model.getRho() /*+ (_actuatorL.getValue() / 256.0)*/;
+    return model.getRho();
   };
   void clearMeasurementCount() { _measurementCount = 0; }
   virtual void startMeasurementCycle(uint8_t cnt) override { _measurementCount++; };

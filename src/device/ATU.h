@@ -25,7 +25,7 @@ struct TxTuneRequest {
 
 typedef etl::observer<TxTuneRequest> TxTuneRequest_Observer;
 
-static bool _tuneGlobalLock = false;  
+static bool _tuneGlobalLock = false;
 
 class ATU : public Core::Component, etl::observable<TxTuneRequest_Observer, 1> {
 protected:
@@ -189,13 +189,23 @@ public:
     while (true) {
       tuneCycle();
       if (!_swrMeter.isInRange()) {
+        _LOGI("atu", "[%d] Exiting, swr meter not in range", cnt);
         break;
       }
-      if (abs(_swrMeter.getTarget() - target) < _optimizerPrecision) {
+      if (_swrMeter.getSWR() < 1.01) {
+        _LOGI("atu", "[%d] Exiting, swr in acceptable range", cnt);
+        break;
+      }
+      if (target < _swrMeter.getTarget()) {
+        _LOGI("atu", "[%d] Exiting, previos step P()=%f was better tnan this one P()=%f (probably noise)", cnt, target, _swrMeter.getTarget());
+        break;
+      }
+      if (abs(target - _swrMeter.getTarget()) < _optimizerPrecision) {
+        _LOGI("atu", "[%d] Exiting, reached precision E()=%f, _optimizerPrecision=%f", cnt, abs(target - _swrMeter.getTarget()), _optimizerPrecision);
         break;
       }
       target = _swrMeter.getTarget();
-      _LOGI("atu", "[%d] Tuning cycle P()=%f", cnt, target);
+      _LOGI("atu", "[%d] Tuning cycle P()=%f, SWR()=%f", cnt, target, _swrMeter.getSWR());
       cnt++;
     }
   };
