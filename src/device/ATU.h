@@ -188,6 +188,7 @@ public:
     uint16_t cnt = 1;
     while (true) {
       tuneCycle();
+      float e = abs(target - _swrMeter.getTarget());
       if (!_swrMeter.isInRange()) {
         _LOGI("atu", "[%d] Exiting, swr meter not in range", cnt);
         break;
@@ -200,12 +201,12 @@ public:
         _LOGI("atu", "[%d] Exiting, previos step P()=%f was better tnan this one P()=%f (probably noise)", cnt, target, _swrMeter.getTarget());
         break;
       }
-      if (abs(target - _swrMeter.getTarget()) < _optimizerPrecision) {
-        _LOGI("atu", "[%d] Exiting, reached precision E()=%f, _optimizerPrecision=%f", cnt, abs(target - _swrMeter.getTarget()), _optimizerPrecision);
+      if (e < _optimizerPrecision) {
+        _LOGI("atu", "[%d] Exiting, reached precision E()=%f, _optimizerPrecision=%f", cnt, e, _optimizerPrecision);
         break;
       }
       target = _swrMeter.getTarget();
-      _LOGI("atu", "[%d] Tuning cycle P()=%f, SWR()=%f", cnt, target, _swrMeter.getSWR());
+      _LOGI("atu", "[%d] Tuning cycle P()=%f, SWR()=%f, E()=%f", cnt, target, _swrMeter.getSWR(), e);
       cnt++;
     }
   };
