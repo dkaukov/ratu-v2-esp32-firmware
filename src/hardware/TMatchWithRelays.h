@@ -6,6 +6,8 @@
 #include "debug.h"
 #include "device/TMatch.h"
 #include <Arduino.h>
+#include "Adafruit_MCP23X17.h"
+
 
 //HW PCB version 0.6 (current)
 /*

@@ -2,13 +2,13 @@
 
 #include "Actuator.h"
 #include "ActuatorDAC.h"
-#include "Adafruit_MCP23X17.h"
+#include "Adafruit_MCP23XXX.h"
 
 namespace Actuators {
 
 class ActuatorDACMCP23017 : public ActuatorDAC {
 protected:
-  Adafruit_MCP23X17 &_mcp;
+  Adafruit_MCP23XXX &_mcp;
 
   virtual void _digitalWrite(uint8_t pin, uint8_t val) override {
     _mcp.digitalWrite(pin, val);
@@ -21,7 +21,7 @@ protected:
 public:
   ActuatorDACMCP23017(const char *name,
                       const gpio8bit gpio,
-                      Adafruit_MCP23X17 &mcp,
+                      Adafruit_MCP23XXX &mcp,
                       const float min,
                       const float max)
       : ActuatorDAC(name,
