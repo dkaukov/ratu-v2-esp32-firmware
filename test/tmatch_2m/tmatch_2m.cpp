@@ -53,7 +53,7 @@ public:
 
 TestActuator actuatorL(L_RANGE_IN_STEPS, "L", L_ACTUATOR_MIN, L_ACTUATOR_MAX);
 TestActuator actuatorC1(C1_RANGE_IN_STEPS, "C1", C1_ACTUATOR_MIN, C1_ACTUATOR_MAX);
-TestActuator actuatorC2(C1_RANGE_IN_STEPS, "C2", C1_ACTUATOR_MIN, C1_ACTUATOR_MAX);
+TestActuator actuatorC2(C1_RANGE_IN_STEPS, "C2", C1_ACTUATOR_MAX, C1_ACTUATOR_MIN);
 TMatchModel model;
 
 class TestSWRMeter : public SWRMeter {
@@ -75,7 +75,7 @@ public:
   };
   virtual float getRho() const override {
     _actuatorC2.setValue(_actuatorC1.getValue());
-    model.setComponents(_actuatorC1.getPhisicalValue(), _actuatorL.getPhisicalValue(), _actuatorC1.getPhisicalValue());
+    model.setComponents(_actuatorC1.getPhisicalValue(), _actuatorL.getPhisicalValue(), _actuatorC2.getPhisicalValue());
     return model.getRho();
   };
   void clearMeasurementCount() { _measurementCount = 0; }
@@ -107,9 +107,10 @@ Core::ComponentManager mgr;
 
 void printState() {
   printf("\n");
-  printf("state: %s=%f(%d), %s=%f(%d)\n",
+  printf("state: %s=%f(%d), %s=%f(%d), %s=%f(%d)\n",
          Test::actuatorC1.getName(), Test::actuatorC1.getPhisicalValue(), Test::actuatorC1.getValue(),
-         Test::actuatorL.getName(), Test::actuatorL.getPhisicalValue(), Test::actuatorL.getValue());
+         Test::actuatorL.getName(), Test::actuatorL.getPhisicalValue(), Test::actuatorL.getValue(),
+         Test::actuatorC2.getName(), Test::actuatorC2.getPhisicalValue(), Test::actuatorC2.getValue());
   printf("SWR         = %f\n", Test::model.getSwr());
   printf("Loss        = %f%%\n", Test::model.getLoss() * 100.0);
   printf("Est.Loss    = %f%%\n", Model::TMatchModel::estimateLoss(Test::model.getFreq(), Test::actuatorC1.getPhisicalValue(), Test::actuatorL.getPhisicalValue(), 100.0) * 100.0);
@@ -121,7 +122,7 @@ void testDummyLoad_50_7020() {
   Test::model.setFreq(7.020);
   Test::model.setLoad(50, 0);
   Test::swr.clearMeasurementCount();
-  Test::actuatorC1.setPct(1.0);
+  Test::actuatorC1.setPct(0.5);
   Test::actuatorL.setPct(0.0);
   Test::atu.testOptimise(50);
   printState();
@@ -131,7 +132,7 @@ void testDummyLoad_33_7020() {
   Test::model.setFreq(7.020);
   Test::model.setLoad(33, 0);
   Test::swr.clearMeasurementCount();
-  Test::actuatorC1.setPct(1.0);
+  Test::actuatorC1.setPct(0.5);
   Test::actuatorL.setPct(0.0);
   Test::atu.testOptimise(50);
   printState();
@@ -141,7 +142,7 @@ void testDummyLoad_100_7020() {
   Test::model.setFreq(7.020);
   Test::model.setLoad(100, 0);
   Test::swr.clearMeasurementCount();
-  Test::actuatorC1.setPct(1.0);
+  Test::actuatorC1.setPct(0.5);
   Test::actuatorL.setPct(0.0);
   Test::atu.testOptimise(50);
   printState();
@@ -149,10 +150,10 @@ void testDummyLoad_100_7020() {
 
 void testSomething_5010_7020() {
   Test::model.setFreq(7.020);
-  Test::model.setLoad(50, -50);
+  Test::model.setLoad(2.287, 31.45);
   Test::swr.clearMeasurementCount();
-  Test::actuatorC1.setPct(1.0);
-  Test::actuatorL.setPct(1.0);
+  Test::actuatorC1.setPct(0.5);
+  Test::actuatorL.setPct(0.0);
   Test::atu.testOptimise(60);
   printState();
 }
