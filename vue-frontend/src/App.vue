@@ -72,6 +72,7 @@ export default {
           visible: false,
           step: 1,
           isReady: false,
+          isInverted: false,
         },
         L: {
           id: "L",
@@ -95,6 +96,7 @@ export default {
           visible: false,
           step: 1,
           isReady: false,
+          isInverted: false,
         },
         C2: {
           id: "C2",
@@ -118,6 +120,7 @@ export default {
           visible: false,
           step: 1,
           isReady: false,
+          isInverted: false,
         },
         swr: {
           value: 3.0,
@@ -239,13 +242,17 @@ export default {
         this.stats.hostname = json.device.wifi.hostname;
         this.stats.hardware = json.device.hardware;
         if (json.actuator.C1) {
-          this.home.C1.minValue = json.actuator.C1.minPh;
-          this.home.C1.maxValue = json.actuator.C1.maxPh;
+          this.home.C1.minValue = Math.min(json.actuator.C1.minPh, json.actuator.C1.maxPh);
+          this.home.C1.maxValue = Math.max(json.actuator.C1.minPh, json.actuator.C1.maxPh);
+          this.home.C1.isInverted = json.actuator.C1.minPh > json.actuator.C1.maxPh;
           this.home.C1.majorTicks = this.getTicks(this.home.C1.minValue, this.home.C1.maxValue, 8);
           this.home.C1.value = json.actuator.C1.maxPh;
           this.home.C1.visible = true;
-          if (json.actuator.C1.max - json.actuator.C1.min > 1000) {
+          if (Math.abs(json.actuator.C1.max - json.actuator.C1.min) > 1000) {
             this.home.C1.step = 10;
+          }
+          if (this.home.C1.isInverted) {
+            this.home.C1.step = -this.home.C1.step;
           }
         } else {
           this.home.C1.visible = false;
@@ -253,13 +260,17 @@ export default {
           this.home.C2.height = this.home.L.height;
         }
         if (json.actuator.C2) {
-          this.home.C2.minValue = json.actuator.C2.minPh;
-          this.home.C2.maxValue = json.actuator.C2.maxPh;
+          this.home.C2.minValue = Math.min(json.actuator.C2.minPh, json.actuator.C2.maxPh);
+          this.home.C2.maxValue = Math.max(json.actuator.C2.minPh, json.actuator.C2.maxPh);
+          this.home.C2.isInverted = json.actuator.C2.minPh > json.actuator.C2.maxPh;
           this.home.C2.majorTicks = this.getTicks(this.home.C2.minValue, this.home.C2.maxValue, 8);
           this.home.C2.value = json.actuator.C2.maxPh;
           this.home.C2.visible = true;
-          if (json.actuator.C2.max - json.actuator.C2.min > 1000) {
+          if (Math.abs(json.actuator.C2.max - json.actuator.C2.min) > 1000) {
             this.home.C2.step = 10;
+          }
+          if (this.home.C2.isInverted) {
+            this.home.C2.step = -this.home.C2.step;
           }
         } else {
           this.home.C2.visible = false;
@@ -267,13 +278,17 @@ export default {
           this.home.C1.height = this.home.L.height;
         }
         if (json.actuator.L) {
-          this.home.L.minValue = json.actuator.L.minPh;
-          this.home.L.maxValue = json.actuator.L.maxPh;
+          this.home.L.minValue = Math.min(json.actuator.L.minPh, json.actuator.L.maxPh);
+          this.home.L.maxValue = Math.max(json.actuator.L.minPh, json.actuator.L.maxPh);
+          this.home.L.isInverted = json.actuator.L.minPh > json.actuator.L.maxPh;
           this.home.L.majorTicks = this.getTicks(this.home.L.minValue, this.home.L.maxValue, 10);
           this.home.L.value = json.actuator.L.maxPh;
           this.home.L.visible = true;
-          if (json.actuator.L.max - json.actuator.L.min > 1000) {
+          if (Math.abs(json.actuator.L.max - json.actuator.L.min > 1000)) {
             this.home.L.step = 10;
+          }
+          if (this.home.L.isInverted) {
+            this.home.L.step = -this.home.L.step;
           }
         } else {
           this.home.L.visible = false;

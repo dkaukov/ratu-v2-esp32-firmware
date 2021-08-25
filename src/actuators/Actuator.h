@@ -14,9 +14,14 @@ protected:
   float _b = 0;
   float __a = 1.0;
   float __b = 0;
+  bool _inverted = false;
 
   virtual int32_t pctToValue(float pct) {
-    return (_min + round((_max - _min) * constrain(pct, 0.0, 1.0)));
+    if (_inverted) {
+      return (_min + round((_max - _min) * (1.0 - constrain(pct, 0.0, 1.0))));
+    } else {
+      return (_min + round((_max - _min) * constrain(pct, 0.0, 1.0)));
+    }
   };
 
   virtual int32_t phToValue(float x) {

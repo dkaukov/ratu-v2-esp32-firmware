@@ -5,7 +5,6 @@
 #include "core/Component.h"
 #include "etl/observer.h"
 #include <Arduino.h>
-#include <esp_task_wdt.h>
 
 namespace Actuators {
 
@@ -101,11 +100,11 @@ public:
 
     __a = 1.0 / _a;
     __b = _b / _a;
+    _inverted = min > max;
   };
 
   virtual void init() override {
     pinMode(_sensorPin, INPUT);
-    enable();
     calibrate();
   };
 
@@ -116,6 +115,7 @@ public:
   };
 
   virtual void calibrate(bool restoreState = false) override {
+    enable();
     _LOGI("calibrate", "Calibration of %s started.", _name);
     int32_t oldPosition = getTargetValue();
     int32_t range = (_max - _min);
@@ -132,7 +132,6 @@ public:
         _targetPosition = 0;
         return;
       }
-      esp_task_wdt_reset();
     }
     _LOGI("calibrate", "Calibration of %s finished in %d steps.", _name, stepsTraveled);
     _stepper->forceStopAndNewPosition(0);

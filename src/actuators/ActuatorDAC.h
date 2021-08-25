@@ -41,6 +41,8 @@ public:
 
     __a = 1.0 / _a;
     __b = _b / _a;
+
+    _inverted = min > max;
     _delay = 15;
   };
 
