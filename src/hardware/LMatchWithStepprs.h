@@ -25,19 +25,19 @@
 /*
   Mechanical parameters
 */
-#define L_RANGE_IN_STEPS 32000
-#define L_SPEED 5500
+#define L_RANGE_IN_STEPS 2964 * 15
+#define L_SPEED 5500 * 2
 #define L_ACCELERATION 4000
 
-#define C1_RANGE_IN_STEPS 32000
-#define C1_SPEED 1000
-#define C1_ACCELERATION 2000
+#define C1_RANGE_IN_STEPS 2964
+#define C1_SPEED 5500
+#define C1_ACCELERATION 4000
 
-#define L_ACTUATOR_MIN 0.05
-#define L_ACTUATOR_MAX 12.75
+#define L_ACTUATOR_MIN 0.03
+#define L_ACTUATOR_MAX 11.9
 
-#define C1_ACTUATOR_MIN 5.0
-#define C1_ACTUATOR_MAX 1304.0
+#define C1_ACTUATOR_MIN 150.0 + 5.0
+#define C1_ACTUATOR_MAX 150.0 + 360.0
 
 /*
   System parameters
