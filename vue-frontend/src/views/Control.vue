@@ -4,8 +4,8 @@
       <div class="section">
         <div class="columns is-vcentered">
           <div class="column is-four-fifths has-text-centered">
-            <linear-gauge :value="home.swr.value" :options="home.swr" ref="swr"></linear-gauge>
-            <linear-gauge :value="home.pwr.value" :options="home.pwr" ref="pwr" style="margin-top: -118px"></linear-gauge>
+            <linear-gauge :value="control.swr.value" :options="control.swr" ref="swr"></linear-gauge>
+            <linear-gauge :value="control.pwr.value" :options="control.pwr" ref="pwr" style="margin-top: -118px"></linear-gauge>
           </div>
           <div class="column is-1 has-text-centered">
             <button class="button is-primary" style="cursor: pointer" @click="sendTuneL" :disabled="this.tuneDisabled">Tune L</button>
@@ -16,9 +16,9 @@
         </div>
         <div class="card-content">
           <div class="columns ml-2">
-            <actuator-card class="ml-2" :key="'card_c1'" :actuator="home.C1" v-if="home.C1.visible"></actuator-card>
-            <actuator-card class="ml-2" :key="'card_l'" :actuator="home.L" v-if="home.L.visible"></actuator-card>
-            <actuator-card class="ml-2" :key="'card_c2'" :actuator="home.C2" v-if="home.C2.visible"></actuator-card>
+            <actuator-card class="ml-2" :key="'card_c1'" :actuator="control.C1" v-if="control.C1.visible"></actuator-card>
+            <actuator-card class="ml-2" :key="'card_l'" :actuator="control.L" v-if="control.L.visible"></actuator-card>
+            <actuator-card class="ml-2" :key="'card_c2'" :actuator="control.C2" v-if="control.C2.visible"></actuator-card>
             <div class="column"></div>
           </div>
         </div>
@@ -47,53 +47,23 @@
 </template>
 
 <script>
-//import GenericCard from '@/components/GenericCard.vue';
-//import TemperatureCard from '@/components/TemperatureCard.vue';
-//import HumdidityCard from '@/components/HumidityCard.vue';
-//import StatusCard from "@/components/StatusCard.vue";
-//import ProgressCard from '@/components/ProgressCard.vue';
-//import SliderCard from '@/components/SliderCard.vue';
-//import ButtonCard from '@/components/ButtonCard.vue';
-
-//import BarChart from '@/components/BarChart.vue';
-//import LineChart from '@/components/LineChart.vue';
-
 import LinearGauge from "vue-canvas-gauges/src/LinearGauge";
-//import RadialGauge from "vue-canvas-gauges/src/RadialGauge";
-
 import ActuatorCard from "@/components/ActuatorCard.vue";
 import EventBus from "@/event-bus.js";
 
 export default {
   name: "control",
 
-  props: ["cards", "charts", "home"],
+  props: ["cards", "charts", "control"],
 
   components: {
-    //GenericCard,
-    //TemperatureCard,
-    //HumdidityCard,
-    //StatusCard,
-    //ProgressCard,
-    //ButtonCard,
-    //SliderCard,
-    //BarChart,
     LinearGauge,
-    //RadialGauge,
-    //LineChart
     ActuatorCard,
   },
 
   data() {
     return {
-      chart: {
-        id: "",
-        type: "line",
-        name: "name",
-        x_axis: [1, 2, 3, 4, 5],
-        y_axis: [1, 2, 3, 4, 5],
-      },
-      tuneDisabled: !(this.home.status.value === "ready"),
+      tuneDisabled: !(this.control.status.value === "ready"),
     };
   },
 
@@ -120,9 +90,6 @@ export default {
       this.tuneDisabled = true;
       EventBus.$emit("tune", this.msg);
     },
-    isTuneEnabled() {
-      return this.home.status.value === "ready";
-    },
   },
 
   mounted() {
@@ -139,8 +106,8 @@ export default {
   },
 
   watch: {
-    "home.status.value": function () {
-      this.tuneDisabled = !(this.home.status.value === "ready");
+    "control.status.value": function () {
+      this.tuneDisabled = !(this.control.status.value === "ready");
     },
   },
 };

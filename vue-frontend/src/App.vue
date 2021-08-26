@@ -7,7 +7,7 @@
     </div>
     <div class="section pt-2">
       <transition name="fade" mode="out-in">
-        <router-view :cards="cards" :charts="charts" :stats="stats" :log="log" :home="home" />
+        <router-view :cards="cards" :charts="charts" :stats="stats" :log="log" :home="home" :control="control" />
       </transition>
     </div>
   </div>
@@ -184,6 +184,108 @@ export default {
           value: "Booting up",
         },
       },
+      control: {
+        C1: {
+          id: "C1",
+          value: 1304.0,
+          rawValue: 255,
+          title: "C\u2081",
+          units: "\u338a",
+          minValue: 5.0,
+          maxValue: 1304.0,
+          visible: false,
+          step: 1,
+          isReady: false,
+          isInverted: false,
+        },
+        L: {
+          id: "L",
+          value: 12.75,
+          rawValue: 255,
+          title: "L",
+          units: "μH",
+          minValue: 0.05,
+          maxValue: 12.75,
+          visible: false,
+          step: 1,
+          isReady: false,
+          isInverted: false,
+        },
+        C2: {
+          id: "C2",
+          value: 1304.0,
+          rawValue: 255,
+          title: "C\u2082",
+          units: "\u338a",
+          minValue: 5.0,
+          maxValue: 1304.0,
+          visible: false,
+          step: 1,
+          isReady: false,
+          isInverted: false,
+        },
+        swr: {
+          value: 3.0,
+          width: null,
+          height: 150,
+          title: false,
+          units: false,
+          minValue: 1.0,
+          maxValue: 3.0,
+          majorTicks: this.getTicks(1.0, 3.0, 5),
+          highlights: [],
+          //minorTicks: 20,
+          strokeTicks: true,
+          barBeginCircle: false,
+          needleSide: "left",
+          tickSide: "left",
+          numberSide: "left",
+          borders: false,
+          borderShadowWidth: 0,
+          needleType: "line",
+          needleWidth: 2,
+          barWidth: 5,
+          valueBox: true,
+          colorPlate: "rgba(0,0,0,0)",
+          animation: true,
+          animationRule: "quad",
+          animationDuration: 500,
+          animatedValue: false,
+        },
+        pwr: {
+          value: 100.0,
+          width: null,
+          height: 150,
+          title: false,
+          units: false,
+          minValue: 0,
+          maxValue: 100.0,
+          majorTicks: this.getTicks(0, 100.0, 10),
+          highlights: [],
+          //minorTicks: 20,
+          strokeTicks: true,
+          barBeginCircle: false,
+          needleSide: "right",
+          tickSide: "right",
+          numberSide: "right",
+          borders: false,
+          borderShadowWidth: 0,
+          needleType: "line",
+          needleWidth: 2,
+          barWidth: 5,
+          valueBox: true,
+          colorPlate: "rgba(0,0,0,0)",
+          animation: true,
+          animationRule: "quad",
+          animationDuration: 500,
+          animatedValue: false,
+        },
+        status: {
+          symbol: "danger",
+          name: "ATU status",
+          value: "Booting up",
+        },
+      },
       cards: [],
       charts: [],
     };
@@ -205,17 +307,12 @@ export default {
         return max;
       }
       return val;
-    }
+    },
   },
 
   mounted() {
     Socket.$on("connected", () => {
       this.ws.connected = true;
-      Socket.send(
-        JSON.stringify({
-          command: "getLayout",
-        })
-      );
     });
 
     Socket.$on("disconnected", () => {
@@ -293,6 +390,24 @@ export default {
         } else {
           this.home.L.visible = false;
         }
+        this.control.C1.minValue = this.home.C1.minValue;
+        this.control.C1.maxValue = this.home.C1.maxValue;
+        this.control.C1.isInverted = this.home.C1.isInverted;
+        this.control.C1.majorTicks = this.home.C1.majorTicks;
+        this.control.C1.value = this.home.C1.value;
+        this.control.C1.visible = this.home.C1.visible;
+        this.control.C2.minValue = this.home.C2.minValue;
+        this.control.C2.maxValue = this.home.C2.maxValue;
+        this.control.C2.isInverted = this.home.C2.isInverted;
+        this.control.C2.majorTicks = this.home.C2.majorTicks;
+        this.control.C1.value = this.home.C2.value;
+        this.control.C2.visible = this.home.C2.visible;
+        this.control.L.minValue = this.home.L.minValue;
+        this.control.L.maxValue = this.home.L.maxValue;
+        this.control.L.isInverted = this.home.L.isInverted;
+        this.control.L.majorTicks = this.home.L.majorTicks;
+        this.control.L.value = this.home.L.value;
+        this.control.L.visible = this.home.L.visible;
       }
 
       if (json.topic === "status") {
@@ -305,14 +420,25 @@ export default {
         this.home.C1.value = (json.actuator.C1 || {}).phValue;
         this.home.C2.value = (json.actuator.C2 || {}).phValue;
         this.home.L.value = (json.actuator.L || {}).phValue;
+        this.control.C1.value = (json.actuator.C1 || {}).phValue;
+        this.control.C2.value = (json.actuator.C2 || {}).phValue;
+        this.control.L.value = (json.actuator.L || {}).phValue;
         this.home.C1.rawValue = (json.actuator.C1 || {}).value;
         this.home.C2.rawValue = (json.actuator.C2 || {}).value;
         this.home.L.rawValue = (json.actuator.L || {}).value;
+        this.control.C1.rawValue = (json.actuator.C1 || {}).value;
+        this.control.C2.rawValue = (json.actuator.C2 || {}).value;
+        this.control.L.rawValue = (json.actuator.L || {}).value;
         this.home.C1.isReady = (json.actuator.C1 || {}).isReady;
         this.home.C2.isReady = (json.actuator.C2 || {}).isReady;
         this.home.L.isReady = (json.actuator.L || {}).isReady;
+        this.control.C1.isReady = (json.actuator.C1 || {}).isReady;
+        this.control.C2.isReady = (json.actuator.C2 || {}).isReady;
+        this.control.L.isReady = (json.actuator.L || {}).isReady;
         this.home.pwr.value = this.constrain(json.sensor.SWRMeterAds1115Ad8310.fwd || 0, this.home.pwr.minValue, this.home.pwr.maxValue);
         this.home.swr.value = this.constrain(json.sensor.SWRMeterAds1115Ad8310.swr || 1, this.home.swr.minValue, this.home.swr.maxValue);
+        this.control.pwr.value = this.constrain(json.sensor.SWRMeterAds1115Ad8310.fwd || 0, this.control.pwr.minValue, this.control.pwr.maxValue);
+        this.control.swr.value = this.constrain(json.sensor.SWRMeterAds1115Ad8310.swr || 1, this.control.swr.minValue, this.control.swr.maxValue);
         this.home.status.value = json.atu.state;
         let upTime = new Date(0);
         upTime.setSeconds(json.system.upTime || 0);
@@ -322,6 +448,8 @@ export default {
         } else {
           this.home.status.symbol = "warning";
         }
+        this.control.status.value = this.home.status.value;
+        this.control.status.symbol = this.home.status.symbol;
       }
     });
 

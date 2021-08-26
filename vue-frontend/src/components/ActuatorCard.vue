@@ -61,6 +61,7 @@ export default {
       this.msg = {
         actuator: {},
       };
+      this.actuator.isReady = false;
       this.msg.actuator[this.actuator.id] = {};
       this.msg.actuator[this.actuator.id].pct = this.pct / 1000;
       EventBus.$emit("actuate", this.msg);
@@ -69,6 +70,7 @@ export default {
       this.msg = {
         actuator: {},
       };
+      this.actuator.isReady = false;
       this.msg.actuator[this.actuator.id] = {};
       this.msg.actuator[this.actuator.id].calibrate = true;
       EventBus.$emit("actuate", this.msg);
@@ -77,6 +79,7 @@ export default {
       this.msg = {
         actuator: {},
       };
+      this.actuator.isReady = false;
       this.msg.actuator[this.actuator.id] = {};
       this.msg.actuator[this.actuator.id].value = this.actuator.rawValue + this.actuator.step;
       EventBus.$emit("actuate", this.msg);
@@ -85,6 +88,7 @@ export default {
       this.msg = {
         actuator: {},
       };
+      this.actuator.isReady = false;
       this.msg.actuator[this.actuator.id] = {};
       this.msg.actuator[this.actuator.id].value = this.actuator.rawValue - this.actuator.step;
       EventBus.$emit("actuate", this.msg);

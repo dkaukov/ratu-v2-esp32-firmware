@@ -32,7 +32,7 @@
 
 <script>
 export default {
-  props: ["connected", "stats", "log"],
+  props: ["connected", "stats", "log", "control"],
 
   data() {
     return {
