@@ -91,7 +91,6 @@ struct MessageGetInfo : public etl::message<MESSAGE_GET_INFO> {
   JsonObject &doc;
 };
 
-
 typedef etl::message_bus<16> MessageBus_t;
 typedef etl::message_timer<TIMER_TYPE_COUNT> MessageTimer_t;
 
@@ -226,7 +225,7 @@ public:
   void loop() const {
     static uint32_t lastMillis = millis();
     uint32_t currentMillis = millis();
-    _timer->tick(currentMillis - lastMillis);
+    _timer->tick(constrain(currentMillis - lastMillis, 0, 250));
     lastMillis = currentMillis;
     _bus->receive(msg_loop);
   };

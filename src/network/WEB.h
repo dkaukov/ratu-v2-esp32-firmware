@@ -133,11 +133,13 @@ public:
         if (info->final && info->index == 0 && info->len == len) {
           if (info->opcode == WS_TEXT) {
             char *msg = (char *)malloc(len + 1);
-            bzero(msg, len + 1);
-            bcopy(data, msg, len);
-            msg_packet_t pkt = {.clientId = client->id(), .msg = msg};
-            if (xQueueSend(_msg_queue, &pkt, portMAX_DELAY) != pdPASS) {
-              free((void *)(msg));
+            if (msg) {
+              bzero(msg, len + 1);
+              bcopy(data, msg, len);
+              msg_packet_t pkt = {.clientId = client->id(), .msg = msg};
+              if (xQueueSend(_msg_queue, &pkt, portMAX_DELAY) != pdPASS) {
+                free((void *)(msg));
+              }
             }
           }
         }
