@@ -13,7 +13,7 @@ namespace Network {
 void __debug_transport_web_callback(const char *s);
 
 typedef struct {
-  AsyncWebSocketClient *client;
+  uint32_t clientId;
   char *msg;
 } msg_packet_t;
 
@@ -39,8 +39,8 @@ private:
   }
 
 protected:
-  virtual void sendStatus(AsyncWebSocketClient *client = NULL) {
-    if ((_ws->count() == 0) && (client == NULL)) {
+  virtual void sendStatus(uint32_t clientId = 0) {
+    if ((_ws->count() == 0) && (clientId == 0)) {
       return;
     }
     StaticJsonDocument<1024> doc;
@@ -49,10 +49,10 @@ protected:
     getGlobalStatus(obj);
     String output;
     serializeJson(doc, output);
-    if (client == NULL) {
+    if (clientId == 0) {
       _ws->textAll(output);
     } else {
-      client->text(output);
+      _ws->text(clientId, output);
     }
   }
 
@@ -88,22 +88,22 @@ protected:
     }
   }
 
-  virtual void handleRequest(AsyncWebSocketClient *client, const JsonObject &doc) {
+  virtual void handleRequest(uint32_t clientId, const JsonObject &doc) {
     String response;
     if (!doc["command"].isNull()) {
       String cmd = doc["command"];
       if (cmd == "ping") {
         response = "{\"command\":\"pong\"}";
-        client->text(response);
+        _ws->text(clientId, response);
         return;
       }
       auto c = parseCommand(cmd);
       if (c != Core::COMMAND_TYPE_UNKNOWN) {
         broadcastCommand(c, doc);
-        sendStatus(client);
+        sendStatus(clientId);
       } else {
         response = "{\"error\":\"Unknown command\"}";
-        client->text(response);
+        _ws->text(clientId, response);
       }
     }
   }
@@ -125,7 +125,7 @@ public:
                      AwsEventType type, void *arg, uint8_t *data, size_t len) {
       if (type == WS_EVT_CONNECT) {
         sendConfig(client);
-        sendStatus(client);
+        sendStatus(client->id());
         sendLogBuffer(client);
       }
       if (type == WS_EVT_DATA) {
@@ -135,8 +135,7 @@ public:
             char *msg = (char *)malloc(len + 1);
             bzero(msg, len + 1);
             bcopy(data, msg, len);
-            //_client = client;
-            msg_packet_t pkt = {.client = client, .msg = msg};
+            msg_packet_t pkt = {.clientId = client->id(), .msg = msg};
             if (xQueueSend(_msg_queue, &pkt, portMAX_DELAY) != pdPASS) {
               free((void *)(msg));
             }
@@ -162,7 +161,7 @@ public:
       if (!error) {
         doc.shrinkToFit();
         JsonObject obj = doc.as<JsonObject>();
-        handleRequest(pkt.client, obj);
+        handleRequest(pkt.clientId, obj);
         doc.clear();
       } else {
         _LOGE("ws", "WS request deserialisation failure: %s", error.c_str());
