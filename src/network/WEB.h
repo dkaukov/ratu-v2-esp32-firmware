@@ -12,6 +12,11 @@ namespace Network {
 
 void __debug_transport_web_callback(const char *s);
 
+typedef struct {
+  AsyncWebSocketClient *client;
+  char *msg;
+} msg_packet_t;
+
 class WEB : public Core::Component {
 private:
   AsyncWebServer *_server = nullptr;
@@ -20,8 +25,9 @@ private:
   String _logBuff[LOG_BUFF_SIZE];
   uint8_t _logBuffHead = 0;
   uint8_t _logBuffTail = 0;
-  char *_cmd = nullptr;
-  AsyncWebSocketClient *_client = nullptr;
+  //char *_cmd = nullptr;
+  //AsyncWebSocketClient *_client = nullptr;
+  xQueueHandle _msg_queue;
 
   const String &buffPush(const String &val) {
     _logBuff[_logBuffHead] = String(val);
@@ -105,6 +111,7 @@ protected:
 public:
   WEB() : Core::Component(Core::COMPONENT_CLASS_NETWORK) {
     static AsyncWebServer server(80);
+    _msg_queue = xQueueCreate(32, sizeof(msg_packet_t));
     _server = &server;
     _ws = new AsyncWebSocket("/dashws");
     _server->on("/", HTTP_GET, [this](AsyncWebServerRequest *request) {
@@ -125,14 +132,14 @@ public:
         AwsFrameInfo *info = (AwsFrameInfo *)arg;
         if (info->final && info->index == 0 && info->len == len) {
           if (info->opcode == WS_TEXT) {
-            if (_cmd != nullptr) {
-              free(_cmd);
-              _cmd = nullptr;
+            char *msg = (char *)malloc(len + 1);
+            bzero(msg, len + 1);
+            bcopy(data, msg, len);
+            //_client = client;
+            msg_packet_t pkt = {.client = client, .msg = msg};
+            if (xQueueSend(_msg_queue, &pkt, portMAX_DELAY) != pdPASS) {
+              free((void *)(msg));
             }
-            _cmd = (char *)malloc(len + 1);
-            bzero(_cmd, len + 1);
-            bcopy(data, _cmd, len);
-            _client = client;
           }
         }
       }
@@ -147,19 +154,18 @@ public:
   virtual void timer250() override { sendStatus(); }
 
   virtual void loop() override {
-    if (_cmd != nullptr) {
+    msg_packet_t pkt;
+    if (xQueueReceive(_msg_queue, &pkt, 0) == pdTRUE) {
       DynamicJsonDocument doc(2048);
-      DeserializationError error = deserializeJson(doc, _cmd);
-      free(_cmd);
-      _cmd = nullptr;
+      DeserializationError error = deserializeJson(doc, pkt.msg);
+      free((void *)(pkt.msg));
       if (!error) {
         doc.shrinkToFit();
         JsonObject obj = doc.as<JsonObject>();
-        handleRequest(_client, obj);
+        handleRequest(pkt.client, obj);
         doc.clear();
       } else {
-        _LOGE("ws", "WS request deserialisation failure: %s",
-              error.c_str());
+        _LOGE("ws", "WS request deserialisation failure: %s", error.c_str());
       }
     }
   }
