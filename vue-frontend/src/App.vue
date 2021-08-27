@@ -395,6 +395,7 @@ export default {
         this.control.C1.isInverted = this.home.C1.isInverted;
         this.control.C1.majorTicks = this.home.C1.majorTicks;
         this.control.C1.value = this.home.C1.value;
+        this.control.C1.step = this.home.C1.step;
         this.control.C1.visible = this.home.C1.visible;
         this.control.C2.minValue = this.home.C2.minValue;
         this.control.C2.maxValue = this.home.C2.maxValue;
@@ -402,12 +403,14 @@ export default {
         this.control.C2.majorTicks = this.home.C2.majorTicks;
         this.control.C1.value = this.home.C2.value;
         this.control.C2.visible = this.home.C2.visible;
+        this.control.C2.step = this.home.C2.step;
         this.control.L.minValue = this.home.L.minValue;
         this.control.L.maxValue = this.home.L.maxValue;
         this.control.L.isInverted = this.home.L.isInverted;
         this.control.L.majorTicks = this.home.L.majorTicks;
         this.control.L.value = this.home.L.value;
         this.control.L.visible = this.home.L.visible;
+        this.control.L.step = this.home.L.step;
       }
 
       if (json.topic === "status") {
