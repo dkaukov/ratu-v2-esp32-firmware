@@ -65,6 +65,15 @@
 #define ADS1115_ALERT_READY_PIN 23
 
 /*
+  Ad8310 calibration
+  y = exp((x - SUB) / DIV)
+*/
+#define AD8310_FWD_DIV 102.743582
+#define AD8310_FWD_SUB 1913.417895
+#define AD8310_RFL_DIV 101.409361
+#define AD8310_RFL_SUB 1913.151197
+
+/*
   System parameters
 */
 #define L_ACTUATOR_NAME "L"
@@ -89,7 +98,7 @@ using namespace Core;
 using namespace Actuators;
 using namespace Device;
 
-static SWRMeterAds1115Ad8310 swr(ADS1115_ALERT_READY_PIN, 102.743582, 1913.417895, 101.409361, 1913.151197);
+static SWRMeterAds1115Ad8310 swr(ADS1115_ALERT_READY_PIN, AD8310_FWD_DIV, AD8310_FWD_SUB, AD8310_RFL_DIV, AD8310_RFL_SUB);
 
 static Adafruit_MCP23X17 mcp;
 ActuatorDACMCP23017 actuatorL(L_ACTUATOR_NAME, {pin : {K1, K2, K3, K4, K5, K6, K7, K8}}, mcp, L_ACTUATOR_MIN, L_ACTUATOR_MAX);

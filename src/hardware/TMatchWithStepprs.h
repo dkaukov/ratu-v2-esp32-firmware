@@ -27,6 +27,15 @@
 #define ADS1115_ALERT_READY_PIN 23
 
 /*
+  Ad8310 calibration
+  y = exp((x - SUB) / DIV)
+*/
+#define AD8310_FWD_DIV 102.743582
+#define AD8310_FWD_SUB 1913.417895
+#define AD8310_RFL_DIV 101.409361
+#define AD8310_RFL_SUB 1913.151197
+
+/*
   Mechanical parameters
 */
 #define L_RANGE_IN_STEPS 2964 * 15
@@ -66,7 +75,7 @@ using namespace Core;
 using namespace Actuators;
 using namespace Device;
 
-static SWRMeterAds1115Ad8310 swr(ADS1115_ALERT_READY_PIN, 102.743582, 1913.417895, 101.409361, 1913.151197);
+static SWRMeterAds1115Ad8310 swr(ADS1115_ALERT_READY_PIN, AD8310_FWD_DIV, AD8310_FWD_SUB, AD8310_RFL_DIV, AD8310_RFL_SUB);
 
 FastAccelStepperEngine engine = FastAccelStepperEngine();
 
