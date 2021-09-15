@@ -66,7 +66,7 @@ using namespace Core;
 using namespace Actuators;
 using namespace Device;
 
-static SWRMeterAds1115Ad8310 swr(ADS1115_ALERT_READY_PIN);
+static SWRMeterAds1115Ad8310 swr(ADS1115_ALERT_READY_PIN, 102.743582, 1913.417895, 101.409361, 1913.151197);
 
 FastAccelStepperEngine engine = FastAccelStepperEngine();
 

@@ -17,6 +17,10 @@ class SWRMeterAds1115Ad8310 : public SWRMeter {
 private:
   ADS1115_WE &_adc;
   const uint8_t _alertReadyPin;
+  const float _fwdLogDiv;
+  const float _fwdLogSub;
+  const float _rflLogDiv;
+  const float _rflLogSub;
   ADS1115_MUX _adcChannel = ADS1115_COMP_0_GND;
   uint32_t _conversionnCount = 0;
   float _fwdRaw;
@@ -82,11 +86,19 @@ private:
   }
 
 public:
-  SWRMeterAds1115Ad8310(uint8_t alertReadyPin,
-                        uint8_t ads1115Addr = ADS1115_DEFAULT_I2C_ADDRESS)
+  SWRMeterAds1115Ad8310(const uint8_t alertReadyPin,
+                        const float fwdLogDiv,
+                        const float fwdLogSub,
+                        const float rflLogDiv,
+                        const float rflLogSub,
+                        const uint8_t ads1115Addr = ADS1115_DEFAULT_I2C_ADDRESS)
       : SWRMeter(Core::COMPONENT_CLASS_SENSOR, "SWRMeterAds1115Ad8310"),
         _adc(getAdc(ads1115Addr)),
-        _alertReadyPin(alertReadyPin){};
+        _alertReadyPin(alertReadyPin),
+        _fwdLogDiv(fwdLogDiv),
+        _fwdLogSub(fwdLogSub),
+        _rflLogDiv(rflLogDiv),
+        _rflLogSub(rflLogSub){};
 
   void start() {
     _adc.setCompareChannels(_adcChannel);
@@ -94,9 +106,9 @@ public:
     _adc.startSingleMeasurement();
   }
 
-  float convertFwd(const float x) const { return exp((x - 1913.417895) / 102.743582); }
+  float convertFwd(const float x) const { return exp((x - _fwdLogSub) / _fwdLogDiv); }
 
-  float convertRfl(const float x) const { return exp((x - 1913.151197) / 101.409361); }
+  float convertRfl(const float x) const { return exp((x - _rflLogSub) / _rflLogDiv); }
 
   virtual bool isInRange() const {
     return (_fwdRaw > _fwdIntercept) && (_rflRaw > _rflIntercept);
