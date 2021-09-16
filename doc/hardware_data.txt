@@ -1,4 +1,13 @@
 VAR COIL
+
+2motor Tandem Match
+16/09/2021 12:52:58 pm info: [50 Ohm -54.54dB: Fwd] Function inv: "y = exp((x - 1872.341735)/96.211954)"
+16/09/2021 12:52:58 pm info: [50 Ohm -54.54dB: Rfl] Function inv: "y = exp((x - 1883.39568)/96.10496)"
+
+3motor Tandem Match
+16/09/2021 2:12:43 pm info: [50 Ohm -54.54dB: Fwd] Function inv: "y = exp((x - 1914.590405)/90.705681)"
+16/09/2021 2:12:43 pm info: [50 Ohm -54.54dB: Rfl] Function inv: "y = exp((x - 1919.543778)/94.387568)"
+
 =========================================================================================================
 Current motors with planetary gear (L and C) and with current settings of drivers 
 makes 2964 steps for 360 degrees revolutiion 
