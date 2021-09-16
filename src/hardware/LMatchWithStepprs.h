@@ -26,10 +26,10 @@
   Ad8310 calibration
   y = exp((x - SUB) / DIV)
 */
-#define AD8310_FWD_DIV 102.743582
-#define AD8310_FWD_SUB 1913.417895
-#define AD8310_RFL_DIV 101.409361
-#define AD8310_RFL_SUB 1913.151197
+#define AD8310_FWD_DIV 96.211954
+#define AD8310_FWD_SUB 1872.341735
+#define AD8310_RFL_DIV 96.10496
+#define AD8310_RFL_SUB 1883.39568
 
 /*
   Mechanical parameters
