@@ -179,7 +179,7 @@ public:
     }
   };
 
-  virtual float getTarget() const override { return _rflRaw / _fwdRaw; };
+  virtual float getTarget() const override { return _rflRaw - _fwdRaw; };
 };
 
 } // namespace Sensor
