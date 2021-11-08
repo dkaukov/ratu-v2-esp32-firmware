@@ -23,6 +23,7 @@ private:
   String _commandTopic;
   int16_t _mqttReconnectCount = -1;
   String _sysLogHost;
+  uint16_t _backoff = 0;
 
   void configureTopics() {
     _configurationTopic = String(MQTT_CONFIG_TOPIC_ROOT) + "/" + _clientId;
@@ -116,6 +117,28 @@ public:
     _client->publish(_statusTopic, output);
   }
 
+  void connect() {
+    if (WiFi.status() == WL_CONNECTED) {
+      if (_backoff == 0) {
+        if (net.connect(_host.c_str(), _port, 1000) <= 0) {
+          _backoff = 15;
+        } else {
+          if (_client->connect(_clientId.c_str(), true)) {
+            if (_client->connected()) {
+              _mqttReconnectCount++;
+              setupMqttConnection();
+              _LOGI("mqtt", "MQTT connected to %s:%d", _host.c_str(), _port);
+            }
+          } else {
+            _backoff = 5;
+          }
+        }
+      } else {
+        _backoff--;
+      }
+    }
+  }
+
   virtual void init() override {
     _client->begin(_host.c_str(), _port, net);
     _client->onMessageAdvanced([this](MQTTClient *client, char topic[], char bytes[], int length) { messageReceived(client, topic, bytes, length); });
@@ -157,15 +180,7 @@ public:
 
   virtual void timer1000() override {
     if (!_client->connected()) {
-      if (WiFi.status() == WL_CONNECTED) {
-        if (_client->connect(_clientId.c_str())) {
-          if (_client->connected()) {
-            _mqttReconnectCount++;
-            setupMqttConnection();
-            _LOGI("mqtt", "MQTT connected to %s:%d", _host.c_str(), _port);
-          }
-        }
-      }
+      connect();
     } else {
       sendStatus();
     }
