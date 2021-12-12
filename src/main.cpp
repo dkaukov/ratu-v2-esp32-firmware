@@ -5,6 +5,9 @@
 #define HARDAWARE_TYPE_TMATCH_WITH_RELAYS
 #endif
 
+#define IP_CONFIGURATION_TYPE_DHCP 0
+#define IP_CONFIGURATION_TYPE_STATIC 1
+
 const char *getDeviceId();
 
 #include "ArduinoJson.h"
@@ -63,7 +66,17 @@ void WiFiSTAConnect() {
   WiFi.disconnect();
   WiFi.mode(WIFI_STA);
   WiFi.setSleep(false);
+#if (!defined(IP_CONFIGURATION_TYPE) || (IP_CONFIGURATION_TYPE == IP_CONFIGURATION_TYPE_DHCP))
   WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE);
+#elif (defined(IP_CONFIGURATION_TYPE) && (IP_CONFIGURATION_TYPE == IP_CONFIGURATION_TYPE_STATIC))
+#define IP(name, value) IPAddress name(value);
+  IP(local_ip, IP_CONFIGURATION_ADDRESS);
+  IP(local_mask, IP_CONFIGURATION_MASK);
+  IP(gw, IP_CONFIGURATION_GW);
+  WiFi.config(local_ip, gw, local_mask);
+#elif
+#error "Incorrect IP_CONFIGURATION_TYPE."
+#endif
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   WiFi.setHostname(getDeviceId());
   WiFi.setAutoReconnect(true);
