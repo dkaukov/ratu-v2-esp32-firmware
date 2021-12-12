@@ -11,17 +11,17 @@
 /*
   Board pin definitions
 */
-#define L_DRIVER_PIN_STEP 17
-#define L_DRIVER_PIN_DIR 16
-#define L_SENSOR_PIN 32
+#define L_DRIVER_PIN_STEP 19
+#define L_DRIVER_PIN_DIR 18
+#define L_SENSOR_PIN 26
 
-#define C1_DRIVER_PIN_STEP 4
-#define C1_DRIVER_PIN_DIR 2
-#define C1_SENSOR_PIN 35
+#define C1_DRIVER_PIN_STEP 17
+#define C1_DRIVER_PIN_DIR 16
+#define C1_SENSOR_PIN 14
 
-#define C2_DRIVER_PIN_STEP 18
-#define C2_DRIVER_PIN_DIR 19
-#define C2_SENSOR_PIN 34
+#define C2_DRIVER_PIN_STEP 00
+#define C2_DRIVER_PIN_DIR 04
+#define C2_SENSOR_PIN 27
 
 #define ALL_MOTORS_ENABLE_PIN 5
 #define ADS1115_ALERT_READY_PIN 23
