@@ -40,7 +40,7 @@ const char *getDeviceId();
 Core::ComponentManager mgr;
 String deviceId;
 
-void InitDeviceId() {
+void initDeviceId() {
 #if defined(DEVICE_ID)
   deviceId = DEVICE_ID;
 #else
@@ -56,6 +56,19 @@ void InitDeviceId() {
   snprintf(clientId, CLIENT_ID_SIZE, CLIENT_ID_TEMPLATE, chipid);
   deviceId = String(clientId);
 #endif
+}
+
+void printEnvironment() {
+  _LOGI("main", "---");
+  _LOGI("main", "Hostname: %s", getDeviceId());
+  _LOGI("main", "MAC: %s", WiFi.macAddress().c_str());
+  _LOGI("main", "Heap Size: %d", ESP.getHeapSize());
+  _LOGI("main", "SDK Version: %s", ESP.getSdkVersion());
+  _LOGI("main", "CPU Freq: %d", ESP.getCpuFreqMHz());
+  _LOGI("main", "Sketch MD5: %s", ESP.getSketchMD5().c_str());
+  _LOGI("main", "Chip model: %s", ESP.getChipModel());
+  _LOGI("main", "Hardware: %s", HW_INFO);
+  _LOGI("main", "---");
 }
 
 const char *getDeviceId() {
@@ -114,7 +127,8 @@ void setupWiFi() {
 }
 
 void setup() {
-  InitDeviceId();
+  initDeviceId();
+  printEnvironment();
   pinMode(BUILTIN_LED, OUTPUT);
   Serial.begin(115200);
   digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
