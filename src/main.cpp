@@ -87,7 +87,7 @@ void WiFiSTAConnect() {
   IP(local_mask, IP_CONFIGURATION_MASK);
   IP(gw, IP_CONFIGURATION_GW);
   WiFi.config(local_ip, gw, local_mask);
-#elif
+#else
 #error "Incorrect IP_CONFIGURATION_TYPE."
 #endif
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
