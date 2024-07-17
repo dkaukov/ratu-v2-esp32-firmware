@@ -10,6 +10,7 @@
 
 const char *getDeviceId();
 
+
 #include "ArduinoJson.h"
 #include "WiFi.h"
 #include "config.h"
@@ -113,9 +114,9 @@ void wiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info) {
 void setupWiFi() {
   btStop();
   WiFiSTAConnect();
-  WiFi.onEvent(WiFiStationConnected, SYSTEM_EVENT_STA_CONNECTED);
-  WiFi.onEvent(wiFiStationDisconnected, SYSTEM_EVENT_STA_DISCONNECTED);
-  WiFi.onEvent(wiFiGotIP, SYSTEM_EVENT_STA_GOT_IP);
+  WiFi.onEvent(WiFiStationConnected, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_CONNECTED);
+  WiFi.onEvent(wiFiStationDisconnected, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
+  WiFi.onEvent(wiFiGotIP, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
 #if defined(NTP_SERVER)
   sntp_setoperatingmode(SNTP_OPMODE_POLL);
   sntp_setservername(0, (char *)NTP_SERVER);
