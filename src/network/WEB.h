@@ -43,7 +43,7 @@ protected:
     if ((_ws->count() == 0) && (clientId == 0)) {
       return;
     }
-    StaticJsonDocument<1024> doc;
+    JsonDocument doc;
     JsonObject obj = doc.to<JsonObject>();
     doc["topic"] = "status";
     getGlobalStatus(obj);
@@ -57,7 +57,7 @@ protected:
   }
 
   virtual void logMessade(const String &message) {
-    StaticJsonDocument<512> doc;
+    JsonDocument doc;
     doc["topic"] = "log";
     doc["message"] = message;
     String output;
@@ -66,7 +66,7 @@ protected:
   }
 
   virtual void sendConfig(AsyncWebSocketClient *client) {
-    StaticJsonDocument<1024> doc;
+    JsonDocument doc;
     JsonObject obj = doc.to<JsonObject>();
     getGlobalInfo(obj);
     obj["topic"] = "config";
@@ -78,7 +78,7 @@ protected:
   virtual void sendLogBuffer(AsyncWebSocketClient *client) {
     uint8_t ptr = _logBuffTail;
     while (ptr != _logBuffHead) {
-      StaticJsonDocument<512> doc;
+      JsonDocument doc;
       doc["topic"] = "log";
       doc["message"] = _logBuff[ptr];
       String output;
@@ -157,7 +157,7 @@ public:
   virtual void loop() override {
     msg_packet_t pkt;
     if (xQueueReceive(_msg_queue, &pkt, 0) == pdTRUE) {
-      DynamicJsonDocument doc(2048);
+      JsonDocument doc;
       DeserializationError error = deserializeJson(doc, pkt.msg);
       free((void *)(pkt.msg));
       if (!error) {

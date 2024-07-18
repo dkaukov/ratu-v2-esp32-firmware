@@ -67,7 +67,7 @@ public:
   virtual void init() override{};
 
   void notification(Device::TxTuneRequest request) {
-    StaticJsonDocument<256> doc;
+    JsonDocument doc;
     JsonObject obj = doc.to<JsonObject>();
     if (request.tuneEnabled && (_drive >= 0) && (_drive <= 100)) {
       obj["cmd"] = "tune_drive";
