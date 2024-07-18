@@ -67,7 +67,7 @@ private:
 
   void setupMqttConnection() {
     net.setNoDelay(true);
-    StaticJsonDocument<1024> doc;
+    JsonDocument doc;
     JsonObject obj = doc.to<JsonObject>();
     getGlobalInfo(obj);
     String output;
@@ -85,7 +85,7 @@ public:
   };
 
   void messageReceived(MQTTClient *client, char topic[], char bytes[], int length) {
-    DynamicJsonDocument doc(2048);
+    JsonDocument doc;
     DeserializationError error = deserializeJson(doc, bytes, length);
     if (!error) {
       doc.shrinkToFit();
@@ -109,7 +109,7 @@ public:
   };
 
   virtual void sendStatus() {
-    StaticJsonDocument<1024> doc;
+    JsonDocument doc;
     JsonObject obj = doc.to<JsonObject>();
     getGlobalStatus(obj);
     String output;
