@@ -4,30 +4,34 @@ on: [push]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
+
     - name: Cache pip
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
+
     - name: Cache PlatformIO
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+
     - name: Set up Python
       uses: actions/setup-python@v2
+
     - name: Install PlatformIO
       run: |
         python -m pip install --upgrade pip
         pip install --upgrade platformio
-        pio platform install native 
+        pio platform install native
+
     - name: Create secrets
       uses: 1arp/create-a-file-action@0.2
       with:
@@ -37,12 +41,15 @@ jobs:
           #pragma once
           #define WIFI_SSID "*"
           #define WIFI_PASSWORD "*"
+
     - name: Create config
       uses: canastro/copy-action@0.0.2
       with:
         source: src/config-example.h
         target: src/config.h
+
     - name: Run PlatformIO build
       run: pio run -e HARDAWARE_TYPE_TMATCH_WITH_RELAYS -e HARDAWARE_TYPE_TMATCH_WITH_STEPPERS -e HARDAWARE_TYPE_LMATCH_WITH_STEPPERS
+
     - name: Run PlatformIO tests
       run: pio test -e test-no-logging-native
